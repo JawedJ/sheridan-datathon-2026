@@ -57,7 +57,7 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | H3 | Comfort number ("where their balance usually settles") | Median month-end balance, skipping the account's first 3 months | DERIVED |
 | H4 | "People at their income level hold X months" | Median B ÷ S for their income decile, pensioners excluded | DERIVED |
 | H5 | Tags (bonus, bills paid in cash, often near zero, has gone below zero, irregular income, pensioner) | Thresholds we chose: bonus > 10% in Jun/Dec; H = 0; edge months > 25%; any day below zero; income CV > 0.6 with few autopays; pension ≥ 50% of income | DERIVED with ASSUMPTION thresholds |
-| H6 | "Bills paid in cash (not in data)" | H = 0 and 98% of these customers never have a labelled bill. That they pay in cash is our **inference** (99.7% of their spending is cash) | ESTIMATE |
+| H6 | "Bills paid in cash (not in data)" | H = 0 and 98% of these customers never have a labelled bill. They most likely pay their bills in cash out of their withdrawals: they spend as much as customers with bills, but almost all of it leaves as cash (median customer 99.7%; 96% of their total spending). 158 others pay a bills standing order by untagged transfer. This is our **inference**, not something the data states | ESTIMATE |
 
 ### 2.2 The "Official formula" result (section 2)
 | # | What | Type |

@@ -243,7 +243,7 @@ What we did with each awkward case:
 | Zero typical income | 14 | Kept; left out only of the income-vs-savings slope (log of 0 is undefined) | They're real customers a judge could pick |
 | Income under $500/month | 118 | Kept | Real customers |
 | Pensioners | 740 | Kept in the app; left out of income comparisons | A layoff can't stop a pension |
-| $0 recorded bills | 1,225 | Kept; no bills estimate; limitation shown on screen | Their bills almost certainly exist: they spend as much as customers with bills, 96% of it in cash. 158 of them even pay a bills standing order every month, but the bank didn't tag those payments as bills |
+| $0 recorded bills | 1,225 | Kept; no bills estimate; limitation shown on screen | Their bills almost certainly exist and are most likely paid in cash out of their withdrawals: they spend as much as customers with bills, but 96% of it leaves as cash. 158 of them even pay a bills standing order every month, but the bank didn't tag those payments as bills |
 | First 3 months of each account | all | Skipped for comfort number and thermostat | Accounts fill up from $0 |
 | 2020 (partial first year) | — | Year-by-year checks use 2021–2025 only, full years only | Accounts were still opening |
 | Accounts without a December 2025 row | 76 | Kept | Their "last 6 months" is just slightly older |

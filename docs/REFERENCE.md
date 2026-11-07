@@ -188,7 +188,7 @@ No shock 7.8 months · EI 55% 3.4 · furnace 4.0 · EI + bills 15% 3.4 (bills sh
 | 4.1.1 | **Median quirk**: 1,181 customers (26.2%) have S > I, so they look like they lose money with no shock | 97.5% of them took in more than they spent over their whole history and ended with a positive balance. Medians come from different months; spending is lumpy (39% of all account-months have out > in). Median false gap $531 | Report the official number as-is. Alternatives tested: paired gap median(out − in) fixes 63% of them; means instead of medians |
 | 4.1.2 | **EI has no cap** in the official rule | 57.2% of customers (2,574) would get more than the real $3,159/month maximum. With the cap, EI runway < 3 months goes **9.7% → 27.9%**; median 8.6 → 5.7 months. Insensitive to the exact cap ($668–$729/week → 28.6–29.6% unrounded) | Real-cap number shown next to the official one |
 | 4.1.3 | **Pensioners get a job-loss shock** | 740 customers, median age 72; job loss can't stop a pension. Doesn't flip anyone (median EI runway 35 months, 0% under 3 either way) | Excluded from income rankings; app keeps the pension during a job loss |
-| 4.1.4 | **Bills shock does nothing for 27%** (app now says their bills aren't recorded; no estimate) | 1,225 customers have $0 median household bills; 98.2% never pay a labelled bill; only 13% have a bills standing order (vs 75% overall); 99.7% of their spending is cash (vs 59%) | App estimates their bills at 19.9% of spending (median bills share of customers who have bills), labelled as an estimate |
+| 4.1.4 | **Bills shock does nothing for 27%** (app now says their bills aren't recorded; no estimate) | 1,225 customers have $0 median household bills; 98.2% never pay a labelled bill; only 13% have a bills standing order (vs 75% overall); 99.7% of their spending is cash (vs 59%) | No estimate (an earlier 19.9%-of-spending estimate was removed). They most likely pay bills in cash out of their withdrawals (same total spending as customers with bills; 96% of it cash); 158 pay a bills standing order by untagged transfer (`verify_deep.py` §6) |
 | 4.1.5 | **Spending is mostly unlabelled cash** | 76% of money out is cash with no purpose | Plans talk about "flexible spending" rather than categories |
 | 4.1.6 | "Household bills" = standing orders exactly | Median ratio of bills standing order ÷ H = 1.00 | Explains 4.1.4 |
 
@@ -209,7 +209,7 @@ No shock 7.8 months · EI 55% 3.4 · furnace 4.0 · EI + bills 15% 3.4 (bills sh
 | 4.3.2 | Zero median income | 14 | Kept; dropped only from log-based elasticity (log 0 undefined) |
 | 4.3.3 | Income under $500/month | 118 | Kept; treated as special cases for plans |
 | 4.3.4 | Pensioners | 740 | Excluded from income rankings, elasticity, charts and timing; pension kept in the app |
-| 4.3.5 | $0 labelled bills | 1,225 | Not estimated. Official rule leaves $0; the app states that a bills increase can't be measured for them (an earlier 19.9%-of-spending estimate was removed) |
+| 4.3.5 | $0 labelled bills | 1,225 | Not estimated. Official rule leaves $0; the app states that a bills increase can't be measured for them (an earlier 19.9%-of-spending estimate was removed). Likely explanation: they pay bills in cash out of their withdrawals |
 | 4.3.6 | First 3 months of each account (fill-up from $0) | all | Excluded from comfort number, thermostat, split-half and year-by-year analysis |
 | 4.3.7 | 2020 partial year | — | Year-by-year test uses 2021–2025, full 12-month account-years only |
 | 4.3.8 | Median quirk (4.1.1) | 1,181 | Official number reported as-is |
