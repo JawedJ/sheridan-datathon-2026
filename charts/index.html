@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comfort Number Findings</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f5f2; --surface: #fcfcfb; --border: #e3e1db;
+    --text: #0b0b0b; --text-2: #52514e; --text-3: #7a7974;
+    --series-1: #2a78d6; --series-2: #eb6834; --muted-bar: #c9c7c0;
+    --grid: #ebe9e4; --axis: #b9b7b0; --gap-fill: #eb6834;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #121211; --surface: #1a1a19; --border: #2e2d2b;
+      --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86;
+      --series-1: #3987e5; --series-2: #d95926; --muted-bar: #4a4945;
+      --grid: #2a2a28; --axis: #55544f; --gap-fill: #d95926;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #121211; --surface: #1a1a19; --border: #2e2d2b;
+    --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86;
+    --series-1: #3987e5; --series-2: #d95926; --muted-bar: #4a4945;
+    --grid: #2a2a28; --axis: #55544f; --gap-fill: #d95926;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 920px; margin: 0 auto; padding: 28px 16px 56px; }
+  nav { font-size: 14px; margin-bottom: 18px; }
+  nav a { color: var(--series-1); }
+  .hero { margin-bottom: 26px; }
+  .hero h1 { font-size: 28px; line-height: 1.2; margin: 0 0 10px; max-width: 760px; }
+  .hero p { color: var(--text-2); margin: 0; max-width: 720px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 20px 0 8px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .stat .v { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: 13px; color: var(--text-2); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 18px; }
+  .card h2 { font-size: 18px; margin: 0 0 4px; }
+  .card .what { color: var(--text-2); font-size: 14px; margin: 0 0 10px; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--text-2); margin: 6px 0 4px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; }
+  .legend i.line { height: 3px; border-radius: 2px; vertical-align: 3px; width: 16px; }
+  .chart { position: relative; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  svg text { fill: var(--text-2); font-size: 12px; font-family: inherit; }
+  svg text.lab { fill: var(--text); font-weight: 600; }
+  .tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--border);
+         border-radius: 8px; padding: 8px 10px; font-size: 12.5px; line-height: 1.4; box-shadow: 0 4px 14px rgba(0,0,0,.14);
+         display: none; z-index: 2; min-width: 160px; }
+  .tip b { color: var(--text); }
+  .note { font-size: 13px; color: var(--text-3); margin-top: 8px; }
+  details { margin-top: 8px; }
+  details summary { cursor: pointer; font-size: 13px; color: var(--text-2); }
+  table { border-collapse: collapse; font-size: 12.5px; margin-top: 8px; width: 100%; }
+  td, th { padding: 4px 8px; border-bottom: 1px solid var(--border); text-align: right; font-variant-numeric: tabular-nums; }
+  th:first-child, td:first-child { text-align: left; }
+  .takeaway { border-left: 3px solid var(--series-1); padding: 4px 0 4px 12px; margin-top: 12px; font-size: 14.5px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="hero">
+    <h1>People save to a dollar number, not to a number of months, so the more you earn, the more fragile you are.</h1>
+    <p>From 4,500 real bank accounts (PKDD'99 Financial dataset, amounts in CAD). Pensioners are excluded from income comparisons because a job loss doesn't apply to them.</p>
+  </div>
+  <div class="stats" id="stats"></div>
+
+  <div class="card">
+    <h2>Savings level off while spending keeps climbing</h2>
+    <p class="what">Where each income group's balance settles, vs what 3 months of their spending costs. Below about $7k/month income the cushion covers 3 months; above it, the gap widens fast.</p>
+    <div class="legend"><span><i class="line" style="background:var(--series-1)"></i>Where their balance settles (comfort number)</span>
+      <span><i class="line" style="background:var(--series-2)"></i>3 months of their spending</span></div>
+    <div class="chart" id="c1"></div>
+    <details><summary>Show the numbers</summary><div id="t1"></div></details>
+  </div>
+
+  <div class="card">
+    <h2>Top earners are the most likely to run out after a layoff</h2>
+    <p class="what">Share of each income group whose savings would run out within 3 months on EI if they kept spending as usual. The real EI maximum ($729/week in 2026) replaces only 12% of a top earner's income. Cutting half their flexible spending would bring the top group from 93% down to 30%.</p>
+    <div class="legend"><span><i style="background:var(--series-1)"></i>Judges' rule (55% of income)</span>
+      <span><i style="background:var(--series-2)"></i>With the real EI maximum</span></div>
+    <div class="chart" id="c2"></div>
+    <details><summary>Show the numbers</summary><div id="t2"></div></details>
+  </div>
+
+  <div class="card">
+    <h2>Balances act like a thermostat, and top earners spend extra fastest</h2>
+    <p class="what">Next month's money in minus money out, as a share of usual monthly income, depending on where the balance sits vs its usual level. Above zero = saving, below = spending down.</p>
+    <div class="legend"><span><i style="background:var(--series-2)"></i>Bottom 20% of earners</span>
+      <span><i style="background:var(--series-1)"></i>Top 20% of earners</span></div>
+    <div class="chart" id="c3"></div>
+    <details><summary>Show the numbers</summary><div id="t3"></div></details>
+  </div>
+
+  <div class="card">
+    <h2>When the layoff hits changes how long savings last</h2>
+    <p class="what">Median months of runway on EI (55%) by the month the job loss starts, using each customer's seasonal spending. The three worst months are highlighted.</p>
+    <div class="chart" id="c4"></div>
+    <details><summary>Show the numbers</summary><div id="t4"></div></details>
+  </div>
+
+  <p class="note">Robustness: the pattern holds in all 8 regions, every account age, both genders, couples and singles, every year 2021–2025 and five different savings definitions. Correcting for income-measurement noise barely changes it. Full method and limits in FINDINGS.md.</p>
+</main>
+
+<script src="charts.js"></script>
+<script>
+const D = window.CHARTS;
+const money = v => "$" + Math.round(v).toLocaleString();
+const kfmt = v => v >= 1000 ? "$" + Math.round(v / 1000) + "k" : "$" + Math.round(v);
+const el = (id) => document.getElementById(id);
+
+function frame(host, H, { L = 56, R = 16, T = 16, B = 44 } = {}) {
+  const W = 860;
+  host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img"></svg><div class="tip"></div>`;
+  return { svg: host.querySelector("svg"), tip: host.querySelector(".tip"), W, H, L, R, T, B, iw: W - L - R, ih: H - T - B };
+}
+function niceTicks(lo, hi, n = 5) {
+  const raw = (hi - lo) / n, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p;
+  const step = (m < 1.5 ? 1 : m < 3 ? 2 : m < 7 ? 5 : 10) * p;
+  const end = Math.ceil(hi / step - 1e-9) * step;
+  const out = []; for (let v = Math.floor(lo / step) * step; v <= end + 1e-9; v += step) out.push(+v.toFixed(6));
+  return out;
+}
+function yAxis(f, ticks, Y, fmt) {
+  return ticks.map(v => `<line x1="${f.L}" x2="${f.W - f.R}" y1="${Y(v)}" y2="${Y(v)}" stroke="${v === 0 ? "var(--axis)" : "var(--grid)"}" stroke-width="${v === 0 ? 1.25 : 1}"/>
+    <text x="${f.L - 8}" y="${Y(v) + 4}" text-anchor="end">${fmt(v)}</text>`).join("");
+}
+function showTip(f, html, x, y) {
+  const r = f.svg.getBoundingClientRect(), s = r.width / f.W;
+  f.tip.innerHTML = html; f.tip.style.display = "block";
+  const tw = f.tip.offsetWidth;
+  f.tip.style.left = Math.max(0, Math.min(r.width - tw, x * s + 12)) + "px";
+  f.tip.style.top = Math.max(0, y * s - 10) + "px";
+}
+function hideTip(f) { f.tip.style.display = "none"; }
+// Bar with rounded data-end anchored at the baseline (4px radius on the value end only)
+function bar(x, y0, y1, w, fill, attrs = "") {
+  const r = Math.min(4, w / 2, Math.abs(y1 - y0));
+  const up = y1 < y0, top = up ? y1 : y0, bot = up ? y0 : y1;
+  const d = up
+    ? `M${x} ${bot}V${top + r}Q${x} ${top} ${x + r} ${top}H${x + w - r}Q${x + w} ${top} ${x + w} ${top + r}V${bot}Z`
+    : `M${x} ${top}V${bot - r}Q${x} ${bot} ${x + r} ${bot}H${x + w - r}Q${x + w} ${bot} ${x + w} ${bot - r}V${top}Z`;
+  return `<path d="${d}" fill="${fill}" ${attrs}/>`;
+}
+function table(host, head, rows) {
+  el(host).innerHTML = `<table><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</table>`;
+}
+
+// ---------- stats
+const d1 = D.deciles[0], d10 = D.deciles[9];
+el("stats").innerHTML = [
+  [d1.cushion_months.toFixed(1) + " mo", "of spending saved, lowest-earning 10%"],
+  [d10.cushion_months.toFixed(1) + " mo", "of spending saved, highest-earning 10%"],
+  [Math.round(d10.ei_lt3_cap) + "%", "of top earners run out within 3 months on real EI"],
+  ["×1.22", "buffer growth when income doubles"],
+].map(([v, l]) => `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+
+// ---------- chart 1: comfort number vs 3 months of spending
+(() => {
+  const f = frame(el("c1"), 340, { L: 64, B: 52 });
+  const xs = D.deciles, n = xs.length;
+  const X = i => f.L + (i + 0.5) / n * f.iw;
+  const hi = Math.max(...xs.map(d => Math.max(d.comfort, d.three_months))) * 1.08;
+  const ticks = niceTicks(0, hi), Y = v => f.T + f.ih - v / ticks.at(-1) * f.ih;
+  let g = yAxis(f, ticks, Y, kfmt);
+  xs.forEach((d, i) => g += `<text x="${X(i)}" y="${f.H - 30}" text-anchor="middle">D${d.decile}</text><text x="${X(i)}" y="${f.H - 14}" text-anchor="middle" style="font-size:11px;fill:var(--text-3)">${kfmt(d.income)}/mo</text>`);
+  // gap shading where 3-month need exceeds the comfort level
+  const area = xs.map((d, i) => `${X(i)},${Y(Math.max(d.three_months, d.comfort))}`).join(" ") + " " +
+               xs.slice().reverse().map((d, j) => `${X(n - 1 - j)},${Y(d.comfort)}`).join(" ");
+  g += `<polygon points="${area}" fill="var(--gap-fill)" opacity=".10"/>`;
+  const line = (k, c) => `<polyline points="${xs.map((d, i) => `${X(i)},${Y(d[k])}`).join(" ")}" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round"/>`;
+  g += line("three_months", "var(--series-2)") + line("comfort", "var(--series-1)");
+  xs.forEach((d, i) => g += `<circle cx="${X(i)}" cy="${Y(d.comfort)}" r="4" fill="var(--series-1)" stroke="var(--surface)" stroke-width="2"/><circle cx="${X(i)}" cy="${Y(d.three_months)}" r="4" fill="var(--series-2)" stroke="var(--surface)" stroke-width="2"/>`);
+  // direct labels at the right end
+  const last = xs[n - 1];
+  g += `<text class="lab" x="${X(n - 1) - 8}" y="${Y(last.three_months) - 10}" text-anchor="end">${money(last.three_months)} needed</text>`;
+  g += `<text class="lab" x="${X(n - 1)}" y="${Y(last.comfort) + 24}" text-anchor="middle">${money(last.comfort)} kept</text>`;
+  const d8 = xs[n - 2];
+  g += `<text x="${X(n - 2) + 4}" y="${(Y(d8.three_months) + Y(d8.comfort)) / 2 + 4}" text-anchor="middle" style="fill:var(--text-3)">the gap</text>`;
+  g += `<line id="c1x" y1="${f.T}" y2="${f.T + f.ih}" stroke="var(--axis)" opacity="0"/>`;
+  g += `<rect x="${f.L}" y="${f.T}" width="${f.iw}" height="${f.ih}" fill="transparent" class="hit"/>`;
+  f.svg.innerHTML = g; f.svg.setAttribute("aria-label", "Comfort number vs three months of spending by income decile");
+  const cx = f.svg.querySelector("#c1x");
+  f.svg.querySelector(".hit").onmousemove = e => {
+    const r = f.svg.getBoundingClientRect(), x = (e.clientX - r.left) * f.W / r.width;
+    const i = Math.max(0, Math.min(n - 1, Math.floor((x - f.L) / f.iw * n))), d = xs[i];
+    cx.setAttribute("x1", X(i)); cx.setAttribute("x2", X(i)); cx.setAttribute("opacity", 1);
+    showTip(f, `<b>Income decile ${d.decile}</b> (${money(d.income)}/mo)<br>Balance settles at: <b>${money(d.comfort)}</b><br>3 months of spending: <b>${money(d.three_months)}</b><br>Covers ${d.cushion_months.toFixed(1)} months · n=${d.n}`, X(i), Y(Math.max(d.comfort, d.three_months)));
+  };
+  f.svg.querySelector(".hit").onmouseleave = () => { hideTip(f); cx.setAttribute("opacity", 0); };
+  table("t1", ["Decile", "Median income", "Balance settles at", "3 months of spending", "Months covered", "n"],
+        xs.map(d => ["D" + d.decile, money(d.income), money(d.comfort), money(d.three_months), d.cushion_months.toFixed(2), d.n]));
+})();
+
+// ---------- grouped bars helper
+function grouped(host, H, cats, series, { fmt, tipFn, labelFn, zero = true, L = 56, B = 40 }) {
+  const f = frame(el(host), H, { L, B });
+  const vals = cats.flatMap(c => series.map(s => s.get(c)));
+  const lo = Math.min(0, ...vals), hi = Math.max(0, ...vals);
+  const ticks = niceTicks(lo, hi), tlo = ticks[0], thi = ticks.at(-1);
+  const Y = v => f.T + (thi - v) / (thi - tlo) * f.ih;
+  const band = f.iw / cats.length, gap = 2, bw = Math.min(26, (band * 0.7 - gap) / series.length);
+  let g = yAxis(f, ticks, Y, fmt);
+  cats.forEach((c, i) => {
+    const x0 = f.L + i * band + (band - (bw * series.length + gap * (series.length - 1))) / 2;
+    series.forEach((s, j) => {
+      const v = s.get(c), x = x0 + j * (bw + gap);
+      g += bar(x, Y(0), Y(v), bw, s.color, `data-i="${i}"`);
+      if (labelFn && labelFn(c, s, v)) g += `<text class="lab" x="${x + bw / 2}" y="${v >= 0 ? Y(v) - 6 : Y(v) + 15}" text-anchor="middle" style="font-size:11.5px">${fmt(v)}</text>`;
+    });
+    g += `<text x="${f.L + i * band + band / 2}" y="${f.H - 16}" text-anchor="middle">${c.label}</text>`;
+    g += `<rect x="${f.L + i * band}" y="${f.T}" width="${band}" height="${f.ih}" fill="transparent" class="hit" data-i="${i}"/>`;
+  });
+  f.svg.innerHTML = g;
+  f.svg.querySelectorAll(".hit").forEach(h => {
+    h.onmousemove = () => { const i = +h.dataset.i; showTip(f, tipFn(cats[i]), f.L + i * band + band / 2, f.T + 10);
+      f.svg.querySelectorAll("path[data-i]").forEach(p => p.style.opacity = p.dataset.i == i ? 1 : 0.45); };
+    h.onmouseleave = () => { hideTip(f); f.svg.querySelectorAll("path[data-i]").forEach(p => p.style.opacity = 1); };
+  });
+  return f;
+}
+
+// ---------- chart 2: run out within 3 months, judges vs real cap
+(() => {
+  const cats = D.deciles.map(d => ({ ...d, label: "D" + d.decile }));
+  grouped("c2", 320, cats, [
+    { name: "Judges' rule", color: "var(--series-1)", get: c => c.ei_lt3_judges },
+    { name: "Real EI maximum", color: "var(--series-2)", get: c => c.ei_lt3_cap },
+  ], {
+    fmt: v => Math.round(v) + "%",
+    labelFn: (c, s) => c.decile === 10 || (c.decile === 1 && s.name === "Real EI maximum"),
+    tipFn: c => `<b>Income decile ${c.decile}</b> (${money(c.income)}/mo)<br>Judges' rule: <b>${c.ei_lt3_judges}%</b><br>Real EI maximum: <b>${c.ei_lt3_cap}%</b><br>n=${c.n}`,
+  });
+  table("t2", ["Decile", "Median income", "Judges' rule", "Real EI maximum", "n"],
+        D.deciles.map(d => ["D" + d.decile, money(d.income), d.ei_lt3_judges + "%", d.ei_lt3_cap + "%", d.n]));
+})();
+
+// ---------- chart 3: thermostat
+(() => {
+  const cats = D.thermostat.map(t => ({ ...t, label: t.position }));
+  grouped("c3", 320, cats, [
+    { name: "Bottom 20%", color: "var(--series-2)", get: c => c.bottom20 },
+    { name: "Top 20%", color: "var(--series-1)", get: c => c.top20 },
+  ], {
+    fmt: v => (v > 0 ? "+" : "") + Math.round(v) + "%",
+    labelFn: () => true,
+    tipFn: c => `<b>Balance ${c.position.toLowerCase()}</b><br>Bottom 20% earners: <b>${c.bottom20 > 0 ? "+" : ""}${c.bottom20}%</b> of usual income next month<br>Top 20% earners: <b>${c.top20 > 0 ? "+" : ""}${c.top20}%</b><br>${c.bottom20_n.toLocaleString()} / ${c.top20_n.toLocaleString()} account-months`,
+  });
+  table("t3", ["Balance vs usual", "Bottom 20% next-month net", "Top 20% next-month net", "Account-months (bottom / top)"],
+        D.thermostat.map(t => [t.position, t.bottom20 + "%", t.top20 + "%", t.bottom20_n.toLocaleString() + " / " + t.top20_n.toLocaleString()]));
+})();
+
+// ---------- chart 4: timing
+(() => {
+  const worst = D.timing.slice().sort((a, b) => a.runway - b.runway).slice(0, 3).map(t => t.month);
+  const cats = D.timing.map(t => ({ ...t, label: t.month }));
+  const f = frame(el("c4"), 300, { L: 56, B: 40 });
+  const hi = Math.max(...cats.map(c => c.runway)), ticks = niceTicks(0, hi), Y = v => f.T + f.ih - v / ticks.at(-1) * f.ih;
+  const band = f.iw / 12, bw = Math.min(30, band * 0.6);
+  let g = yAxis(f, ticks, Y, v => v + " mo");
+  cats.forEach((c, i) => {
+    const x = f.L + i * band + (band - bw) / 2, hot = worst.includes(c.month);
+    g += bar(x, Y(0), Y(c.runway), bw, hot ? "var(--series-1)" : "var(--muted-bar)", `data-i="${i}"`);
+    if (hot || c.month === "Feb") g += `<text class="lab" x="${x + bw / 2}" y="${Y(c.runway) - 6}" text-anchor="middle" style="font-size:11.5px">${c.runway.toFixed(1)}</text>`;
+    g += `<text x="${x + bw / 2}" y="${f.H - 16}" text-anchor="middle">${c.month}</text>`;
+    g += `<rect x="${f.L + i * band}" y="${f.T}" width="${band}" height="${f.ih}" fill="transparent" class="hit" data-i="${i}"/>`;
+  });
+  f.svg.innerHTML = g; f.svg.setAttribute("aria-label", "Median runway by layoff start month");
+  f.svg.querySelectorAll(".hit").forEach(h => {
+    h.onmousemove = () => { const c = cats[+h.dataset.i];
+      showTip(f, `<b>Layoff starts in ${c.month}</b><br>Median runway: <b>${c.runway.toFixed(1)} months</b><br>Worst month for ${c.worst_share}% of customers`, f.L + (+h.dataset.i) * band + band / 2, f.T + 10); };
+    h.onmouseleave = () => hideTip(f);
+  });
+  table("t4", ["Layoff starts", "Median runway (months)", "Worst month for (% of customers)"],
+        D.timing.map(t => [t.month, t.runway.toFixed(1), t.worst_share + "%"]));
+  el("c4").insertAdjacentHTML("afterend", `<p class="note">${D.timing_n.toLocaleString()} customers whose runway runs out within 10 years for every start month. Best (Feb) vs worst (Dec): ${(D.timing[1].runway - D.timing[11].runway).toFixed(1)} months.</p>`);
+})();
+</script>
+</body>
+</html>

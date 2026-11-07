@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Runway Check</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f5f2; --surface: #fcfcfb; --border: #e3e1db;
+    --text: #0b0b0b; --text-2: #52514e; --text-3: #7a7974;
+    --series-1: #2a78d6; --series-2: #eb6834;
+    --grid: #ebe9e4; --axis: #b9b7b0;
+    --good: #0f7b3e; --warn: #9a6400; --bad: #c0362c;
+    --accent-bg: #eef4fc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #121211; --surface: #1a1a19; --border: #2e2d2b;
+      --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86;
+      --series-1: #3987e5; --series-2: #d95926;
+      --grid: #2a2a28; --axis: #55544f;
+      --good: #4cc27a; --warn: #e0a43a; --bad: #ef6b60;
+      --accent-bg: #1c2633;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #121211; --surface: #1a1a19; --border: #2e2d2b;
+    --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86;
+    --series-1: #3987e5; --series-2: #d95926;
+    --grid: #2a2a28; --axis: #55544f;
+    --good: #4cc27a; --warn: #e0a43a; --bad: #ef6b60;
+    --accent-bg: #1c2633;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 0 0 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-2); }
+  .sub { color: var(--text-2); margin: 0 0 20px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .grid { display: grid; gap: 16px; }
+  @media (min-width: 860px) { .two { grid-template-columns: 340px 1fr; } }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  input[type=number], select { font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border);
+         background: var(--bg); color: var(--text); }
+  input[type=number] { width: 130px; }
+  button { font: inherit; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border);
+           background: var(--bg); color: var(--text); cursor: pointer; }
+  button.primary { background: var(--series-1); color: #fff; border-color: var(--series-1); }
+  .chips button { font-size: 13px; padding: 5px 10px; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 14px; }
+  .kpi .label { font-size: 12.5px; color: var(--text-2); }
+  .kpi .value { font-size: 22px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .kpi .note { font-size: 12px; color: var(--text-3); }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .tag { font-size: 12.5px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-2); }
+  .ctl { margin-bottom: 14px; }
+  .ctl label { display: flex; justify-content: space-between; font-size: 13.5px; color: var(--text-2); margin-bottom: 4px; }
+  .ctl label b { color: var(--text); font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; accent-color: var(--series-1); }
+  .check { display: flex; gap: 8px; align-items: flex-start; font-size: 13.5px; color: var(--text-2); margin: 8px 0; }
+  .verdict { font-size: 20px; font-weight: 650; margin: 0 0 6px; }
+  .verdict.good { color: var(--good); } .verdict.bad { color: var(--bad); } .verdict.warn { color: var(--warn); }
+  .compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 12px 0; }
+  .compare .box { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+  .compare .box .label { font-size: 12.5px; color: var(--text-2); }
+  .compare .box .value { font-size: 20px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .legend { display: flex; gap: 16px; font-size: 13px; color: var(--text-2); margin: 4px 0 6px; }
+  .legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+  svg text { fill: var(--text-2); font-size: 11.5px; }
+  .tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--border);
+         border-radius: 8px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 4px 14px rgba(0,0,0,.12); display: none; }
+  .plan h3 { font-size: 15px; margin: 0 0 6px; }
+  .plan ul { margin: 6px 0 0; padding-left: 18px; }
+  .plan li { margin: 4px 0; }
+  .insight { background: var(--accent-bg); border-radius: 10px; padding: 10px 12px; margin-top: 10px; font-size: 14px; }
+  .muted { color: var(--text-3); font-size: 12.5px; }
+  details summary { cursor: pointer; color: var(--text-2); font-size: 13.5px; }
+  table { border-collapse: collapse; font-size: 12.5px; margin-top: 8px; }
+  td, th { padding: 3px 8px; border-bottom: 1px solid var(--border); text-align: right; font-variant-numeric: tabular-nums; }
+  th:first-child, td:first-child { text-align: left; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Runway Check</h1>
+  <p class="sub">Pick a customer, hit them with a shock, see how long their savings last and what to do about it.</p>
+
+  <div class="card">
+    <div class="row">
+      <input id="acct" type="number" placeholder="account_id" aria-label="Account ID">
+      <button class="primary" id="go">Look up</button>
+      <button id="rand">Random</button>
+      <span id="err" class="muted"></span>
+    </div>
+    <div class="row chips" style="margin-top:10px">
+      <span class="muted">Examples:</span>
+      <button data-ex="judges_example">Judges' example</button>
+      <button data-ex="thin_high">High earner, thin cushion</button>
+      <button data-ex="edge">Living on the edge</button>
+      <button data-ex="builder">Saver with bonuses</button>
+      <button data-ex="pensioner">Pensioner</button>
+    </div>
+  </div>
+
+  <section id="out" style="display:none">
+    <div class="card" style="margin-top:16px">
+      <h2>1 · Know the customer <span id="who" style="text-transform:none;letter-spacing:0;color:var(--text-3)"></span></h2>
+      <div class="kpis" id="kpis"></div>
+      <div class="tags" id="tags"></div>
+    </div>
+
+    <div class="grid two" style="margin-top:16px">
+      <div class="card">
+        <h2>2 · Take a shock</h2>
+        <div class="ctl"><label>Income during shock <b id="v-ei"></b></label>
+          <input id="ei" type="range" min="0" max="100" step="5" value="55"></div>
+        <div class="ctl"><label>Shock lasts (job back after) <b id="v-dur"></b></label>
+          <input id="dur" type="range" min="1" max="24" step="1" value="6"></div>
+        <div class="ctl"><label>Household bills up <b id="v-bills"></b></label>
+          <input id="bills" type="range" min="0" max="50" step="5" value="0"></div>
+        <div class="ctl"><label>One-off cost (repair) <b id="v-oneoff"></b></label>
+          <input id="oneoff" type="range" min="0" max="3" step="0.25" value="0"></div>
+        <div class="ctl"><label for="start">Shock starts in</label>
+          <select id="start"></select></div>
+        <div class="check"><input type="checkbox" id="cap"><label for="cap">Apply real EI maximum ($729/week)</label></div>
+        <div class="check"><input type="checkbox" id="hidden" checked><label for="hidden">Estimate hidden bills for cash-only payers</label></div>
+        <div class="row chips">
+          <span class="muted">Twist cards:</span>
+          <button data-tw="ei">Laid off, EI 55%</button>
+          <button data-tw="furnace">Furnace dies</button>
+          <button data-tw="combo">EI + bills 15%</button>
+          <button data-tw="none">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="verdict" id="verdict"></p>
+        <div class="muted" id="verdict-sub"></div>
+        <div class="compare" id="compare"></div>
+        <div class="legend"><span><i style="background:var(--series-1)"></i>With shock</span>
+          <span><i style="background:var(--series-2)"></i>No shock</span></div>
+        <div style="position:relative">
+          <svg id="chart" viewBox="0 0 640 260" width="100%" role="img" aria-label="Balance month by month"></svg>
+          <div class="tip" id="tip"></div>
+        </div>
+        <details><summary>Show the numbers</summary><div id="tbl"></div></details>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:16px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+      <div class="card plan">
+        <h2>3 · Goal plan</h2>
+        <div id="goal"></div>
+      </div>
+      <div class="card plan">
+        <h2>3 · Backup plan if the shock hits</h2>
+        <div id="backup"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="data.js"></script>
+<script>
+const C = window.CUSTOMERS, M = window.META;
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const $ = id => document.getElementById(id);
+const money = x => (x < 0 ? "−$" : "$") + Math.round(Math.abs(x)).toLocaleString();
+const mo = x => x >= 120 ? "120+ mo" : x.toFixed(1) + " mo";
+let cur = null;
+
+MONTHS.forEach((m, i) => $("start").insertAdjacentHTML("beforeend", `<option value="${i + 1}">${m}</option>`));
+$("start").value = 1;
+
+function judgesRunway(bufferLeft, gap) {
+  if (bufferLeft <= 0) return 0;
+  if (gap <= 0) return 120;
+  return Math.round(Math.min(bufferLeft / gap, 120) * 10) / 10;
+}
+
+function shockedIncome(c, eiPct, cap, base = c.I) {
+  const pensioner = c.pension_share >= 0.5;
+  const pension = pensioner ? base * c.pension_share : 0;   // pension keeps paying
+  let ei = eiPct * (base - pension);
+  if (cap) ei = Math.min(ei, M.ei_monthly_max);
+  return { income: pension + ei, pensioner };
+}
+
+function billsBase(c, hidden) {
+  if (c.H > 0 || !hidden) return { H: c.H, estimated: false };
+  return { H: M.median_bills_share * c.S, estimated: true };
+}
+
+// Month-by-month path: seasonal spending, bonus months, job back after `dur` months.
+// Uses the customer's real yearly averages (mean in/out) spread over the calendar, so a
+// no-shock year adds up to what actually happened. Shock income follows the judges' rule.
+function simulate(c, o, shocked) {
+  let bal = c.B - (shocked ? o.oneoff * c.S : 0);
+  const pts = [{ k: 0, m: o.start, bal }];
+  let out = null, low = bal;
+  const bonus = c.has_bonus ? c.bonus_pct : 0;
+  const baseIn = c.mean_in / (1 + 2 * bonus / 12);          // so 12 months average to mean_in
+  const shockInc = shockedIncome(c, o.eiPct, o.cap, baseIn).income;   // EI on regular (non-bonus) pay
+  for (let k = 0; k < 24; k++) {
+    const m = (o.start - 1 + k) % 12 + 1;
+    const onShock = shocked && k < o.dur;
+    const inc = onShock ? shockInc : baseIn * (1 + ((m === 6 || m === 12) ? bonus : 0));
+    const spend = c.mean_out * c.season[m - 1] + (shocked ? o.bills * o.Hb : 0);
+    const next = bal + inc - spend;
+    if (out === null && bal > 0 && next <= 0) out = k + bal / (spend - inc);
+    if (out === null && bal <= 0) out = k;
+    bal = next; low = Math.min(low, bal);
+    pts.push({ k: k + 1, m: m % 12 + 1, bal, inc, spend });
+  }
+  return { pts, out, low };
+}
+
+function options(c) {
+  const eiPct = +$("ei").value / 100, cap = $("cap").checked;
+  const { income, pensioner } = shockedIncome(c, eiPct, cap);
+  const { H: Hb, estimated } = billsBase(c, $("hidden").checked);
+  return { eiPct, cap, income, pensioner, Hb, estimated,
+           dur: +$("dur").value, bills: +$("bills").value / 100,
+           oneoff: +$("oneoff").value, start: +$("start").value };
+}
+
+function render() {
+  const c = cur; if (!c) return;
+  const o = options(c);
+  $("v-ei").textContent = Math.round(o.eiPct * 100) + "% of usual (" + money(o.income) + "/mo)";
+  $("v-dur").textContent = o.dur + " months";
+  $("v-bills").textContent = Math.round(o.bills * 100) + "%" + (o.bills && o.estimated ? " (estimated bills)" : "");
+  $("v-oneoff").textContent = o.oneoff ? o.oneoff + "× monthly spending = " + money(o.oneoff * c.S) : "none";
+
+  // Judges' formula (exact when cap off & no pension)
+  const spendAfter = c.S + o.bills * o.Hb;
+  const bufferLeft = c.B - o.oneoff * c.S;
+  const formula = judgesRunway(bufferLeft, spendAfter - o.income);
+  const sim = simulate(c, o, true), base = simulate(c, o, false);
+  const made = sim.out === null || sim.out >= o.dur;
+
+  const v = $("verdict");
+  if (sim.out === null) { v.className = "verdict good"; v.textContent = `Makes it — savings never run out in 24 months`; }
+  else if (made) { v.className = "verdict warn"; v.textContent = `Survives the ${o.dur}-month shock, runs out in month ${Math.ceil(sim.out)} after`; }
+  else { v.className = "verdict bad"; v.textContent = `Runs out in month ${Math.ceil(sim.out)} of a ${o.dur}-month shock`; }
+  $("verdict-sub").textContent = `Lowest balance: ${money(sim.low)}. Starting ${MONTHS[o.start - 1]}.`;
+
+  $("compare").innerHTML = `
+    <div class="box"><div class="label">Runway, judges' formula</div><div class="value">${mo(formula)}</div>
+      <div class="muted">buffer left ÷ monthly gap</div></div>
+    <div class="box"><div class="label">Runway, month by month</div><div class="value">${sim.out === null ? "24+ mo" : mo(sim.out)}</div>
+      <div class="muted">real averages, seasons, bonuses, job back after ${o.dur} mo</div></div>
+    <div class="box"><div class="label">${spendAfter > o.income ? "Monthly gap during shock" : "Monthly surplus during shock"}</div><div class="value">${money(Math.abs(spendAfter - o.income))}</div>
+      <div class="muted">spending ${money(spendAfter)} − income ${money(o.income)}</div></div>`;
+
+  drawChart(sim.pts, base.pts);
+  $("tbl").innerHTML = "<table><tr><th>Month</th><th>Income</th><th>Spending</th><th>Balance</th></tr>" +
+    sim.pts.slice(1, 13).map(p => `<tr><td>${MONTHS[(p.m + 10) % 12]}</td><td>${money(p.inc)}</td><td>${money(p.spend)}</td><td>${money(p.bal)}</td></tr>`).join("") + "</table>";
+  renderPlans(c, o, sim);
+}
+
+function drawChart(a, b) {
+  const W = 640, H = 260, L = 64, R = 14, T = 12, Bm = 30;
+  const all = a.concat(b).map(p => p.bal);
+  let lo = Math.min(0, ...all), hi = Math.max(...all);
+  const pad = (hi - lo) * 0.08 || 1; lo -= lo < 0 ? pad : 0; hi += pad;
+  const X = k => L + (k / 24) * (W - L - R), Y = v => T + (hi - v) / (hi - lo) * (H - T - Bm);
+  const step = niceStep((hi - lo) / 4);
+  let g = "";
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step)
+    g += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${L - 8}" y="${Y(v) + 4}" text-anchor="end">${money(v)}</text>`;
+  g += `<line x1="${L}" x2="${W - R}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--axis)" stroke-width="1.25"/>`;
+  for (let k = 0; k <= 24; k += 3)
+    g += `<text x="${X(k)}" y="${H - 10}" text-anchor="middle">${MONTHS[(a[k].m + 11) % 12]}</text>`;
+  const o = options(cur);
+  g += `<rect x="${X(0)}" y="${T}" width="${X(o.dur) - X(0)}" height="${H - T - Bm}" fill="var(--series-1)" opacity=".06"/>`;
+  g += `<text x="${X(o.dur) - 4}" y="${T + 12}" text-anchor="end">shock period</text>`;
+  const path = pts => pts.map((p, i) => (i ? "L" : "M") + X(p.k).toFixed(1) + " " + Y(p.bal).toFixed(1)).join("");
+  g += `<path d="${path(b)}" fill="none" stroke="var(--series-2)" stroke-width="2" stroke-linejoin="round"/>`;
+  g += `<path d="${path(a)}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round"/>`;
+  g += `<line id="cross" x1="0" x2="0" y1="${T}" y2="${H - Bm}" stroke="var(--axis)" opacity="0"/>`;
+  g += `<rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - Bm}" fill="transparent" id="hit"/>`;
+  const svg = $("chart"); svg.innerHTML = g;
+  const tip = $("tip"), cross = svg.querySelector("#cross");
+  svg.querySelector("#hit").onmousemove = e => {
+    const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width;
+    const k = Math.max(0, Math.min(24, Math.round((x - L) / (W - L - R) * 24)));
+    cross.setAttribute("x1", X(k)); cross.setAttribute("x2", X(k)); cross.setAttribute("opacity", 1);
+    tip.style.display = "block";
+    tip.style.left = Math.min(r.width - 170, X(k) * r.width / W + 10) + "px"; tip.style.top = "10px";
+    tip.innerHTML = `<b>${MONTHS[(a[k].m + 11) % 12]} (month ${k})</b><br>With shock: ${money(a[k].bal)}<br>No shock: ${money(b[k].bal)}`;
+  };
+  svg.querySelector("#hit").onmouseleave = () => { tip.style.display = "none"; cross.setAttribute("opacity", 0); };
+}
+function niceStep(x) { const p = Math.pow(10, Math.floor(Math.log10(x))); const n = x / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+
+function renderPlans(c, o, sim) {
+  // Goal: emergency fund of 3 months of spending
+  const target = 3 * c.S, gap = Math.max(0, target - c.B);
+  const surplus = Math.max(0, c.mean_in - c.mean_out);
+  const bonusYear = c.has_bonus ? 2 * c.I * c.bonus_pct : 0;
+  const withBonus = surplus + 0.5 * bonusYear / 12;
+  let goal = `<p>Target: <b>${money(target)}</b> (3 months of typical spending). They have <b>${money(c.B)}</b>.</p>`;
+  if (gap === 0) {
+    goal += `<p>Already there, with ${(c.B / c.S).toFixed(1)} months covered. Next step: keep it there and aim for 6 months (${money(6 * c.S)}).</p>`;
+  } else {
+    const m1 = surplus > 0 ? gap / surplus : Infinity, m2 = withBonus > 0 ? gap / withBonus : Infinity;
+    goal += `<ul><li>Short by <b>${money(gap)}</b>.</li>
+      <li>At their usual monthly surplus (${money(surplus)}): <b>${isFinite(m1) ? Math.ceil(m1) + " months" : "no surplus to save"}</b>.</li>
+      ${c.has_bonus ? `<li>Also banking half of each June and December bonus (+${Math.round(c.bonus_pct * 100)}% months): <b>${Math.ceil(m2)} months</b>.</li>` : ""}</ul>`;
+  }
+  if (c.plateau && c.B < target)
+    goal += `<div class="insight">Their balance tends to settle around <b>${money(c.plateau)}</b> and extra money gets spent. Moving that "comfortable number" up to ${money(target)} is the real goal. An automatic transfer to savings works better than willpower.</div>`;
+  $("goal").innerHTML = goal;
+
+  // Backup: what buys extra months if the shock hits now
+  const cuts = [0.1, 0.2].map(cut => {
+    const c2 = Object.assign({}, c, { mean_out: c.mean_out - cut * c.cash_share * c.mean_out });
+    const s = simulate(c2, o, true);
+    return { cut, out: s.out };
+  });
+  const fmt = s => s.out === null ? "makes it through, savings never hit zero" : `runs out after ${mo(s.out)}`;
+  let backup = `<ul>
+    <li>As is: ${fmt(sim)}.</li>
+    ${cuts.map(x => `<li>Cut cash spending ${x.cut * 100}% (about ${money(x.cut * c.cash_share * c.mean_out)}/mo): ${fmt(x)}.</li>`).join("")}`;
+  if (!o.cap && o.income > M.ei_monthly_max) backup += `<li>Heads up: real EI caps at ${money(M.ei_monthly_max)}/mo, less than this ${money(o.income)}. Tick "Apply real EI maximum" to see the honest number.</li>`;
+  if (c.has_bonus) backup += `<li>A layoff also means losing the June/December bonus months.</li>`;
+  backup += `</ul>`;
+  const worst = [1, 6, 12].includes(o.start);
+  backup += `<div class="insight">${worst ? `Starting in ${MONTHS[o.start - 1]} is one of the worst times: spending peaks in January and June, and December and January are when balances run lowest.`
+    : `Timing matters: the same shock starting in December or January would leave them less runway, because spending peaks then.`}</div>`;
+  $("backup").innerHTML = backup;
+}
+
+function load(id) {
+  const c = C[id];
+  if (!c) { $("err").textContent = "No account " + id; return; }
+  $("err").textContent = ""; cur = c; $("acct").value = id; $("out").style.display = "block";
+  $("who").textContent = `#${id} · ${c.age ? Math.round(c.age) + " yrs" : ""} ${c.gender || ""} · ${c.district}, ${c.region}`;
+  const ei = shockedIncome(c, 0.55, false).income;
+  $("kpis").innerHTML = [
+    ["Money in (I)", money(c.I) + "/mo", "median month"],
+    ["Spending (S)", money(c.S) + "/mo", "median month"],
+    ["Fixed costs (F)", money(c.F) + "/mo", "bills + insurance + loans"],
+    ["Buffer (B)", money(c.B), "avg balance, last 6 months"],
+    ["Runway, no shock", mo(judgesRunway(c.B, c.S - c.I)), "judges' formula"],
+    ["Runway on EI 55%", mo(judgesRunway(c.B, c.S - ei)), "judges' formula"],
+  ].map(([l, v, n]) => `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div><div class="note">${n}</div></div>`).join("");
+  const T = {
+    pensioner: "Pensioner: job-loss shock doesn't apply to the pension",
+    thin_high: `High earner, thin cushion: ${(c.B / c.S).toFixed(1)} months saved`,
+    irregular: "Irregular income, few automatic payments",
+    edge: "Often close to zero",
+    builder: "Balance has been growing",
+  };
+  const tags = c.personas.map(p => `<span class="tag">${T[p]}</span>`);
+  if (c.has_bonus) tags.push(`<span class="tag">Bonus months: June & December +${Math.round(c.bonus_pct * 100)}%</span>`);
+  if (c.H === 0) tags.push(`<span class="tag">No labelled bills (pays in cash)</span>`);
+  if (c.neg_ever) tags.push(`<span class="tag">Has gone below zero</span>`);
+  $("tags").innerHTML = tags.join("");
+  render();
+}
+
+$("go").onclick = () => load(+$("acct").value);
+$("acct").onkeydown = e => { if (e.key === "Enter") load(+$("acct").value); };
+$("rand").onclick = () => { const k = Object.keys(C); load(+k[Math.floor(Math.random() * k.length)]); };
+document.querySelectorAll("[data-ex]").forEach(b => b.onclick = () => load(M.examples[b.dataset.ex]));
+document.querySelectorAll("input,select").forEach(el => el.addEventListener("input", render));
+document.querySelectorAll("[data-tw]").forEach(b => b.onclick = () => {
+  const s = { ei: [55, 0, 0], furnace: [100, 0, 1], combo: [55, 15, 0], none: [100, 0, 0] }[b.dataset.tw];
+  $("ei").value = s[0]; $("bills").value = s[1]; $("oneoff").value = s[2]; render();
+});
+$("ei").value = 55; load(M.examples.judges_example);
+</script>
+</body>
+</html>
