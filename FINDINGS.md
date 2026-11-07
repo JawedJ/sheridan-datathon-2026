@@ -181,7 +181,7 @@ buffer grows only about 22% when income doubles.
 | **Each year 2021–2025** | Is it one period? | Holds every year: elasticity 0.24–0.27, D10 cushion 1.2–1.3 months |
 | **Bootstrap (1,000 resamples)** | Is it a fluke of the sample? | Top 10% cushion 1.63 months (CI 1.56–1.69) vs bottom 10% 9.03 (8.75–9.50). Top 10% EI < 3 mo with real cap: 90.2% (87.3–92.9) |
 | **Thermostat by income** | Does the mechanism apply to everyone? | Present in every income quintile, and **strongest for top earners**: Spearman −0.43 vs −0.26 for the bottom. When their balance is far above usual, top earners' next month runs **−66% of income** |
-| **"They keep savings at another bank"** | The obvious banker's objection | Only 25–41% of any decile ever send money to another bank, and the median share of spending is 0%. Top earners who do send money have *similar* in-bank cushions (1.84 vs 1.98 months). **Upper bound:** counting every dollar ever sent elsewhere as never-spent savings moves top earners from 1.9 to only 2.4 months (bottom 20%: 8.5 → 15.5), and 62% stay under 3 months |
+| **"They keep savings at another bank"** | The obvious banker's objection | Only 20–41% of any decile ever send money to another bank, and the median share of spending is 0%. Top earners who do send money have *similar* in-bank cushions (1.84 vs 1.98 months). **Upper bound:** counting every dollar ever sent elsewhere as never-spent savings moves top earners from 1.9 to only 2.4 months (bottom 20%: 8.5 → 15.5), and 62% stay under 3 months |
 
 What this can't rule out: savings funded from income that never touches this bank (cash kept at
 home, a second job paid elsewhere). The data can't see that, and we say so (section 4.3).

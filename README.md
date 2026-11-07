@@ -38,6 +38,7 @@ in months, not dollars.
 | `build_customer_table.py` | Per-customer judges' metrics (income, spending, fixed costs, buffer, runway, standard shocks) |
 | `analysis/` | Formula checks, broad survey, deep dives, stress test |
 | `output/` | Generated tables (not committed; rebuilt by the scripts) |
+| [`docs/REFERENCE.md`](docs/REFERENCE.md) | Everything in one place: data, every formula, cleaning log, all findings and numbers, app calculations, corrections |
 | `docs/PITCH.md` | The 1-minute pitch, live-twist script, judge Q&A prep, demo video outline |
 | `docs/CHALLENGE.md` | The organizers' challenge brief and data dictionary |
 | `data/` | The provided dataset (not committed; add it locally) |
