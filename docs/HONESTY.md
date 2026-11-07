@@ -69,7 +69,7 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | # | Adjustment | Why | Honest caveat | Type |
 | --- | --- | --- | --- | --- |
 | A1 | EI capped at $729/week = $3,159/month | Real 2026 Canadian policy (canada.ca) | I is **deposits**, not insurable earnings, and includes non-wage money; EI eligibility isn't checked | ESTIMATE |
-| A2 | **Any** income drop below 100% is treated as a job loss, so the EI cap applies | Simplification in the engine | If someone types "income drops 30%" (not a layoff), the cap still applies. **DECIDE:** apply the cap only when the scenario is a job loss? | ASSUMPTION |
+| A2 | EI cap applies **only to job losses** | EI only replaces income after a layoff | **Fixed.** Before, any income drop was capped (e.g. 71293 "income drops 30%" showed 2.8 months instead of 11.0; would have affected 2,780 customers). Now the scenario box marks layoff/EI wording as a job loss; "income drops X%" isn't; a checkbox under "Adjust the shock by hand" controls it | fixed |
 | A3 | Pensioners keep their pension; only the rest of income drops | A layoff can't stop a pension | Pension part = I × lifetime pension share (approximate) | ESTIMATE |
 | A4 | Customers with $0 bills get estimated bills = 19.9% of S when a bills shock is applied | Their bills are invisible in the data | One share for everyone (the median among customers who do have bills); it's a guess, labelled on screen | ESTIMATE |
 | A5 | Label "Real-world rules" | — | It's our estimate of real rules, not real-world data. **DECIDE:** rename to "Real-world estimate"? | wording |
@@ -104,15 +104,13 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | F1 | 11.1 vs 1.6 months; 93% "if nothing changes"; ×1.22 | ✅ Stated as non-pensioners on the page |
 | F2 | Thermostat ("money above it gets spent") | Observational. We show balances are pulled back; we don't prove *why* (REFERENCE 11.4) |
 | F3 | Layoff timing chart | Subset: 3,547 non-pensioners whose savings run out within 10 years for every start month; seasonal factors per M2 |
-| F4 | "4,500 real bank customers" | ✅ True. **Note:** they're 1990s Czech customers with amounts converted to CAD. The findings page says so; **the engine page doesn't.** **DECIDE:** add a one-line footnote on the engine page? |
+| F4 | "4,500 real bank customers" headline | **Removed** from the engine page (team decision: judges know the dataset). The findings page still states the source |
 | F5 | "Under real EI rules" in the pitch | Fine with A1's caveat (deposits ≠ insurable earnings) |
 
 ---
 
 ## Part 3 — Decisions for the team (nothing changed yet)
 1. **T2** Set the Gemini key, or don't enter the Gemini track.
-2. **A2** Apply the EI cap only to job-loss scenarios, not every income drop?
-3. **A5** Rename "Real-world rules" → "Real-world estimate"?
-4. **P5** Flag backup-plan cuts above some level (e.g. 50%) as unrealistic?
-5. **F4** Add a data-origin footnote to the engine page?
-6. **S1** Aim for a ~2:00 video.
+2. **A5** Rename "Real-world rules" → "Real-world estimate"?
+3. **P5** Flag backup-plan cuts above some level (e.g. 50%) as unrealistic?
+4. **S1** Aim for a ~2:00 video.

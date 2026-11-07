@@ -48,6 +48,7 @@ export function parseScenario(text: string, startMonth = 1): Parsed {
   else if (jobLoss) incomePct = 55;
   if (incomePct !== null) {
     shock.incomePct = Math.max(0, Math.min(100, incomePct));
+    shock.jobLoss = jobLoss;   // EI rules only when the text describes a layoff / EI
     understood.push(jobLoss
       ? `Job loss: income drops to ${shock.incomePct}% of usual${!eiPct && !dropBy && !dropTo && incomePct === 55 ? " (EI default)" : ""}`
       : `Income drops to ${shock.incomePct}% of usual`);

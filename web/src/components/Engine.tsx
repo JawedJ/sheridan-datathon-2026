@@ -51,7 +51,16 @@ export default function Engine() {
     setMsg("");
   };
 
-  const setManual = (patch: Partial<Shock>) => { setShock(s => ({ ...s, ...patch })); setUnderstood(["Adjusted by hand"]); };
+  const setManual = (patch: Partial<Shock>) => {
+    setShock(s => {
+      const next = { ...s, ...patch };
+      // Sliding income down from "no change" by hand is almost always a layoff; the checkbox can undo it.
+      if (patch.incomePct !== undefined && patch.incomePct < 100 && s.incomePct === 100 && patch.jobLoss === undefined) next.jobLoss = true;
+      if (next.incomePct === 100) next.jobLoss = false;
+      return next;
+    });
+    setUnderstood(["Adjusted by hand"]);
+  };
   const reset = () => { setShock(s => ({ ...NO_SHOCK, startMonth: s.startMonth })); setUnderstood([]); setText(""); };
 
   if (!data || !c) return <p className="muted">Loading 4,500 customers…</p>;
@@ -228,6 +237,10 @@ function AnswerPanel({ c, data, shock, adjustOpen, setAdjustOpen, setManual }: {
         <div style={{ marginTop: 10 }}>
           <Slider label="Income during shock" value={shock.incomePct} min={0} max={100} step={5}
             show={shock.incomePct === 100 ? "no change" : `${shock.incomePct}% of usual`} onChange={v => setManual({ incomePct: v })} />
+          <label className="check-line">
+            <input type="checkbox" checked={shock.jobLoss} onChange={e => setManual({ jobLoss: e.target.checked })} />
+            It&apos;s a job loss (EI rules apply, including the ${data.meta.ei_weekly_max}/week maximum)
+          </label>
           <Slider label="Lasts" value={shock.duration} min={1} max={24} step={1} show={`${shock.duration} months`} onChange={v => setManual({ duration: v })} />
           <Slider label="Household bills / rent up" value={shock.billsPct} min={0} max={50} step={5} show={`${shock.billsPct}%`} onChange={v => setManual({ billsPct: v })} />
           <Slider label="One-off cost, months of spending" value={shock.oneOffMonths} min={0} max={3} step={0.25}
@@ -315,7 +328,7 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
               <ul>
                 {backup.cutNeeded !== null && backup.cutNeeded > 0 && backup.reachable && <li>That&apos;s <b>{money(backup.cutDollars)}/mo</b> less spending</li>}
                 {backup.options.map(o => <li key={o.cut}>Cut {pct(o.cut)} → {runwayText(o.runway)}</li>)}
-                {c.bonusPct > 0 && shock.incomePct < 100 && <li>A layoff also means losing the June and December bonus</li>}
+                {c.bonusPct > 0 && shock.jobLoss && shock.incomePct < 100 && <li>A layoff also means losing the June and December bonus</li>}
               </ul>
               <p className="tip-line">
                 {[1, 6, 12].includes(shock.startMonth)

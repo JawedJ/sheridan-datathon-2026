@@ -61,7 +61,8 @@ export function getCustomer(d: EngineData, idx: Map<number, number>, id: number)
 
 // ---------------------------------------------------------------- shocks
 export type Shock = {
-  incomePct: number;      // income during the shock as % of usual (100 = no job loss, 55 = EI)
+  incomePct: number;      // income during the shock as % of usual (100 = no change, 55 = EI)
+  jobLoss: boolean;       // true = layoff, so EI rules (the weekly maximum) apply; false = e.g. reduced hours
   billsPct: number;       // household bills increase, %
   oneOffMonths: number;   // one-off cost in months of typical spending (furnace = 1)
   oneOffDollars: number;  // extra one-off cost in dollars
@@ -69,12 +70,12 @@ export type Shock = {
   startMonth: number;     // 1-12, month the shock starts
 };
 
-export const NO_SHOCK: Shock = { incomePct: 100, billsPct: 0, oneOffMonths: 0, oneOffDollars: 0, duration: 6, startMonth: 1 };
+export const NO_SHOCK: Shock = { incomePct: 100, jobLoss: false, billsPct: 0, oneOffMonths: 0, oneOffDollars: 0, duration: 6, startMonth: 1 };
 
 export const TWISTS: { key: string; label: string; shock: Partial<Shock> }[] = [
-  { key: "ei", label: "Laid off, EI 55% for 6 months", shock: { incomePct: 55, billsPct: 0, oneOffMonths: 0, duration: 6 } },
+  { key: "ei", label: "Laid off, EI 55% for 6 months", shock: { incomePct: 55, jobLoss: true, billsPct: 0, oneOffMonths: 0, duration: 6 } },
   { key: "furnace", label: "Furnace dies (1 month of spending)", shock: { incomePct: 100, billsPct: 0, oneOffMonths: 1 } },
-  { key: "combo", label: "Laid off + bills up 15%", shock: { incomePct: 55, billsPct: 15, oneOffMonths: 0, duration: 6 } },
+  { key: "combo", label: "Laid off + bills up 15%", shock: { incomePct: 55, jobLoss: true, billsPct: 15, oneOffMonths: 0, duration: 6 } },
   { key: "rent", label: "Rent and bills up 25%", shock: { incomePct: 100, billsPct: 25, oneOffMonths: 0 } },
 ];
 
@@ -109,10 +110,10 @@ export function official(c: Customer, s: Shock): Result {
   return { income, spending, bufferLeft, gap, runway: judgesRunway(bufferLeft, gap), notes: [] };
 }
 
-/** Same formula with real-world rules: EI maximum, pensions keep paying, cash-paid bills estimated. */
+/** Same formula with real-world rules: EI maximum (job losses only), pensions keep paying, cash-paid bills estimated. */
 export function realWorld(c: Customer, s: Shock, eiMonthlyMax: number, billsShare: number): Result {
   const notes: string[] = [];
-  const jobLoss = s.incomePct < 100;
+  const jobLoss = s.jobLoss && s.incomePct < 100;   // EI only applies after a job loss, not e.g. reduced hours
   const pension = c.pensioner ? c.I * c.pensionShare : 0;
   let earned = (s.incomePct / 100) * (c.I - pension);
   if (jobLoss && c.pensioner) notes.push("Pension keeps paying; only the rest of income drops.");
