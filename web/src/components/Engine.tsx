@@ -31,7 +31,6 @@ export default function Engine() {
   const [shock, setShock] = useState<Shock>({ ...NO_SHOCK });
   const [understood, setUnderstood] = useState<string[]>([]);
   const [msg, setMsg] = useState("");
-  const [adjustOpen, setAdjustOpen] = useState(false);
 
   useEffect(() => { fetch("/engine.json").then(r => r.json()).then(setData); }, []);
   const idx = useMemo(() => (data ? indexData(data) : null), [data]);
@@ -98,7 +97,7 @@ export default function Engine() {
           onLookup={() => loadAccount(Number(idInput.trim()))}
           onRandom={() => loadAccount(data.id[Math.floor(Math.random() * data.id.length)])}
           onExample={loadAccount} currentId={id} />
-        <AnswerPanel c={c} data={data} shock={shock} adjustOpen={adjustOpen} setAdjustOpen={setAdjustOpen} setManual={setManual} />
+        <AnswerPanel c={c} data={data} shock={shock} setManual={setManual} />
       </div>
 
       {/* ---------------- 3 plans */}
@@ -170,8 +169,8 @@ function Stat({ label, value, unit }: { label: string; value: string; unit?: str
 }
 
 // ================================================================== 2. the answer
-function AnswerPanel({ c, data, shock, adjustOpen, setAdjustOpen, setManual }: {
-  c: Customer; data: EngineData; shock: Shock; adjustOpen: boolean; setAdjustOpen: (v: boolean) => void; setManual: (p: Partial<Shock>) => void;
+function AnswerPanel({ c, data, shock, setManual }: {
+  c: Customer; data: EngineData; shock: Shock; setManual: (p: Partial<Shock>) => void;
 }) {
   const off = official(c, shock);
   const real = realWorld(c, shock, data.meta.ei_monthly_max, data.meta.bills_share);
@@ -232,9 +231,9 @@ function AnswerPanel({ c, data, shock, adjustOpen, setAdjustOpen, setManual }: {
         </details>
       )}
 
-      <details className="more" open={adjustOpen} onToggle={e => setAdjustOpen((e.target as HTMLDetailsElement).open)}>
-        <summary>Adjust the shock by hand</summary>
-        <div style={{ marginTop: 10 }}>
+      <div className="adjust">
+        <h3 className="adjust-title">Adjust the shock</h3>
+        <div>
           <Slider label="Income during shock" value={shock.incomePct} min={0} max={100} step={5}
             show={shock.incomePct === 100 ? "no change" : `${shock.incomePct}% of usual`} onChange={v => setManual({ incomePct: v })} />
           <label className="check-line">
@@ -255,7 +254,7 @@ function AnswerPanel({ c, data, shock, adjustOpen, setAdjustOpen, setManual }: {
             </select>
           </label>
         </div>
-      </details>
+      </div>
     </section>
   );
 }

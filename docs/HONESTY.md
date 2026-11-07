@@ -16,7 +16,7 @@ questions for the team.
 | # | Rule (source) | Status | Where |
 | --- | --- | --- | --- |
 | R1 | **Know the customer:** any `account_id` → income, bills and fixed costs, savings buffer, months of runway (brief) | ✅ | Engine, section 1 |
-| R2 | **Take a shock** and recalculate (job loss with EI, higher rent/bills, surprise repair, a mix); **user can change the size** (brief) | ✅ | Plain-words scenario + "Adjust the shock by hand" sliders |
+| R2 | **Take a shock** and recalculate (job loss with EI, higher rent/bills, surprise repair, a mix); **user can change the size** (brief) | ✅ | Plain-words scenario + "Adjust the shock" sliders (always visible) |
 | R3 | **Make a plan:** a goal plan (e.g. emergency fund) **and** a backup plan if the shock hits, **based on their own numbers** (brief) | ✅ | Engine, section 3 |
 | R4 | Live twist: judge picks an `account_id` and reads a twist card; we run it live (brief) | ✅ | Type the card into the scenario box; all three example cards parse correctly |
 | R5 | Judges' definitions for I, F, S, B, H, P and runway (brief) | ✅ Exact | `npm run verify`: 4,500 accounts × 5 shocks, 49,500 checks, 0 mismatches |
@@ -69,7 +69,7 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | # | Adjustment | Why | Honest caveat | Type |
 | --- | --- | --- | --- | --- |
 | A1 | EI capped at $729/week = $3,159/month | Real 2026 Canadian policy (canada.ca) | I is **deposits**, not insurable earnings, and includes non-wage money; EI eligibility isn't checked | ESTIMATE |
-| A2 | EI cap applies **only to job losses** | EI only replaces income after a layoff | **Fixed.** Before, any income drop was capped (e.g. 71293 "income drops 30%" showed 2.8 months instead of 11.0; would have affected 2,780 customers). Now the scenario box marks layoff/EI wording as a job loss; "income drops X%" isn't; a checkbox under "Adjust the shock by hand" controls it | fixed |
+| A2 | EI cap applies **only to job losses** | EI only replaces income after a layoff | **Fixed.** Before, any income drop was capped (e.g. 71293 "income drops 30%" showed 2.8 months instead of 11.0; would have affected 2,780 customers). Now the scenario box marks layoff/EI wording as a job loss; "income drops X%" isn't; a checkbox under "Adjust the shock" controls it | fixed |
 | A3 | Pensioners keep their pension; only the rest of income drops | A layoff can't stop a pension | Pension part = I × lifetime pension share (approximate) | ESTIMATE |
 | A4 | Customers with $0 bills get estimated bills = 19.9% of S when a bills shock is applied | Their bills are invisible in the data | One share for everyone (the median among customers who do have bills); it's a guess, labelled on screen | ESTIMATE |
 | A5 | Label "Real-world rules" | — | It's our estimate of real rules, not real-world data. **DECIDE:** rename to "Real-world estimate"? | wording |
