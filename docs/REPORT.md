@@ -196,10 +196,12 @@ shock hits, both based on their own numbers."*
 
 **How the plan appears.** The plan section only shows once a scenario is run. It opens with the
 plan in plain words, written automatically: a template version appears instantly, then Google's
-Gemini (gemini-3.5-flash) rewords it about a second later. Gemini is only given the numbers the engine
-already calculated and is told not to compute or invent any. Its reply is only used if it finished
-cleanly and reads as a plain letter; otherwise (or if Google's quota is used up) the template stays, and
-a small note says which wording is showing.
+Gemini (gemini-3.5-flash-lite) rewords it a second or two later. Gemini only rewords our template
+text; it never sees raw data to interpret. Its reply is only used if it finished cleanly, reads as a
+plain letter, and every number in it already appears in our text. Otherwise (or if Google's quota is
+used up) the template stays, and a small note says which wording is showing. We tightened this after
+Gemini, given raw numbers, misdescribed a furnace as an income shock and quoted savings before the
+one-off cost.
 
 **What the plan changes (chart).** Four outcomes for the same scenario, as tiles and a 24-month
 balance chart: no plan; backup plan (cut the needed share of non-essential spending during the
@@ -532,9 +534,9 @@ shows "Understood as…" so you can check it read the card correctly, and every 
 adjusted with the sliders.
 
 **"What does Gemini do?"**
-It rewrites the plan in plain words for the customer. It's given only the numbers our engine
-calculated and is told not to compute or invent any. If it's unavailable, a template with the same
-numbers is used.
+It rewords the plan for the customer. It only rewrites our own plan text, and the server rejects any
+reply containing a number that isn't in that text, so Gemini can't show a wrong number. If it's
+unavailable, our original wording is shown.
 
 **"Why does timing matter?"**
 Spending peaks in January and June, and bonuses arrive in June and December. A layoff in January

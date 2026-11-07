@@ -482,6 +482,15 @@ function Letter(props: ImpactProps & { goalFirstRunway: number | null; bothRunwa
   );
 }
 
+function describeShock(c: Customer, s: Shock): string {
+  const parts: string[] = [];
+  if (s.incomePct < 100) parts.push(`${s.jobLoss ? "job loss: " : ""}income drops to ${s.incomePct}% of usual for ${s.duration} months`);
+  if (s.billsPct > 0) parts.push(`household bills/rent go up ${s.billsPct}%`);
+  if (s.oneOffMonths > 0) parts.push(`a one-off cost of ${money(s.oneOffMonths * c.S)} (${s.oneOffMonths} month${s.oneOffMonths === 1 ? "" : "s"} of spending)`);
+  if (s.oneOffDollars > 0) parts.push(`a one-off cost of ${money(s.oneOffDollars)}`);
+  return parts.join("; ") + `, starting in ${MONTHS[s.startMonth - 1]}`;
+}
+
 function summary({ c, shock, off, real, goal, backup, goalFirstRunway, bothRunway }: ImpactProps & { goalFirstRunway: number | null; bothRunway: number | null }): Summary {
   const r1 = (x: number) => Math.round(x);
   return {
@@ -489,6 +498,8 @@ function summary({ c, shock, off, real, goal, backup, goalFirstRunway, bothRunwa
     comfort_number: r1(c.comfort), cushion_months: +(c.B / c.S).toFixed(1), pensioner: c.pensioner,
     bonus_pct: c.bonusPct, shock,
     official_runway: off.runway, real_runway: real.runway, real_notes: real.notes,
+    shock_description: describeShock(c, shock),
+    buffer_after_shock: r1(real.bufferLeft),
     goal_first_runway: goalFirstRunway, both_runway: bothRunway,
     goal: { target: r1(goal.target), gap: r1(goal.gap), monthly_transfer: r1(goal.monthlyTransfer), months_to_goal: goal.monthsToGoal, months_with_bonus: goal.monthsWithBonus },
     backup: {

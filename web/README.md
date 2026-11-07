@@ -27,5 +27,5 @@ npm run dev      # http://localhost:3000
 **Deploy** (from this folder, Vercel CLI logged in): `vercel deploy --prod --yes`.
 Pushing to GitHub doesn't deploy on its own; to enable that, set Root Directory = `web` in the Vercel project.
 
-**Gemini:** set `GEMINI_API_KEY` (and optionally `GEMINI_MODEL`, default `gemini-3.5-flash`) in the
+**Gemini:** set `GEMINI_API_KEY` (and optionally `GEMINI_MODEL`, default `gemini-3.5-flash-lite`) in the
 Vercel project's environment variables, then redeploy. Without it the template wording is used.

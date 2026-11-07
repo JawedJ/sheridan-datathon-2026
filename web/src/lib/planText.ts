@@ -6,6 +6,8 @@ export type Summary = {
   comfort_number: number; cushion_months: number; pensioner: boolean; bonus_pct: number;
   shock: { incomePct: number; billsPct: number; oneOffMonths: number; oneOffDollars: number; duration: number; startMonth: number } | null;
   official_runway: number; real_runway: number; real_notes: string[];
+  shock_description: string | null;   // the scenario in plain words, so the wording can't misdescribe it
+  buffer_after_shock: number;          // savings left after any one-off cost
   goal_first_runway: number | null;   // same shock, if they'd reached the 3-month goal first
   both_runway: number | null;         // goal first AND the backup cuts
   goal: { target: number; gap: number; monthly_transfer: number; months_to_goal: number | null; months_with_bonus: number | null };
@@ -21,6 +23,8 @@ export function template(s: Summary): string {
   lines.push(`Right now you have ${$(s.buffer)} saved, about ${s.cushion_months} months of your usual spending. ` +
     `Your balance tends to settle around ${$(s.comfort_number)}, and money above that usually gets spent the following month.`);
   if (s.shock && s.backup) {
+    if (s.buffer_after_shock !== s.buffer)
+      lines.push(`The one-off cost would leave ${$(Math.max(0, s.buffer_after_shock))} in savings.`);
     lines.push(`If this shock hit, your savings would last ${months(s.real_runway)} under real rules` +
       (s.real_runway !== s.official_runway ? ` (${months(s.official_runway)} by the standard formula).` : "."));
     if (s.backup.cut_share_of_non_essential === 0) lines.push(`You'd get through ${s.backup.target_months} months without cutting back.`);
@@ -42,3 +46,10 @@ export function template(s: Summary): string {
   return lines.join("\n\n");
 }
 
+
+/** Every number Gemini writes must already be in the template; otherwise its wording is not used. */
+export function numbersMatch(rewrite: string, source: string): boolean {
+  const nums = (t: string) => (t.match(/\d[\d,]*(\.\d+)?/g) ?? []).map(x => parseFloat(x.replace(/,/g, "")));
+  const allowed = new Set(nums(source));
+  return nums(rewrite).every(n => allowed.has(n));
+}
