@@ -211,12 +211,24 @@ formula as everywhere else; the chart adds the customer's seasonal spending. For
 (6.3), which is the headline in one picture: build the cushion before the shock.
 
 ### 4.5 The plain-words scenario box
-Judges read a twist card; we type it in. A rule-based parser (not AI, so it's instant and works
-offline) reads the account number, job loss or EI percentage, income drop, how long it lasts,
-bills or rent increase, one-off costs, and start month. It always shows **"Understood as: …"** so
-nothing is applied silently. Where the text doesn't say, it uses the brief's own examples: a job
-loss without a percentage means EI at 55%; a furnace without an amount costs one month of spending;
-length defaults to 6 months. Every setting can also be changed with the sliders below.
+Judges read a twist card; we type it in. **Gemini reads it** and fills a fixed set of fields (a JSON
+schema): account, income during the shock (% of usual), whether EI rules apply (layoff, sickness,
+parental leave), how long, bills/rent increase (% or $/month), one-off cost ($ or months of spending),
+start month, any defaults it applied, and anything the engine can't model. Our code then range-checks
+every value and builds the **"Understood as: …"** pills from what is actually applied, so nothing
+happens silently. Defaults come from the brief's own examples (job loss without a % → EI at 55%;
+furnace without an amount → one month of spending; no length → 6 months) and are shown as
+"Assumed: …". Things the engine can't model (inflation on all spending, a partner's job loss, good
+news) are shown as **"Not included"** instead of being guessed. Every setting can still be changed
+with the sliders.
+
+*Why Gemini and not a script:* we first used a word-pattern script. Tested on 25 different phrasings
+it missed 9 completely ("income cut in half", "a 20% pay cut", "bills double") and misread one
+silently ("lose 40% of their income" read as *to* 40%). Gemini read all 14 test phrasings it answered
+correctly, including those. *Reliability:* on the free tier Google is often busy (about half of
+requests timed out in testing, 7–19 s when they worked) and the stronger models allow 20 requests a
+day. Billing goes on before judging; the model list is one Vercel setting (`GEMINI_PARSE_MODELS`). If
+Gemini can't answer, the page says so and the previous results stay, labelled as such.
 
 ### 4.6 Choices in our analysis (not the app)
 - **Pensioners are left out of income comparisons** (the headline numbers, charts, elasticity),

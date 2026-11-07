@@ -3,7 +3,7 @@
 Live: https://comfort-number.vercel.app
 
 Next.js 16 (App Router). All calculations run in the browser from `public/engine.json`, so the live
-demo doesn't depend on a server. Only the plan wording calls the server (`/api/explain`), automatically
+demo doesn't depend on a server. The scenario box and the plan wording call the server (`/api/explain`), automatically
 after a scenario runs; the template version shows instantly, so the page never waits on it.
 
 | Path | What it is |
@@ -13,6 +13,8 @@ after a scenario runs; the template version shows instantly, so the page never w
 | `src/components/charts.tsx` | SVG charts (balance path, grouped bars, gap lines) |
 | `src/app/findings/page.tsx` | The four headline charts |
 | `src/app/api/explain/route.ts` | Gemini rewrites the plan in plain words from the engine's numbers (thinking off, output checked); template fallback |
+| `src/lib/scenario.ts` | Gemini prompt + JSON schema for reading a scenario, and the range-checked conversion to engine settings |
+| `src/app/api/parse/route.ts` | Sends the scenario to Gemini (models from `GEMINI_PARSE_MODELS`, retry when busy) |
 | `src/lib/planText.ts` | Plan wording template, shared by the page (instant) and the route (fallback) |
 | `public/engine.json` | Per-customer data, built by `../build_engine_data.py` (keep inputs at full precision) |
 | `public/findings.json` | Chart data, built by `../build_chart_data.py` |

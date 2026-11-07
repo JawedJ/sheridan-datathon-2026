@@ -96,8 +96,8 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 ### 2.6 Plain-words scenario box
 | # | What | Type |
 | --- | --- | --- |
-| W1 | Rule-based parser; shows "Understood as: …" for every match, nothing applied silently | — |
-| W2 | Defaults when the text doesn't say: job loss without a % → 55% (labelled "EI default"); furnace without an amount → 1 month of spending (labelled); length not given → 6 months | ASSUMPTION (matches the brief's examples) |
+| W1 | Gemini reads the scenario into fixed fields (JSON schema); our code range-checks them and shows "Understood as", "Assumed" and "Not included" pills, so nothing is applied or dropped silently. Replaced a word-pattern script that missed 9 of 25 test phrasings | — |
+| W2 | Defaults when the text doesn't say (shown as "Assumed: …"): job loss without a % → 55%; furnace without an amount → 1 month of spending (labelled); length not given → 6 months | ASSUMPTION (matches the brief's examples) |
 
 ### 2.7 Findings page and pitch claims
 | # | Claim | Status |

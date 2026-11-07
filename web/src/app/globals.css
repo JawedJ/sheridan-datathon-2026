@@ -208,3 +208,4 @@ details.more { margin-top: 14px; border-top: 1px solid var(--border); padding-to
 .caveats ul, .limits { margin: 0; padding-left: 18px; list-style: disc; }
 .caveats li, .limits li { margin: 6px 0; }
 .caveats b { color: var(--text); }
+.pill.warn { background: var(--warn-bg); color: var(--warn); }

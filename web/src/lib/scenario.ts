@@ -1,105 +1,134 @@
-// Turns a twist card written in plain words into shock settings.
-// Rule-based on purpose: instant, works offline during the live demo, and every match is shown
-// back to the user ("Understood as ...") so nothing happens silently.
+// Reads a twist card written in plain words. Gemini turns the sentence into the engine's shock
+// settings (structured JSON, checked against a schema); our code range-checks every value and
+// builds the "Understood as" list from what will actually be applied. Anything the engine can't
+// model is listed back to the user, never silently dropped or guessed.
 
 import { MONTHS, NO_SHOCK, type Shock } from "./engine";
 
-export type Parsed = {
-  accountId: number | null;
-  shock: Shock;
-  understood: string[];   // plain-language list of what was recognised
-  empty: boolean;         // nothing recognised at all
+/** What Gemini returns (all fields present; null = not mentioned). */
+export type ParsedScenario = {
+  account_id: number | null;
+  income_pct: number | null;        // income during the shock, % of usual (null = income unchanged)
+  ei_rules: boolean;                // layoff / sick / parental leave: EI rules (incl. weekly maximum) apply
+  duration_months: number | null;   // how long the income drop lasts
+  bills_pct: number | null;         // household bills / rent increase, %
+  bills_dollars: number | null;     // ... or as dollars per month (converted with the customer's bills)
+  one_off_months: number | null;    // one-off cost as months of usual spending
+  one_off_dollars: number | null;   // one-off cost in dollars
+  start_month: number | null;       // 1-12
+  assumptions: string[];            // defaults the reader had to apply
+  not_modelled: string[];           // parts of the card the engine can't represent
 };
 
-const MONTH_WORDS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-const WORD_NUM: Record<string, number> = {
-  a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9,
-  ten: 10, eleven: 11, twelve: 12, half: 0.5, full: 1,
+export const SCENARIO_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    account_id: { type: "INTEGER", nullable: true },
+    income_pct: { type: "NUMBER", nullable: true },
+    ei_rules: { type: "BOOLEAN" },
+    duration_months: { type: "NUMBER", nullable: true },
+    bills_pct: { type: "NUMBER", nullable: true },
+    bills_dollars: { type: "NUMBER", nullable: true },
+    one_off_months: { type: "NUMBER", nullable: true },
+    one_off_dollars: { type: "NUMBER", nullable: true },
+    start_month: { type: "INTEGER", nullable: true },
+    assumptions: { type: "ARRAY", items: { type: "STRING" } },
+    not_modelled: { type: "ARRAY", items: { type: "STRING" } },
+  },
+  required: ["account_id", "income_pct", "ei_rules", "duration_months", "bills_pct", "bills_dollars",
+    "one_off_months", "one_off_dollars", "start_month", "assumptions", "not_modelled"],
+  propertyOrdering: ["account_id", "income_pct", "ei_rules", "duration_months", "bills_pct", "bills_dollars",
+    "one_off_months", "one_off_dollars", "start_month", "assumptions", "not_modelled"],
 };
 
-function num(s: string): number {
-  const t = s.trim().toLowerCase();
-  if (t in WORD_NUM) return WORD_NUM[t];
-  return Number(t.replace(/,/g, ""));
+export function scenarioPrompt(text: string, todayMonth: number): string {
+  return `You convert a financial "shock" scenario, written in plain English by a hackathon judge, into settings for a bank-customer resilience engine. Read the scenario carefully, like an expert financial analyst, and fill in the JSON fields exactly as defined below.
+
+THE ENGINE CAN ONLY MODEL THESE THINGS
+1. account_id: the customer's account number if the text names one (e.g. "account 71293", "#71293", "customer 20111"). Otherwise null.
+2. Income during the shock:
+   - income_pct = the customer's income DURING the shock as a percentage of their usual income (0-100). null if income doesn't change.
+   - Read the direction carefully: "drops TO 40%" means 40; "drops BY 40%", "loses 40% of their income", "a 40% pay cut" mean 60; "cut in half" means 50; "no income", "no EI", "no pay" mean 0.
+   - ei_rules = true when the income drop is because they are off work and on Employment Insurance: laid off, let go, fired, lost their job, unemployed, on EI, sick and can't work (EI sickness benefits), maternity or parental leave (EI benefits). Otherwise false (pay cut, fewer hours, business slowdown, commission drop).
+   - If they are laid off / on EI / on sick or parental leave and no percentage is given, use 55 (the EI rate) and add an assumption "No EI rate given, used 55% (the standard EI rate)".
+   - duration_months = how long the income drop lasts, in months (1-24). Convert: weeks / 4.345, "a year" = 12, "half a year" = 6, "six-month layoff" = 6. If income drops but no length is given, use null and add the assumption "No length given, used 6 months".
+3. Household bills / rent going up (this is the ONLY kind of spending increase the engine can model):
+   - bills_pct = the percentage increase ("rent goes up 15%" → 15; "bills double" → 100; "triple" → 200).
+   - bills_dollars = an increase stated in dollars per month ("rent goes up by $300 a month" → 300). Use bills_pct OR bills_dollars, not both.
+   - Counts as bills: rent, mortgage payment, utilities, hydro, heating, electricity, water, internet/phone bills, property tax, condo fees.
+4. A one-off cost (a single unexpected expense paid from savings):
+   - one_off_dollars = the amount in dollars ("$2,500 car repair" → 2500, "$3k" → 3000). Several one-off costs: add them up.
+   - one_off_months = the cost measured in months of their usual spending ("a full month of their typical spending" → 1, "two months of expenses" → 2).
+   - A furnace / roof / major home repair with NO amount given: one_off_months = 1 and add the assumption "No cost given for the repair, used 1 month of their usual spending". Any other one-off cost with no amount: leave null and list it in not_modelled ("<the cost>: no amount given").
+5. start_month = the calendar month the shock starts (1 = January ... 12 = December). The current month is ${todayMonth} (${MONTHS[todayMonth - 1]}), so "next month" = ${(todayMonth % 12) + 1}. null if not mentioned.
+
+WHAT THE ENGINE CANNOT MODEL → list in not_modelled, briefly, and do NOT approximate it in the other fields:
+- Increases to all spending or to non-bill spending (inflation, groceries, gas, childcare, tuition).
+- Someone else's job loss or income (spouse, partner, roommate): we don't know their share of household income.
+- Good news (raises, bonuses, inheritances, tax refunds, lottery wins).
+- Anything else that isn't one of the fields above.
+Questions like "Do they make it?" are not shocks; ignore them.
+
+RULES
+- Use only what the text says plus the defaults above. Never invent amounts.
+- Use null for anything not mentioned. Numbers only, no units or symbols.
+- assumptions and not_modelled are short plain-English phrases; use [] when empty.
+- Only list something in not_modelled if you could NOT put it in one of the fields above.
+
+EXAMPLES (input → output)
+"Account 71293 loses 40% of their income for half a year and needs a $3k dental procedure" →
+{"account_id":71293,"income_pct":60,"ei_rules":false,"duration_months":6,"bills_pct":null,"bills_dollars":null,"one_off_months":null,"one_off_dollars":3000,"start_month":null,"assumptions":[],"not_modelled":[]}
+"They're laid off and their partner's hours get cut" →
+{"account_id":null,"income_pct":55,"ei_rules":true,"duration_months":null,"bills_pct":null,"bills_dollars":null,"one_off_months":null,"one_off_dollars":null,"start_month":null,"assumptions":["No EI rate given, used 55% (the standard EI rate)","No length given, used 6 months"],"not_modelled":["Partner's hours cut: their share of household income is unknown"]}
+"Groceries go up 20% and rent rises $250 a month from March" →
+{"account_id":null,"income_pct":null,"ei_rules":false,"duration_months":null,"bills_pct":null,"bills_dollars":250,"one_off_months":null,"one_off_dollars":null,"start_month":3,"assumptions":[],"not_modelled":["Groceries up 20%: only bills and rent increases can be modelled"]}
+
+Scenario: """${text.slice(0, 600)}"""`;
 }
 
-export function parseScenario(text: string, startMonth = 1): Parsed {
-  const t = " " + text.toLowerCase().replace(/[–—]/g, "-") + " ";
-  const shock: Shock = { ...NO_SHOCK, startMonth };
+const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x));
+const finite = (x: unknown): x is number => typeof x === "number" && Number.isFinite(x);
+
+/** Turn the reader's output into engine settings. `billsH` = the target customer's monthly
+ *  household bills (to convert a dollar increase); every value is range-checked here. */
+export function toShock(p: ParsedScenario, billsH: number, keepStartMonth: number) {
+  const shock: Shock = { ...NO_SHOCK, startMonth: keepStartMonth };
   const understood: string[] = [];
-  const N = "(\\d+(?:\\.\\d+)?|a|an|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|half|full)";
+  const notes = [...(p.assumptions ?? [])].map(a => "Assumed: " + a);
+  const missing = [...(p.not_modelled ?? [])];
 
-  // ---- account id: "account 20111", "#20111", "customer 20111", or a bare 4-6 digit number
-  let accountId: number | null = null;
-  const acc = t.match(/(?:account(?:_id)?|acct|customer|client|id|#)\s*(?:no\.?|number)?\s*#?\s*(\d{4,6})\b/)
-    ?? t.match(/(?<![$\d.,])\b(\d{4,6})\b(?!\s*(?:%|percent|months?|mo\b|weeks?|dollars|k\b))/);
-  if (acc) accountId = Number(acc[1]);
-
-  // ---- job loss / income drop
-  const jobLoss = /(laid off|lay ?off|let go|lose[sd]? (?:their |his |her |a |the )?job|lost (?:their |his |her |a |the )?job|job loss|unemploy|fired|\bei\b|employment insurance)/.test(t);
-  let incomePct: number | null = null;
-  const eiPct = t.match(/\bei\b[^.%]{0,40}?(\d+(?:\.\d+)?)\s*%|(\d+(?:\.\d+)?)\s*%\s*(?:of (?:their |his |her )?(?:usual |normal |typical )?(?:income|pay|salary|earnings))/);
-  const dropBy = t.match(/income[^.%]{0,25}?(?:drops?|falls?|cut|reduced|goes down|decreases?)\s*(?:by\s*)?(\d+(?:\.\d+)?)\s*%/);
-  const dropTo = t.match(/income[^.%]{0,25}?(?:drops?|falls?|cut|reduced|goes down)\s*to\s*(\d+(?:\.\d+)?)\s*%/);
-  if (/no income|zero income|without (?:any )?income|no ei\b/.test(t)) incomePct = 0;
-  else if (dropTo) incomePct = Number(dropTo[1]);
-  else if (dropBy) incomePct = 100 - Number(dropBy[1]);
-  else if (eiPct) incomePct = Number(eiPct[1] ?? eiPct[2]);
-  else if (jobLoss) incomePct = 55;
-  if (incomePct !== null) {
-    shock.incomePct = Math.max(0, Math.min(100, incomePct));
-    shock.jobLoss = jobLoss;   // EI rules only when the text describes a layoff / EI
-    understood.push(jobLoss
-      ? `Job loss: income drops to ${shock.incomePct}% of usual${!eiPct && !dropBy && !dropTo && incomePct === 55 ? " (EI default)" : ""}`
-      : `Income drops to ${shock.incomePct}% of usual`);
-  }
-
-  // ---- how long the income drop lasts ("for 6 months", "for a year", "for 26 weeks")
-  const dur = t.match(new RegExp(`for\\s+(?:the\\s+next\\s+)?${N}\\s*(months?|mo\\b|weeks?|years?)`))
-    ?? t.match(new RegExp(`${N}\\s*(months?|weeks?)\\s+(?:of\\s+)?(?:ei|unemployment|without (?:a )?(?:job|work|income))`));
-  if (dur && shock.incomePct < 100) {
-    const n = num(dur[1]), unit = dur[2];
-    const months = unit.startsWith("w") ? n / 4.345 : unit.startsWith("y") ? n * 12 : n;
-    shock.duration = Math.max(1, Math.min(24, Math.round(months)));
+  if (finite(p.income_pct) && p.income_pct < 100) {
+    shock.incomePct = Math.round(clamp(p.income_pct, 0, 100));
+    shock.jobLoss = !!p.ei_rules;
+    understood.push(p.ei_rules ? `Off work on EI: income drops to ${shock.incomePct}% of usual` : `Income drops to ${shock.incomePct}% of usual`);
+    shock.duration = finite(p.duration_months) ? Math.round(clamp(p.duration_months, 1, 24)) : 6;
     understood.push(`Lasts ${shock.duration} month${shock.duration === 1 ? "" : "s"}`);
   }
-
-  // ---- household bills / rent increase ("bills go up 15%", "rent rises by 10%", "15% rent increase")
-  const BILL = "(?:rent|bills?|household|utilit\\w*|hydro|heating|electricity|mortgage|housing)";
-  const UP = "(?:up|increases?|increased|rises?|rose|goes up|go up|jumps?|climbs?|higher|more)";
-  const bills = t.match(new RegExp(`${BILL}[^.%]{0,30}?${UP}[^.%\\d]{0,12}(\\d+(?:\\.\\d+)?)\\s*%`))
-    ?? t.match(new RegExp(`(\\d+(?:\\.\\d+)?)\\s*%\\s*${UP}?[^.%]{0,15}?${BILL}`));
-  if (bills) {
-    shock.billsPct = Math.max(0, Math.min(100, Number(bills[1])));
+  if (finite(p.bills_pct) && p.bills_pct > 0) {
+    shock.billsPct = Math.round(clamp(p.bills_pct, 0, 300));
     understood.push(`Household bills / rent up ${shock.billsPct}%`);
+  } else if (finite(p.bills_dollars) && p.bills_dollars > 0) {
+    if (billsH > 0) {
+      shock.billsPct = Math.round(clamp((100 * p.bills_dollars) / billsH, 0, 300));
+      understood.push(`Household bills / rent up $${Math.round(p.bills_dollars).toLocaleString("en-CA")}/mo (${shock.billsPct}% of their bills)`);
+    } else {
+      missing.push(`Bills up $${Math.round(p.bills_dollars)}/mo: this customer's bills aren't recorded, so the increase can't be applied`);
+    }
   }
-
-  // ---- one-off cost ("furnace dies", "repair costs a full month of their typical spending", "$5,000 car repair")
-  const oneOffWords = /(furnace|repair|broke|breaks|dies|car\b|roof|emergency|surprise|unexpected|one-off|one off|medical|dental|vet\b|bill of)/.test(t);
-  const monthsOf = t.match(new RegExp(`${N}\\s*(?:full\\s+)?months?\\s+(?:worth\\s+)?of\\s+(?:their\\s+|his\\s+|her\\s+)?(?:typical\\s+|usual\\s+|normal\\s+)?(?:spending|expenses)`));
-  const dollars = t.match(/\$\s*(\d[\d,]*(?:\.\d+)?)\s*(k\b)?|(\d[\d,]*(?:\.\d+)?)\s*(k\b|dollars)/);
-  if (monthsOf) {
-    shock.oneOffMonths = Math.min(3, num(monthsOf[1]));
-    understood.push(`One-off cost: ${shock.oneOffMonths} month${shock.oneOffMonths === 1 ? "" : "s"} of typical spending`);
-  } else if (dollars && oneOffWords) {
-    const raw = dollars[1] ?? dollars[3];
-    const k = (dollars[2] ?? dollars[4]) === "k";
-    shock.oneOffDollars = Math.round(Number(raw.replace(/,/g, "")) * (k ? 1000 : 1));
+  if (finite(p.one_off_months) && p.one_off_months > 0) {
+    shock.oneOffMonths = clamp(Math.round(p.one_off_months * 4) / 4, 0, 6);
+    understood.push(`One-off cost: ${shock.oneOffMonths} month${shock.oneOffMonths === 1 ? "" : "s"} of usual spending`);
+  }
+  if (finite(p.one_off_dollars) && p.one_off_dollars > 0) {
+    shock.oneOffDollars = Math.round(clamp(p.one_off_dollars, 0, 10_000_000));
     understood.push(`One-off cost: $${shock.oneOffDollars.toLocaleString("en-CA")}`);
-  } else if (/furnace/.test(t)) {
-    shock.oneOffMonths = 1;
-    understood.push("One-off cost: furnace repair, 1 month of typical spending (twist-card default)");
   }
-
-  // ---- when it starts ("in January", "starting December")
-  const mon = t.match(/(?:in|starting|starts|from|during|this|next)\s+(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)\b/);
-  if (mon) {
-    shock.startMonth = MONTH_WORDS.indexOf(mon[1].slice(0, 3)) + 1;
+  if (finite(p.start_month) && p.start_month >= 1 && p.start_month <= 12) {
+    shock.startMonth = Math.round(p.start_month);
     understood.push(`Starts in ${MONTHS[shock.startMonth - 1]}`);
   }
-
-  if (accountId !== null) understood.unshift(`Customer #${accountId}`);
-  return { accountId, shock, understood, empty: understood.length === 0 };
+  const accountId = finite(p.account_id) && p.account_id > 0 ? Math.round(p.account_id) : null;
+  return { accountId, shock, understood, notes, missing, empty: understood.length === 0 };
 }
 
 export const EXAMPLE_SCENARIOS = [

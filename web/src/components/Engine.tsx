@@ -6,7 +6,7 @@ import {
   realWorld, runwayText,
 } from "@/lib/engine";
 import { type Summary, template } from "@/lib/planText";
-import { EXAMPLE_SCENARIOS, parseScenario } from "@/lib/scenario";
+import { EXAMPLE_SCENARIOS, type ParsedScenario, toShock } from "@/lib/scenario";
 import { BalanceChart, MultiLine } from "@/components/charts";
 
 const EXAMPLES = [
@@ -33,6 +33,8 @@ export default function Engine() {
   const [shock, setShock] = useState<Shock>({ ...NO_SHOCK });
   const [understood, setUnderstood] = useState<string[]>([]);
   const [msg, setMsg] = useState("");
+  const [reading, setReading] = useState(false);
+  const [missing, setMissing] = useState<string[]>([]);
 
   useEffect(() => { fetch("/engine.json").then(r => r.json()).then(setData); }, []);
   const idx = useMemo(() => (data ? indexData(data) : null), [data]);
@@ -43,13 +45,28 @@ export default function Engine() {
     setId(n); setIdInput(String(n)); setMsg(""); return true;
   };
 
-  const run = (sentence: string) => {
-    const p = parseScenario(sentence, shock.startMonth);
-    if (p.accountId !== null && !loadAccount(p.accountId)) return;
-    if (p.empty) { setMsg("I couldn't find a shock in that. Try one of the examples below."); return; }
-    setShock(p.shock);
-    setUnderstood(p.understood.filter(u => !u.startsWith("Customer #")));
-    setMsg("");
+  const run = async (sentence: string) => {
+    if (!sentence.trim() || reading) return;
+    setReading(true); setMsg("");
+    try {
+      const r = await fetch("/api/parse", { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ text: sentence, month: new Date().getMonth() + 1 }) });
+      const j = await r.json();
+      if (!r.ok || !j.parsed) throw new Error(j.error || "failed");
+      const target = j.parsed.account_id ?? id;
+      if (j.parsed.account_id !== null && !loadAccount(target)) return;
+      const tc = data && idx ? getCustomer(data, idx, target) : c;
+      const p = toShock(j.parsed as ParsedScenario, tc?.H ?? 0, shock.startMonth);
+      setMissing(p.missing);
+      if (p.empty) { setUnderstood(p.notes); setMsg(p.missing.length ? "That isn't something the engine can model (see below)." : "I couldn't find a shock in that. Try one of the examples below."); return; }
+      setShock(p.shock);
+      setUnderstood([...p.understood, ...p.notes]);
+    } catch {
+      setMsg("Gemini couldn't read that just now (Google's servers are busy). Try again in a moment, or set the shock with the sliders below." +
+        (understood.length ? " The results below are still from the previous scenario." : ""));
+    } finally {
+      setReading(false);
+    }
   };
 
   const setManual = (patch: Partial<Shock>) => {
@@ -60,9 +77,9 @@ export default function Engine() {
       if (next.incomePct === 100) next.jobLoss = false;
       return next;
     });
-    setUnderstood(["Adjusted by hand"]);
+    setUnderstood(["Adjusted by hand"]); setMissing([]);
   };
-  const reset = () => { setShock(s => ({ ...NO_SHOCK, startMonth: s.startMonth })); setUnderstood([]); setText(""); };
+  const reset = () => { setShock(s => ({ ...NO_SHOCK, startMonth: s.startMonth })); setUnderstood([]); setMissing([]); setText(""); };
 
   if (!data || !c) return <p className="muted">Loading 4,500 customers…</p>;
 
@@ -75,7 +92,7 @@ export default function Engine() {
           <div className="scenario-row">
             <input id="scenario" className="input scenario-input" value={text} onChange={e => setText(e.target.value)}
               placeholder="e.g. Account 71293 is laid off. EI pays 55% for 6 months and rent goes up 15%." autoComplete="off" />
-            <button className="btn primary" type="submit">Run</button>
+            <button className="btn primary" type="submit" disabled={reading}>{reading ? "Reading…" : "Run"}</button>
           </div>
         </form>
         <div className="chip-row">
@@ -83,12 +100,19 @@ export default function Engine() {
             <button key={s} className="btn chip" onClick={() => { setText(s); run(s); }}>{s.replace(/ Do they make it\?$/, "")}</button>
           ))}
         </div>
+        {reading && <p className="note"><span className="dot" />Gemini is reading the scenario…</p>}
         {msg && <p className="error">{msg}</p>}
         {understood.length > 0 && (
           <div className="understood">
             <span className="muted">Understood as:</span>
             {understood.map(u => <span key={u} className="pill">{u}</span>)}
             <button className="link" onClick={reset}>Clear</button>
+          </div>
+        )}
+        {missing.length > 0 && (
+          <div className="understood">
+            <span className="muted">Not included (the engine can&apos;t model it):</span>
+            {missing.map(m => <span key={m} className="pill warn">{m}</span>)}
           </div>
         )}
       </section>
