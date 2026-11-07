@@ -32,7 +32,8 @@ Judged on Discovery 35%, Data Use 25%, Communication 25%, Impact 15%.
 
 The judge picks an `account_id` and reads a twist card. Run it in this order every time:
 
-1. **Know the customer (≈30 s).** Type the ID. Read: money in, spending, fixed costs, buffer,
+0. **Type the twist card into the scenario box** (include the account number, e.g. "Account 71293: laid off, EI 55% for 6 months") and press Run. Read the "Understood as" line aloud so the judge sees it was read correctly.
+1. **Know the customer (≈30 s).** Read: money in, spending, fixed costs, buffer,
    runway. Then the line that's ours: *"Their balance settles around $X. That's their comfort
    number, and it covers Y months of spending."*
 2. **Apply the twist (≈60 s).** Set the shock exactly as the card says. Read the **judges' runway

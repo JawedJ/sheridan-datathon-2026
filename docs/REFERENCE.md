@@ -478,7 +478,8 @@ Live at https://comfort-number.vercel.app (code in `web/`, engine in `web/src/li
 
 - 12.1 **Data:** `engine.json` (0.96 MB, columnar, full-precision I, S, F, H, B, P) built by `build_engine_data.py`; all calculations run in the browser.
 - 12.2 **Customer card:** I, S, F, B, P and no-shock runway (official); comfort number; cushion months (B ÷ S) and the typical cushion for their income decile; tags: pensioner, high earner with thin cushion (decile ≥ 8 and cushion < 3), bonus months, no bills in data, often close to zero, irregular income, has gone below zero, shared account.
-- 12.3 **Shock inputs:** income during shock (% of usual; 100 = no job loss), shock length (months), household bills/rent up (%), one-off cost in months of spending, one-off cost in dollars, start month. Twist cards: EI 55% for 6 months · furnace (1 month of spending) · EI + bills 15% · rent and bills up 25% · reset.
+- 12.2a **Plain-words scenario box (top of the page):** rule-based parser (`web/src/lib/scenario.ts`) reads the account number, job loss / EI %, income drop, length (months, weeks, a year), bills/rent increase %, one-off cost (months of spending or dollars; furnace defaults to 1 month), start month; shows "Understood as" for each match. Defaults: job loss without a % → 55%, length → 6 months.
+- 12.3 **Shock inputs (also under "Adjust the shock by hand"):** income during shock (% of usual; 100 = no job loss), shock length (months), household bills/rent up (%), one-off cost in months of spending, one-off cost in dollars, start month. Twist cards: EI 55% for 6 months · furnace (1 month of spending) · EI + bills 15% · rent and bills up 25% · reset.
 - 12.4 **Official result:** income = pct × I; spending = S + bills% × H; buffer left = B − one-off; runway by the official rule (2.7).
 - 12.5 **Real-world result:** same formula, but (a) pensioners keep their pension (I × pension share) and only the rest drops; (b) for a job loss, earned income is capped at $3,159/month; (c) if H = 0 and a bills shock is applied, H is estimated at 19.9% × S. Each applied correction is listed on screen.
 - 12.6 **Verdict:** horizon = shock length for a job loss, otherwise 3 months. "Yes, they make it" if both runways ≥ horizon; "Official formula: yes. Real rules: no" if only the official one is; otherwise "No, savings run out in about X."
@@ -541,6 +542,7 @@ Data and `output/` aren't in the repo (`transactions.csv` is over 100 MB). Loan 
 - 16.3 Devpost write-up not drafted.
 - 16.4 Possible deep dives: does the comfort number move after a bonus or big event? Who raised theirs over time, and what's different about them? How many months of warning does the edge slide give before the first negative balance?
 - 16.5 Loan analysis not saved as a script or robustness-tested.
+- 16.7 Open honesty decisions: see `docs/HONESTY.md` Part 3.
 - 16.6 Vercel isn't auto-deploying from GitHub (Root Directory would need to be `web`).
 
 ---

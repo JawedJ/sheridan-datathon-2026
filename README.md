@@ -21,7 +21,7 @@ in months, not dollars.
 ## The app
 **Live: https://comfort-number.vercel.app**
 
-- **Engine:** enter any `account_id` and see the judges' numbers (income, spending, fixed costs,
+- **Engine:** describe a scenario in plain words ("Account 71293 is laid off, EI 55% for 6 months, rent up 15%"). It shows how it read the sentence. For any `account_id` you see the judges' numbers (income, spending, fixed costs,
   buffer, runway) plus the customer's comfort number and cushion in months. Apply a shock (twist
   cards or sliders for EI %, length, bills, one-off costs, start month) and compare the **official
   formula** with **real-world rules** (EI maximum, pensions keep paying, cash-paid bills estimated).
@@ -38,6 +38,7 @@ in months, not dollars.
 | `build_customer_table.py` | Per-customer judges' metrics (income, spending, fixed costs, buffer, runway, standard shocks) |
 | `analysis/` | Formula checks, broad survey, deep dives, stress test |
 | `output/` | Generated tables (not committed; rebuilt by the scripts) |
+| [`docs/HONESTY.md`](docs/HONESTY.md) | Rules check and exactly how we use the data: what's raw, what's the judges' formula, what's our estimate or assumption |
 | [`docs/REFERENCE.md`](docs/REFERENCE.md) | Everything in one place: data, every formula, cleaning log, all findings and numbers, app calculations, corrections |
 | `docs/PITCH.md` | The 1-minute pitch, live-twist script, judge Q&A prep, demo video outline |
 | `docs/CHALLENGE.md` | The organizers' challenge brief and data dictionary |
