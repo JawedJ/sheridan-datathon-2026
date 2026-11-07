@@ -157,8 +157,9 @@ deposit has fewer withdrawals anyway. It shows spending *can* drop, not that it'
 | Real EI cap ($3,159/month = 12% of a top earner's income) | 93.4% | 3.5% |
 | Judges' rule (55%, uncapped) | 25.5% | 3.5% |
 
-- **Currency scale:** customers' median income ($9,468/month for non-pensioners) is about 1.7× the
-  Canadian average (~$5,600/month). If every amount were halved, 81% of top earners would still run
+- **Currency scale:** customers' median income ($9,468/month for non-pensioners) is about 1.6× the
+  Canadian average: $1,354.55/week = $5,870/month (Statistics Canada, Table 14-10-0223-01, Canada,
+  all employees, industrial aggregate excluding unclassified businesses, seasonally adjusted, August 2026). If every amount were halved, 81% of top earners would still run
   out. The cushion gap (11.1 vs 1.6 months) is identical at any scale.
 
 **What this changes in the story:** top earners aren't trapped. They're *unprepared*. Their risk is
@@ -567,4 +568,5 @@ accounts and 5 standard shocks (49,500 checks, `npm run verify`).
 
 ## Sources
 - PKDD'99 Discovery Challenge Financial dataset, CTU Prague: https://relational.fel.cvut.cz/dataset/Financial
+- Statistics Canada, Table 14-10-0223-01, average weekly earnings, August 2026 (scale comparison only): https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410022301
 - EI benefit rate and 2026 maximum: https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html

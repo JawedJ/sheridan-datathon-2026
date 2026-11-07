@@ -106,7 +106,7 @@ A = finished, repaid (203) · B = finished, defaulted (31) · C = running, OK (4
 | 1.7.14 | History length | every account has ≥ 12 months |
 | 1.7.15 | Regions / districts | 8 regions, 77 districts |
 | 1.7.16 | Customers earn vs district average salary | ~1.34× |
-| 1.7.17 | Customers' income vs Canadian average (~$5,600/mo) | ~1.7× (non-pensioners) |
+| 1.7.17 | Customers' income vs Canadian average ($1,354.55/week = $5,870/month, StatCan Table 14-10-0223-01, Aug 2026, seasonally adjusted) | ~1.6× (non-pensioners, $9,468) |
 
 ---
 
@@ -469,7 +469,7 @@ D1: I $1,580, B $14,060, 10.6 months, EI<3 3.1% / 3.1% · D3: $3,379, $14,369, 6
 - 11.6 No household size: a high income may support more people.
 - 11.7 We can't tell necessary from discretionary spending (cash has no category).
 - 11.8 Small groups: 117 edge customers, 76 loan defaults.
-- 11.9 Customers earn ~1.7× the Canadian average; tested: results hold at any scale (5.7.8).
+- 11.9 Customers earn ~1.6× the Canadian average (StatCan, Aug 2026); tested: results hold at any scale (5.7.8).
 
 ---
 
@@ -550,4 +550,5 @@ Data and `output/` aren't in the repo (`transactions.csv` is over 100 MB). Loan 
 ## 17. Sources
 - PKDD'99 Discovery Challenge Financial dataset, CTU Prague Relational Dataset Repository: https://relational.fel.cvut.cz/dataset/Financial
 - Government of Canada, EI regular benefits (55%, $729/week maximum, $68,900 maximum insurable earnings, 2026): https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html
+- Statistics Canada, Table 14-10-0223-01, Employment and average weekly earnings (including overtime) for all employees, monthly, seasonally adjusted; Canada, industrial aggregate excluding unclassified businesses, August 2026 = $1,354.55/week (series v79311153; used only for the scale comparison): https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410022301
 - Organizers' brief and data dictionary: `docs/CHALLENGE.md`

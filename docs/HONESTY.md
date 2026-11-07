@@ -24,7 +24,7 @@ questions for the team.
 | R7 | Using AI: "Use any tools you want, including AI" (brief) | ✅ | — |
 | R8 | Credit the data: PKDD'99 Financial dataset (CTU Prague) + Statistics Canada / Government of Canada sources if used (brief) | ✅ | README "Data and sources" |
 | R9 | Sources: links to every outside data source (brief) | ⚠️ See R9a | — |
-| R9a | We quote "Canadian average income ~$5,600/month (~$1,300/week)" in FINDINGS 1.4 and REFERENCE 1.7.17 / 11.9. **It came from memory, not a source we opened.** Not in the app, charts or pitch. | **DECIDE** | Either source it (StatCan Average weekly earnings, Table 14-10-0223-01, listed in the brief) or remove it |
+| R9a | The "Canadian average income" comparison was first written from memory (~$5,600/month). **Fixed:** now sourced from StatCan Table 14-10-0223-01 (Aug 2026, $1,354.55/week = $5,870/month, read from the official CSV); the ratio changed from ~1.7× to ~1.6×. Not in the app, charts or pitch. | ✅ Fixed | FINDINGS 1.4, REFERENCE 1.7.17 / 11.9 / 17, README sources |
 
 ### 1.2 Submission (two sources disagree slightly)
 | # | Item | Tangerine brief | Devpost page | Status |
@@ -110,10 +110,9 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 ---
 
 ## Part 3 — Decisions for the team (nothing changed yet)
-1. **R9a** Source or remove the "Canadian average income" comparison.
-2. **T2** Set the Gemini key, or don't enter the Gemini track.
-3. **A2** Apply the EI cap only to job-loss scenarios, not every income drop?
-4. **A5** Rename "Real-world rules" → "Real-world estimate"?
-5. **P5** Flag backup-plan cuts above some level (e.g. 50%) as unrealistic?
-6. **F4** Add a data-origin footnote to the engine page?
-7. **S1** Aim for a ~2:00 video.
+1. **T2** Set the Gemini key, or don't enter the Gemini track.
+2. **A2** Apply the EI cap only to job-loss scenarios, not every income drop?
+3. **A5** Rename "Real-world rules" → "Real-world estimate"?
+4. **P5** Flag backup-plan cuts above some level (e.g. 50%) as unrealistic?
+5. **F4** Add a data-origin footnote to the engine page?
+6. **S1** Aim for a ~2:00 video.

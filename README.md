@@ -80,5 +80,6 @@ cd web && npm install && npm run verify && npm run dev   # http://localhost:3000
 - **PKDD'99 Discovery Challenge Financial dataset** (real anonymized bank data), CTU Prague Relational
   Dataset Repository: https://relational.fel.cvut.cz/dataset/Financial. Provided by Tangerine with
   dates shifted to 2020–2025 and amounts in CAD.
+- **Statistics Canada**, Table 14-10-0223-01, average weekly earnings (Aug 2026), used only to compare our customers' incomes with Canada's: https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410022301
 - **Government of Canada**, EI regular benefits (55% rate, $729/week maximum in 2026):
   https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html

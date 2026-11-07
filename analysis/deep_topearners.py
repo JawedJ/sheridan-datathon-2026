@@ -106,7 +106,8 @@ for label, inc in [("no EI at all", 0 * t.I), ("real cap", ei), ("judges' 55% un
     print(f"  {label:22s} top 10% under 3 months: {pct((r[t.dec == 10] < 3).mean())}   bottom 10%: {pct((r[t.dec == 1] < 3).mean())}")
 dist = pd.read_csv(DATA / "districts.csv")
 print(f"\nscale check: district average salary ${dist.average_salary.median():,.0f}/mo; customers' median income "
-      f"${t.I.median():,.0f}/mo; Canada average weekly earnings ~ $1,300 (~$5,600/mo)")
+      f"${t.I.median():,.0f}/mo; Canada average weekly earnings $1,354.55 = $5,870/mo "
+      f"(StatCan Table 14-10-0223-01, Aug 2026, seasonally adjusted, series v79311153)")
 for scale in [0.5, 0.75, 1.0, 1.5]:
     ei_s = np.minimum(0.55 * t.I * scale, EI_CAP)
     r = runway((t.B * scale).values, (t.S * scale - ei_s).values)
