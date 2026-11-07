@@ -488,7 +488,7 @@ Live at https://comfort-number.vercel.app (code in `web/`, engine in `web/src/li
 - 12.8 **Goal plan:** target = 3 × S; gap = max(0, target − B); monthly transfer = lifetime mean surplus (mean in − mean out) if ≥ 2% of I, else 10% of non-essential spending; bonus boost = half of (2 × I × bonus %) per year ÷ 12; months to goal = ceil(gap ÷ transfer). Comfort-number message: "raise the setting with an automatic transfer."
 - 12.9 **Backup plan:** target months = max(3, shock length if job loss); protected (essential) spending = max(F, 63.8% × S) using the Canadian basic-needs share (StatCan SHS 2023); non-essential = S − protected; cut needed = (real-world spending − (buffer left ÷ target + real-world income)) ÷ non-essential. If that's over 100%, the app says cutting alone won't cover it and shows the runway from cutting all non-essential spending. Options: cut 25%, 50%, all of non-essential.
 - 12.10 **Accuracy check (`npm run verify`):** compares the app's I, S, F, H, B, P and official runway (no shock, EI 55%, furnace, EI + bills 15%, bills 15%) with `output/judges_expected.csv` from Python: 4,500 accounts, 49,500 checks, **0 mismatches**, exact (no tolerance).
-- 12.11 **Plan in plain words:** `/api/explain` sends the computed numbers to Gemini (model `gemini-2.5-flash` by default) with instructions to use only those numbers; max ~120 words. If `GEMINI_API_KEY` isn't set or the call fails/times out (12 s), a template using the same numbers is returned. **Key not set yet.**
+- 12.11 **Plan in plain words:** `/api/explain` sends the computed numbers to Gemini (model `gemini-3.5-flash`; 2.5-flash was retired) with instructions to use only those numbers; max ~120 words. If `GEMINI_API_KEY` isn't set or the call fails/times out (12 s), a template using the same numbers is returned. **Key set in Vercel; verified working (about 9 s per answer; route allows 30 s).**
 - 12.12 **Findings page:** the four charts from `findings.json` (5.2, 5.4.5, 5.2 EI columns, 7.1.1).
 - 12.13 **Rehearsal accounts:** 20111 (judges' example), 71293 (high earner, thin cushion: official 6.2 vs real 2.8 months on EI), 22998 (on the edge), 98208 (saver with bonuses), 93255 (pensioner).
 - 12.14 **Known simplifications:** the chart uses median S with seasonal factors (so for customers with the median quirk the no-shock path drifts down); plans use lifetime mean surplus; bills estimate is a single share for everyone.
@@ -538,7 +538,7 @@ Data and `output/` aren't in the repo (`transactions.csv` is over 100 MB). Loan 
 ---
 
 ## 16. Not done / open questions
-- 16.1 Gemini key not set in Vercel (template wording used).
+- 16.1 ~~Gemini key not set~~ Done: Gemini live in production.
 - 16.2 Pitch doesn't yet include a cleaning sentence or a "how did you clean the data?" answer.
 - 16.3 Devpost write-up not drafted.
 - 16.4 Possible deep dives: does the comfort number move after a bonus or big event? Who raised theirs over time, and what's different about them? How many months of warning does the edge slide give before the first negative balance?

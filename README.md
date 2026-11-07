@@ -38,6 +38,7 @@ in months, not dollars.
 | `build_customer_table.py` | Per-customer judges' metrics (income, spending, fixed costs, buffer, runway, standard shocks) |
 | `analysis/` | Formula checks, broad survey, deep dives, stress test |
 | `output/` | Generated tables (not committed; rebuilt by the scripts) |
+| [`docs/REPORT.md`](docs/REPORT.md) | **Start here to prepare for judges:** the full story, every decision and deviation from the brief with its justification, cleaning, limits, and answers to likely questions |
 | [`docs/HONESTY.md`](docs/HONESTY.md) | Rules check and exactly how we use the data: what's raw, what's the judges' formula, what's our estimate or assumption |
 | [`docs/REFERENCE.md`](docs/REFERENCE.md) | Everything in one place: data, every formula, cleaning log, all findings and numbers, app calculations, corrections |
 | `docs/PITCH.md` | The 1-minute pitch, live-twist script, judge Q&A prep, demo video outline |

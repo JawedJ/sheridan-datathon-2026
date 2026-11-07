@@ -39,7 +39,7 @@ questions for the team.
 | # | Track | Requirement | Status |
 | --- | --- | --- | --- |
 | T1 | Best Data Visualization & Storytelling | Judged on the story and charts | ✅ Findings page + charts |
-| T2 | **[MLH] Best Use of Gemini API** | Build with the Gemini API | ⚠️ **Not actually using Gemini yet.** No `GEMINI_API_KEY` in Vercel, so the app uses template wording. **Don't submit to this track unless the key is set and it really runs.** |
+| T2 | **[MLH] Best Use of Gemini API** | Build with the Gemini API | ✅ **Live.** `GEMINI_API_KEY` and `GEMINI_MODEL=gemini-3.5-flash` set in Vercel; "Write it for the customer" returns Gemini text (verified, source = gemini). Template fallback kept for reliability |
 
 ---
 
@@ -111,6 +111,5 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 ---
 
 ## Part 3 — Decisions for the team (nothing changed yet)
-1. **T2** Set the Gemini key, or don't enter the Gemini track.
-2. **F6** Replace the "cutting half brings 93% → 30%" claim with the basic-needs-protected numbers (79% / 43%).
-3. **S1** Aim for a ~2:00 video.
+1. **F6** Replace the "cutting half brings 93% → 30%" claim with the basic-needs-protected numbers (79% / 43%).
+2. **S1** Aim for a ~2:00 video.
