@@ -341,8 +341,8 @@ spend down two-thirds of a month's income the next month (−66%), vs −27% for
   spending fell to about 0.56× normal. That shows spending *can* drop, though part of it is
   mechanical (cash is withdrawn after deposits arrive).
 - **Note:** an earlier version of this analysis treated all cash as cuttable and said "cutting half
-  brings 93% down to 30%." That claim is superseded by the basic-needs version above. *(Open item:
-  the README and pitch Q&A still contain the old line; see `docs/HONESTY.md` F6.)*
+  brings 93% down to 30%." That claim is superseded by the basic-needs version above and has been
+  replaced everywhere (README, pitch, findings page).
 
 ### 7.5 Is it robust? The stress tests
 | Test | What it rules out | Result |

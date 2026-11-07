@@ -106,10 +106,9 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | F3 | Layoff timing chart | Subset: 3,547 non-pensioners whose savings run out within 10 years for every start month; seasonal factors per M2 |
 | F4 | "4,500 real bank customers" headline | **Removed** from the engine page (team decision: judges know the dataset). The findings page still states the source |
 | F5 | "Under real EI rules" in the pitch | Fine: deposits are the only income measure in the data and the judges' own definition |
-| F6 | **"88% of top earners' spending is flexible; cutting half brings 93% down to 30%"** (README, FINDINGS 1.4, PITCH Q&A) | ⚠️ **Built on the old "all cash is cuttable" assumption.** With basic needs protected (P4): only 36% is non-essential; cutting half → 79% still run out within 3 months; cutting all → 43%. **DECIDE:** replace the claim with the protected version |
+| F6 | "88% flexible; cutting half brings 93% → 30%" | **Fixed.** Replaced everywhere with the basic-needs-protected numbers: 36% non-essential; cut half → 79% still run out; cut all → 43% |
 
 ---
 
 ## Part 3 — Decisions for the team (nothing changed yet)
-1. **F6** Replace the "cutting half brings 93% → 30%" claim with the basic-needs-protected numbers (79% / 43%).
-2. **S1** Aim for a ~2:00 video.
+1. **S1** Aim for a ~2:00 video.

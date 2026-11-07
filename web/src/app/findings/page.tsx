@@ -85,8 +85,8 @@ export default function FindingsPage() {
         <h2 style={{ fontSize: 18, margin: 0 }}>Top earners are the most likely to run out after a layoff</h2>
         <p style={{ color: "var(--text-2)", fontSize: 14, margin: "4px 0 8px" }}>
           Share of each income group whose savings would run out within 3 months on EI if they kept spending as usual.
-          The real EI maximum ($729/week in 2026) replaces only 12% of a top earner&apos;s income. Cutting half their flexible
-          spending would bring the top group from 93% to 30%.
+          The real EI maximum ($729/week in 2026) replaces only 12% of a top earner&apos;s income. With basic needs protected
+          (Statistics Canada), even cutting all non-essential spending leaves 43% of the top group running out within 3 months.
         </p>
         <div className="legend">
           <span><i style={{ background: "var(--series-1)" }} />Judges&apos; rule (55% of income)</span>

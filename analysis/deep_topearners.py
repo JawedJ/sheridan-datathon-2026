@@ -113,3 +113,18 @@ for scale in [0.5, 0.75, 1.0, 1.5]:
     r = runway((t.B * scale).values, (t.S * scale - ei_s).values)
     print(f"  if all amounts were x{scale}: top 10% under 3 months {pct((r[t.dec == 10] < 3).mean())}, "
           f"months-of-cushion gap unchanged (D1 {(t.B / t.S)[t.dec == 1].median():.1f} vs D10 {(t.B / t.S)[t.dec == 10].median():.1f})")
+
+# ------------------------------------------------------------------ E
+head("E. Same question with basic needs protected (the app's backup-plan rule)")
+# Basic needs = 63.8% of spending: StatCan Survey of Household Spending 2023, Table 11-10-0222-01, Canada,
+# food from stores + principal accommodation + transportation + health care + clothing = $48,600 of $76,146.
+ESSENTIAL_SHARE = 48600 / 76146
+floor = np.maximum(t.F, ESSENTIAL_SHARE * t.S)
+non_ess = (t.S - floor).clip(lower=0)
+top = t.dec == 10
+print(f"top 10% non-essential share of spending (median): {(non_ess / t.S)[top].median():.3f}")
+for cut in [0, 0.5, 1.0]:
+    r = runway(t.B.values, (t.S - cut * non_ess - ei).values)
+    print(f"  cut {int(cut * 100):3d}% of non-essential: top 10% under 3 months {pct((r[top] < 3).mean())}, median runway {np.median(r[top]):.1f}")
+need = ((t.S - (t.B / 3 + ei)) / non_ess.replace(0, np.nan)).clip(lower=0)
+print(f"  median cut of non-essential needed for 3 months: {need[top].median():.2f}; possible (<=100%) for {pct((need[top] <= 1).mean())}")

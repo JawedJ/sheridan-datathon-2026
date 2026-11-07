@@ -38,10 +38,10 @@ Sources for every number: the scripts in `analysis/`, `build_*.py`, the app's `w
 | 0.3 | Mechanism | Balances act like a thermostat: above-usual balances are spent down the next month (top earners: −66% of a month's income). |
 | 0.4 | Why high earners | The level people settle at grows only ~22% when income doubles (elasticity 0.29, 95% CI 0.26–0.31). |
 | 0.5 | Layoff risk | With real EI rules, 93% of top earners run out within 3 months *if nothing changes* (judges' uncapped rule: 25.5%). |
-| 0.6 | They can adapt | 88% of top earners' spending is flexible; cutting half of it brings 93% down to 30%. |
+| 0.6 | Cutting back isn't enough | With basic needs protected (StatCan, 63.8% of spending), only 36% of top earners' spending is non-essential; cutting all of it still leaves 43% running out within 3 months. |
 | 0.7 | Robust | Holds in all 8 regions, every account age, both genders, couples and singles, every year 2021–2025, 5 savings definitions, noise-corrected. |
 | 0.8 | Data use | Found 5 problems with the official formula; match the official formula exactly anyway (49,500 checks, 0 mismatches). |
-| 0.9 | Product | Engine shows official vs real-world runway, the customer's comfort number, and plans: auto-transfer above the comfort number; % of flexible spending to cut. |
+| 0.9 | Product | Engine shows official vs real-world runway, the customer's comfort number, and plans: auto-transfer above the comfort number; % of non-essential spending to cut, with basic needs protected. |
 | 0.10 | Supporting | Layoff timing matters (January 6.1 vs February 7.8 months); bonus months; edge slide; no autopay → going negative. |
 
 ---
@@ -307,9 +307,9 @@ D1: I $1,580, B $14,060, 10.6 months, EI<3 3.1% / 3.1% · D3: $3,379, $14,369, 6
 - 5.7.1 Fixed costs plateau around $3k/month from D5 up.
 - 5.7.2 We can't tell whether cash spending is necessary (no categories, no household size).
 - 5.7.3 Natural experiment (12,450 income-drop months, 904 accounts): spending that month / next month / after two low months: bottom 30% 1.35× / 0.81× / 0.88× · middle 40% 0.60× / 0.59× / 0.29× · top 30% 0.56× / 0.58× / 0.33×. Normal months ≈ 0.96–1.00×. Partly mechanical (cash is withdrawn after deposits arrive).
-- 5.7.4 Cut of flexible spending needed to reach 3 months (real cap), median: D9 20%, D10 **39%**; achievable without touching fixed costs for ~99%.
-- 5.7.4a **Caveat:** 5.7.4–5.7.5 treat all spending except labelled bills as cuttable. With basic needs protected (63.8% of spending, StatCan SHS 2023): top 10% non-essential share 36% (vs 88%); cut half → 78.7% run out within 3 months (median 2.4 months); cut all → 42.8% (3.2); median cut needed 91%, possible for 57%.
-- 5.7.5 Top 10% under 3 months: as is 93.4% · cut flexible 25% → 72.3% (median runway 2.5) · cut 50% → **29.5%** (3.7) · live on fixed costs + a median customer's flexible spending ($5,232) → 8.5% (8.2 months).
+- 5.7.4 *(Superseded by 5.7.4a; old "all cash is cuttable" assumption)* Cut of flexible spending needed to reach 3 months (real cap), median: D9 20%, D10 **39%**; achievable without touching fixed costs for ~99%.
+- 5.7.4a **Current numbers (basic needs protected).** 5.7.4–5.7.5 below treat all spending except labelled bills as cuttable. With basic needs protected (63.8% of spending, StatCan SHS 2023): top 10% non-essential share 36% (vs 88%); cut half → 78.7% run out within 3 months (median 2.4 months); cut all → 42.8% (3.2); median cut needed 91%, possible for 57%.
+- 5.7.5 *(Superseded by 5.7.4a)* Top 10% under 3 months: as is 93.4% · cut flexible 25% → 72.3% (median runway 2.5) · cut 50% → **29.5%** (3.7) · live on fixed costs + a median customer's flexible spending ($5,232) → 8.5% (8.2 months).
 - 5.7.6 Top 10% under 3 months by EI rule: no EI 98.7% · real cap 93.4% · official uncapped 25.5% · full income kept 0%. Bottom 10%: 3.5% / 3.5% / 3.5% / 2.9%.
 - 5.7.7 The real cap replaces 12% of a top earner's income ($3,159 of $26,568).
 - 5.7.8 Currency scale: if every amount were ×0.5 / ×0.75 / ×1 / ×1.5, top 10% under 3 months = 81.4% / 90.4% / 93.4% / 95.7%. Months saved (11.1 vs 1.6) is identical at any scale.

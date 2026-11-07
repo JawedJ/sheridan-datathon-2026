@@ -92,9 +92,10 @@ The judge picks an `account_id` and reads a twist card. Run it in this order eve
 > bills paid in cash. Both are on screen.
 
 **"Is the 93% realistic? Wouldn't they just cut back?"**
-> Yes, they would, and that's the point of the plan. 93% assumes nothing changes. 88% of top earners'
-> spending is flexible, and cutting half of it brings 93% down to 30%. They're not trapped, they're
-> unprepared.
+> 93% assumes nothing changes, so we tested cutting back. With basic needs protected (Statistics Canada:
+> 64% of household spending), only about a third of a top earner's spending can be cut. Cutting all of it
+> still leaves 43% running out within 3 months. The fix has to come before the shock, which is
+> what our goal plan does.
 
 **"How is the comfort number calculated?"**
 > The median month-end balance after the first three months of the account. Balances above it are

@@ -114,9 +114,11 @@ Script: `analysis/deep_topearners.py`. Non-pensioners.
 
 **Short answer:** the "93% run out within 3 months" figure is true *if they keep spending as usual*.
 The EI cap is real Canadian policy, so 93% is the realistic number. The judges' uncapped 55% rule
-(25.5%) is the simplification. Most of the jump from 25.5% to 93% comes from applying that real cap. Top earners also have by far the most room to cut, because almost
-none of their extra spending is locked in. The robust part of the headline is the cushion gap
-(11.1 vs 1.6 months), which doesn't depend on EI rules or currency scale.
+(25.5%) is the simplification. Most of the jump from 25.5% to 93% comes from applying that real cap.
+Cutting back helps less than you'd think: once basic needs are protected, only about a third of a top
+earner's spending can be cut, and even cutting all of it leaves 43% running out within 3 months. The
+robust part of the headline is the cushion gap (11.1 vs 1.6 months), which doesn't depend on EI rules
+or currency scale.
 
 **Their extra spending isn't fixed costs.**
 | Income decile | Spending | Fixed costs (bills + insurance + loans) | Fixed share | Flexible spending | Cash share |
@@ -143,17 +145,20 @@ Top and middle earners spend much less when money stops coming in; the bottom 30
 Caveat: some of this is mechanical. People withdraw cash after deposits arrive, so a month with no
 deposit has fewer withdrawals anyway. It shows spending *can* drop, not that it's painless.
 
-> **Caveat (added after the app's basic-needs rule):** the numbers below treat all spending except labelled
-> bills as cuttable. Protecting basic needs (63.8% of spending, Statistics Canada Survey of Household Spending
-> 2023): only 36% of a top earner's spending is non-essential; cutting half of it → 78.7% still run out within
-> 3 months; cutting all of it → 42.8%; median cut needed 91%.
+**How much cutting would rescue them (real EI cap, basic needs protected):**
+Basic needs = 63.8% of spending, the share Canadian households spend on food from stores, their main
+home, transportation, health care and clothing (Statistics Canada, Survey of Household Spending 2023,
+Table 11-10-0222-01). Protected spending = the larger of that share or their labelled bills; the rest
+is non-essential. This is the same rule the app's backup plan uses.
+- Only **36%** of a top earner's spending is non-essential (median).
+- Cut half of it → **78.7%** still run out within 3 months (median runway 2.4 months).
+- Cut all of it → **42.8%** still run out (median runway 3.2 months).
+- The median top earner would need to cut **91%** of their non-essential spending to reach 3 months;
+  it's possible at all for 57% of them.
 
-**How much cutting would rescue them (real EI cap, old "all cash is cuttable" assumption):**
-- To reach 3 months of runway, the median top-10% customer must cut **39%** of flexible spending
-  (D9: 20%). For 99% of them, that's possible without touching fixed costs.
-- Cut flexible spending 25% → 72% still run out within 3 months. Cut 50% → **30%**.
-- Live on fixed costs plus a *median customer's* flexible spending ($5,232) → only **8.5%** run out,
-  with median runway 8.2 months.
+*Earlier version (superseded):* treating all spending except labelled bills as cuttable gave "88% is
+flexible; cutting half brings 93% down to 30%". That assumed cash spending on food and rent could be
+cut, which the data can't support, so we no longer use it.
 
 **How much is the EI cap?**
 | Income replaced while laid off | Top 10% run out within 3 months | Bottom 10% |
@@ -167,10 +172,10 @@ deposit has fewer withdrawals anyway. It shows spending *can* drop, not that it'
   all employees, industrial aggregate excluding unclassified businesses, seasonally adjusted, August 2026). If every amount were halved, 81% of top earners would still run
   out. The cushion gap (11.1 vs 1.6 months) is identical at any scale.
 
-**What this changes in the story:** top earners aren't trapped. They're *unprepared*. Their risk is
-the cushion, not their ability to adapt. That's good for the product: the backup plan can say
-exactly how much to cut ("39% of your flexible spending gets you to 3 months"), and the goal plan
-can say how to avoid needing to.
+**What this changes in the story:** cutting back after a layoff can't save most top earners, because
+their cushion is simply too thin for the spending their basic needs require. That strengthens the
+headline: the fix has to come *before* the shock (the goal plan: raise the comfort number with an
+automatic transfer), not after it. The backup plan says honestly when cutting isn't enough.
 
 ---
 

@@ -7,8 +7,9 @@ Sheridan Datathon 2026 · Tangerine track
 
 Across 4,500 real bank accounts, the lowest-earning 10% hold **11.1 months** of spending in savings.
 The highest-earning 10% hold **1.6**. Under real EI rules, if they kept spending as usual, **93%**
-of top earners would run out within 3 months of a layoff, versus 3.5% of the lowest earners. They
-aren't trapped, though: 88% of their spending is flexible, and cutting half of it brings 93% down to 30%.
+of top earners would run out within 3 months of a layoff, versus 3.5% of the lowest earners. Cutting
+back doesn't rescue most of them: with basic needs protected (Statistics Canada), even cutting all
+non-essential spending leaves 43% running out within 3 months.
 
 The reason: balances act like a **thermostat**. When a customer's balance climbs above their usual
 level, they spend it back down the next month (top earners net −66% of a month's income), and that
