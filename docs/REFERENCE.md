@@ -274,6 +274,8 @@ D1: I $1,580, B $14,060, 10.6 months, EI<3 3.1% / 3.1% · D3: $3,379, $14,369, 6
 - 5.4.4 The money leaves as **cash withdrawals**, not transfers to other banks.
 - 5.4.5 By income (chart): next-month net, bottom 20% vs top 20% of earners: below +34% / +19% · near +18% / +3% · above +12% / −17% · far above −27% / **−66%**.
 - 5.4.6 Strength by income quintile (Spearman): Q1 −0.26, Q2 −0.26, Q3 −0.29, Q4 −0.31, Q5 **−0.43**.
+- 5.4.7 **Stricter test** (`verify_deep.py` §4): "usual" = median of the previous 6 month-end balances (no future data). Next month: real −0.235 (n=139,977) vs shuffled-order null −0.011 (5 runs, −0.017 to −0.002). Skip a month (t+2): real −0.072, null −0.012. Average daily balance, t+2: −0.047. Next month controlling for this month's own net flow: −0.172. By income at t+2: bottom 20% −0.081, middle −0.061, top 20% −0.106. Reading: real and not an artifact of the median, but concentrated in the following month (part may be deposit/spend timing).
+- 5.4.8 **Windfall test** (`verify_deep.py` §3): windfall = month with net inflow ≥ account's median money_in, balance above the median of the previous 3 month-ends, 6 months of follow-up; non-pensioners; 5,747 events in 1,358 accounts; 97% cash deposits; median money_in 2.84× usual (loans aren't credited: loan-start-month money_in = 1.0× usual). Median share of windfall still in the account at +1/+3/+6 months: all 62% / 44% / 45%; bottom 20% 79% / 65% / 67%; middle 57% / 43% / 41%; top 20% 43% / 24% / 29%. 42.6% of windfalls are < 25% kept at +6. Null (4,000 events, account's own net flows drawn at random): 100% / 108% / 115%.
 
 ### 5.5 The comfort number is in dollars, not months
 - 5.5.1 Comfort number by all-customer decile: D1 $13.1k · D2 $12.4k · D3 $13.5k · D4 $16.0k · D5 $18.3k · D6 $21.1k · D7 $23.8k · D8 $26.3k · D9 $28.1k · D10 $33.2k. As months of income: 12.0 → 5.1 → 4.0 → 3.8 → 2.9 → 2.5 → 2.2 → 2.0 → 1.7 → 1.3.
@@ -331,6 +333,12 @@ D1: I $1,580, B $14,060, 10.6 months, EI<3 3.1% / 3.1% · D3: $3,379, $14,369, 6
 | 6.10 | Thermostat in every income quintile | Yes; strongest at the top (5.4.6) |
 | 6.11 | "Savings kept at another bank" | 20–41% per decile ever send money elsewhere; median share 0%. Top-30% earners with outbound transfers: cushion 1.84 vs 1.98 without. Unlabelled standing orders > 5% of income: 19.7% of top earners, cushion 1.88 vs 1.96. **Upper bound** (every dollar ever sent elsewhere + every unlabelled standing order every month counted as hidden savings): top 30% 1.93 → 2.44 months, 62% still under 3; bottom 20% 8.51 → 15.46 |
 | 6.12 | Not ruled out | Savings funded by money that never touches this bank |
+| 6.13 | Hold-out (`verify_deep.py` §2): random 50/50 account split, seeds 1–3, non-pensioners | All 6 halves: D1 cushion 8.8–9.9 · D10 1.6–1.7 · naive elasticity 0.25–0.26 · Spearman −0.67 to −0.70 · D10 under 3 months on real EI 91.5–94.7% |
+| 6.14 | Cash round-trips (§1a): cash deposit within 7 days and ±10% of a prior cash withdrawal | Share of cash deposits matched, mean by decile D1 0.5% → D10 3.6%. Removing them from income and spending: D1 9.1 · D10 1.7 · elasticity 0.28 · D10 real-EI 89.2% (vs 9.3 / 1.6 / 0.26 / 93.4% as published) |
+| 6.15 | Salary-like income (§1b): ≥ 50% / ≥ 80% of money in by bank transfer (n = 866 / 746) | D10 1.5 / 1.5 months · Spearman −0.77 / −0.80 · elasticity 0.39 / 0.42 · D10 real-EI 100% / 100%. Cash ≥ 80% (n = 2,894): D10 1.7, Spearman −0.56 |
+| 6.16 | Big cash withdrawals (§1c): ≥ 2× the account's median withdrawal | Median share of spending: D1 44.5% · D2–D8 19–27% · D9 36.5% · D10 40.9%. Present in ~40% of months for D10, amount variation 0.26, median day of month 14–16; share higher when no bills are recorded (D10 46% vs 37%). **Extreme upper bound** (one full year of them added to savings): bottom 20% 8.9 → 13.6 months, top 10% 1.6 → 7.3. Not ruled out |
+| 6.17 | Basic needs by income (`deep_topearners.py` §F), StatCan 11-10-0223-01, 2023: lowest 68.2% · 2nd 67.0% · 3rd 64.2% · 4th 64.0% · highest 60.6% · all 63.8% (matches 11-10-0222-01) | With the highest quintile's 60.6%: top 10% non-essential share 39.4%; cut half → 76.6% under 3 months (median 2.4); cut all → 37.5% (median 3.4) |
+| 6.18 | Seasonal stability (§5): population spending by calendar month, each year | Jan 1.57–1.70 · Feb 0.67–0.72 · Jun 1.45–1.52 · Dec 0.97–1.16. 2021–23 vs 2024–25 population pattern correlation 0.99; per-account pattern median correlation 0.55 (n = 2,119) |
 
 ---
 
@@ -525,6 +533,7 @@ Live at https://comfort-number.vercel.app (code in `web/`, engine in `web/src/li
 | `analysis/verify_formula.py` | Formula problems (4.1) | `output/customers_checks.csv` |
 | `analysis/explore_people.py`, `explore_places.py`, `explore_behaviour.py`, `explore_time.py`, `explore_followups.py` | Broad survey (sections 7–8) | `output/customers_explore.csv`, `customers_time.csv` |
 | `analysis/deep_plateau.py` | Thermostat, comfort number, elasticity, fragility gap | `output/customers_plateau.csv` |
+| `analysis/verify_deep.py` | Verification pass: hold-out, cash round-trips, salary-like income, big cash withdrawals, windfall set point, stricter thermostat null, seasonal stability (6.13–6.18, 5.4.7–5.4.8) | `output/verify_deep.txt` |
 | `analysis/deep_edge.py` | Edge, autopay, statement frequency | `output/customers_edge.csv` |
 | `analysis/stress_headline.py` | Stress tests (section 6) | printout |
 | `analysis/deep_topearners.py` | Top earners' spending, natural experiment, cuts, EI and scale sensitivity | printout |
@@ -553,4 +562,5 @@ Data and `output/` aren't in the repo (`transactions.csv` is over 100 MB). Loan 
 - Government of Canada, EI regular benefits (55%, $729/week maximum, $68,900 maximum insurable earnings, 2026): https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html
 - Statistics Canada, Table 14-10-0223-01, Employment and average weekly earnings (including overtime) for all employees, monthly, seasonally adjusted; Canada, industrial aggregate excluding unclassified businesses, August 2026 = $1,354.55/week (series v79311153; used only for the scale comparison): https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410022301
 - Statistics Canada, Table 11-10-0222-01, Household spending, Canada, 2023 (Survey of Household Spending): basic needs $48,600 of $76,146 total current consumption = 63.8%, used to protect essential spending in backup plans: https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1110022201
+- Statistics Canada, Table 11-10-0223-01, Household spending by household income quintile 2023 (highest quintile basic-needs share 60.6%, sensitivity check only): https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1110022301
 - Organizers' brief and data dictionary: `docs/CHALLENGE.md`

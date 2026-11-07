@@ -56,6 +56,12 @@ in months, not dollars.
 - The thermostat beats a shuffled-order null and appears in every income group, strongest at the top.
 - "They keep savings at another bank": even counting every dollar ever sent elsewhere as savings,
   top earners only reach 2.4 months.
+- **Hold-out:** split the accounts 50/50 at random (3 times); every half gives the same answer
+  (top 10% 1.6–1.7 months, bottom 10% 8.8–9.9).
+- **Windfalls drain back:** six months after a windfall, accounts keep 45% of it (top earners 29%);
+  with no set point they'd keep all of it.
+- Not ruled out: cash withdrawn and saved at home. Big cash withdrawals look like rent/bills paid in
+  cash, but we can't follow cash (FINDINGS 2.1).
 
 Details and limits: [FINDINGS.md](FINDINGS.md) sections 2 and 4.
 
@@ -84,5 +90,6 @@ cd web && npm install && npm run verify && npm run dev   # http://localhost:3000
   dates shifted to 2020–2025 and amounts in CAD.
 - **Statistics Canada**, Table 14-10-0223-01, average weekly earnings (Aug 2026), used only to compare our customers' incomes with Canada's: https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410022301
 - **Statistics Canada**, Table 11-10-0222-01, Household spending 2023: basic needs are 63.8% of household spending; the app never cuts this share in backup plans: https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1110022201
+- **Statistics Canada**, Table 11-10-0223-01, Household spending by household income quintile 2023 (highest quintile basic-needs share 60.6%, sensitivity check only): https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1110022301
 - **Government of Canada**, EI regular benefits (55% rate, $729/week maximum in 2026):
   https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html

@@ -128,3 +128,15 @@ for cut in [0, 0.5, 1.0]:
     print(f"  cut {int(cut * 100):3d}% of non-essential: top 10% under 3 months {pct((r[top] < 3).mean())}, median runway {np.median(r[top]):.1f}")
 need = ((t.S - (t.B / 3 + ei)) / non_ess.replace(0, np.nan)).clip(lower=0)
 print(f"  median cut of non-essential needed for 3 months: {need[top].median():.2f}; possible (<=100%) for {pct((need[top] <= 1).mean())}")
+
+# ------------------------------------------------------------------ F
+head("F. Sensitivity: basic-needs share of the HIGHEST income quintile (richer households spend less on basics)")
+# StatCan Table 11-10-0223-01 (by before-tax income quintile), 2023, Canada, same five categories:
+# highest quintile $74,235 of $122,479 = 60.6%; lowest 68.2%; all quintiles 63.8% (matches 11-10-0222-01).
+TOP_Q_SHARE = 74235 / 122479
+floor_q = np.maximum(t.F, TOP_Q_SHARE * t.S)
+non_q = (t.S - floor_q).clip(lower=0)
+print(f"top 10% non-essential share of spending (median): {(non_q / t.S)[top].median():.3f}")
+for cut in [0, 0.5, 1.0]:
+    r = runway(t.B.values, (t.S - cut * non_q - ei).values)
+    print(f"  cut {int(cut * 100):3d}% of non-essential: top 10% under 3 months {pct((r[top] < 3).mean())}, median runway {np.median(r[top]):.1f}")

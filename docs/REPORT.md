@@ -320,6 +320,29 @@ this pattern, so we built a comparison: shuffle the order of each account's mont
 the same amounts) and measure again. Real data: correlation −0.30. Shuffled: about −0.20. The real
 pull back toward the usual level is clearly stronger than chance.
 
+*A stricter version (verification pass):* the −0.20 in the shuffled data happens because "usual"
+was the account's whole-history median, which quietly uses the future. Measuring "usual" from the
+previous 6 months only fixes that: shuffled data drops to −0.01, real data stays at −0.23. One
+honest caveat: the pull is fast. If we skip a month, it's only −0.07, so part of the one-month
+effect may be timing (cash deposited at the end of one month and spent early the next).
+
+### 7.2a The cleanest proof: windfalls drain back
+Correlations can be argued with, so we ran a direct test. We found 5,747 "windfall" months (net
+inflow of at least one month's usual income, typically 2.8×, almost all cash deposits; loans are
+not paid into the account) and tracked how much was still there later.
+
+| Share of the windfall still in the account | after 1 month | 3 months | 6 months |
+| --- | ---: | ---: | ---: |
+| Bottom 20% of earners | 79% | 65% | 67% |
+| Top 20% of earners | 43% | 24% | 29% |
+| Everyone | 62% | 44% | 45% |
+| If there were no set point (same account's own flows, random order) | 100% | 108% | 115% |
+
+Without a set point the windfall would stay and keep growing. Instead more than half drains away
+within 3 months and then levels off: the balance settles back near its old level. Top earners
+spend about three of every four windfall dollars within 3 months. This is the mechanism, measured
+a second, independent way.
+
 *It's strongest for top earners:* when their balance is far above usual, the top 20% of earners
 spend down two-thirds of a month's income the next month (−66%), vs −27% for the bottom 20%.
 
@@ -355,6 +378,11 @@ spend down two-thirds of a month's income the next month (−66%), vs −27% for
 | 1,000 random resamples | "It's luck" | Top 10%: 1.63 months (1.56–1.69) vs bottom 10%: 9.03 (8.75–9.50) |
 | Savings at another bank | The obvious banker's objection | Even counting every dollar ever sent to another bank as savings, top earners only go from 1.9 to 2.4 months, and 62% stay under 3 months |
 | Currency scale | "Amounts are inflated" | Halving every amount, 81% of top earners still run out; the months-saved gap is identical at any scale |
+| Hold-out (split accounts 50/50 at random, 3 times) | "You tried lots of angles and found noise" | All 6 halves: top 10% 1.6–1.7 months, bottom 10% 8.8–9.9, elasticity 0.25–0.26, 92–95% run out on real EI |
+| Cash re-deposits | "Income is inflated by people withdrawing and re-depositing cash" | Only 0.5–3.6% of deposits look like re-deposits; removing them changes nothing that matters (1.6 → 1.7 months) |
+| Salary-like income only (≥80% arrives by transfer) | "Cash deposits aren't real income" | The effect gets *stronger*: Spearman −0.80, top 10% 1.5 months |
+| Basic needs for the richest households (StatCan 60.6% vs 63.8%) | "Rich people spend less on basics" | Cutting all non-essential: 37.5% still run out instead of 43% |
+| Seasonal pattern by year | "The timing finding is overfit" | Same pattern every year (January 1.6×, June 1.5×, February 0.7×); correlation between 2021–23 and 2024–25: 0.99 |
 
 ### 7.6 Supporting findings (used in the product)
 - **Layoff timing matters.** Median runway by the month the layoff starts: January 6.1 months
@@ -400,6 +428,10 @@ original, and the sample is small.
 5. No household size: a high income may support more people, which would make high earners' real
    cushion even thinner per person.
 6. We can't see what cash was spent on; the backup plan uses a Canadian national average.
+   About 41% of top earners' spending is big cash withdrawals. They look like rent or bills paid in
+   cash (they recur at similar amounts, mid-month, more often when no bills are recorded), but we
+   can't prove none of it was saved at home. In the extreme case where a full year of them was
+   saved, top earners would hold 7.3 months. This is the biggest limit, and we say it plainly.
 7. Some groups are small (117 edge customers, 76 loan defaults).
 
 ---
@@ -422,14 +454,21 @@ income raises savings just 22%, even after correcting for measurement noise. And
 the thermostat. Money above a customer's usual balance is spent the next month.
 
 **"How do you know the thermostat isn't a statistical artifact?"**
-Comparing to a median creates some of the pattern automatically, so we tested against a shuffled
-version of each account's history. Real: −0.30. Shuffled: about −0.20. The real effect is clearly
-stronger, and it appears in every income group.
+Two ways. First, a correlation measured carefully: comparing each balance only to its *previous* 6
+months, shuffled data shows nothing (−0.01) and the real data shows −0.23. Second, a direct test:
+after a windfall, accounts keep only 45% of it six months later, while with no set point they'd
+keep all of it. Top earners keep 29%. Two different methods, same answer.
+
+**"You tested a lot of things. Isn't one of them bound to look significant?"**
+We split the accounts 50/50 at random, three times, and re-ran the headline on each half. All six
+halves give the same answer: top earners 1.6–1.7 months, bottom earners 8.8–9.9.
 
 **"Maybe high earners keep their savings at another bank."**
 We tested the worst case: counting every dollar ever sent to another bank as savings that were
 never spent. Top earners only go from 1.9 to 2.4 months, and 62% stay under 3 months. What we can't
 see is money that never touches this bank, and we say so.
+(If pushed on cash: big cash withdrawals look like rent/bills paid in cash, but we can't follow
+cash, so it's our stated biggest limit. See Part 8.)
 
 **"This is old Czech data. Does it apply to Canadians?"**
 The exact amounts don't. The pattern holds whether we halve or increase every amount, and a comfort
@@ -527,4 +566,6 @@ of this dataset, so it wouldn't be original. We focused on something new.
   https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410022301
 - Statistics Canada, Table 11-10-0222-01, Household spending 2023 (basic needs 63.8%):
   https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1110022201
+- Statistics Canada, Table 11-10-0223-01, Household spending by income quintile 2023 (highest
+  quintile 60.6%, sensitivity check only): https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1110022301
 - Organizers' brief and data dictionary: `docs/CHALLENGE.md`

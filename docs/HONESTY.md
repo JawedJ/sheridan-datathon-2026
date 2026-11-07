@@ -102,7 +102,10 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | # | Claim | Status |
 | --- | --- | --- |
 | F1 | 11.1 vs 1.6 months; 93% "if nothing changes"; ×1.22 | ✅ Stated as non-pensioners on the page |
-| F2 | Thermostat ("money above it gets spent") | Observational. We show balances are pulled back; we don't prove *why* (REFERENCE 11.4) |
+| F2 | Thermostat ("money above it gets spent") | Observational. We show balances are pulled back; we don't prove *why* (REFERENCE 11.4). Verified Nov 7: with a backward-only baseline the null is −0.01 vs real −0.23, but the effect is mostly within one month (skip a month: −0.07), so part may be deposit timing. The windfall test (FINDINGS 1.2a) is the stronger evidence; say "pulled back", don't quote −0.30 as the whole effect |
+| F7 | Windfalls drain back (45% kept after 6 months vs 115% null; top 20% keep 29%) | Observed, with a null. Windfalls = net inflow ≥ 1× usual income, 97% cash deposits |
+| F8 | Hidden cash savings | **Stated limit.** 41% of top-10% spending is big cash withdrawals; they look like rent/bills paid in cash, but if a full year of them were saved the top 10% would hold 7.3 months. Say this if asked; don't claim it's ruled out |
+| F9 | 43% still run out after cutting all non-essentials | Uses the national-average basic-needs share. With the highest quintile's share (60.6%) it's 37.5%. Either is fine to say; 43% is the conservative one the app uses |
 | F3 | Layoff timing chart | Subset: 3,547 non-pensioners whose savings run out within 10 years for every start month; seasonal factors per M2 |
 | F4 | "4,500 real bank customers" headline | **Removed** from the engine page (team decision: judges know the dataset). The findings page still states the source |
 | F5 | "Under real EI rules" in the pitch | Fine: deposits are the only income measure in the data and the judges' own definition |

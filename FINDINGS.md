@@ -46,7 +46,8 @@ people their cushion in months, not dollars.
 
 **Is it non-obvious?** Partly. A team doing a broad survey could find the income table, and the EI
 cap effect follows from the rules. What's harder to reproduce is the measured mechanism (D1, tested
-against a shuffled-order null), the per-customer comfort number, and the robustness in section 2.
+against a shuffled-order null; D9, windfalls drain back to the old level), the per-customer comfort
+number, and the robustness in section 2 (including a 50/50 hold-out, section 2.1).
 
 ### 1.1 Higher earners hold fewer months of cushion [4.1]
 Savings don't keep pace with income. Every step up the income ladder holds *fewer* months of cushion.
@@ -82,6 +83,35 @@ below it, they tighten up. That would make balances plateau.
 - Balance-above-usual vs next month's net flow: Spearman −0.30 over 166,875 account-months. A
   shuffled-order null gives about −0.20 (some negative correlation is automatic). The real
   pull back to the target is clearly stronger than chance.
+- **Stronger test (verify_deep.py §4):** the −0.20 null exists because "usual" was the account's
+  *whole-history* median, which peeks at the future. Measuring "usual" from the **previous 6 months
+  only** removes that: the shuffled null drops to **−0.01**, the real data stays at **−0.23**.
+  Caveat: the pull is fast. Skipping a month (balance now vs net flow in 2 months) it is only
+  −0.07, so part of the one-month effect may be timing (cash deposited late in a month, spent early
+  the next). Controlling for this month's own flow it is still −0.17.
+- **Cleanest evidence, the windfall test [D9]:** see 1.2a.
+
+### 1.2a Windfalls drain back to the old level, fastest for top earners [D9]
+Test of the set point that doesn't depend on correlations: find months where net inflow was at
+least one month of usual income (5,747 windfalls in 1,358 non-pensioner accounts; 97% cash
+deposits, median 2.8× usual income; loans are not credited to the account, so they aren't loans),
+then measure how much of the windfall is still in the account later.
+
+| Share of the windfall still there | +1 month | +3 months | +6 months |
+| --- | ---: | ---: | ---: |
+| Bottom 20% of earners | 79% | 65% | 67% |
+| Middle | 57% | 43% | 41% |
+| **Top 20% of earners** | 43% | **24%** | **29%** |
+| All | 62% | 44% | 45% |
+| Null: same account, its own flows in random order | 100% | 108% | 115% |
+
+- Without a set point, a windfall would stay (and the account's normal surplus would add to it):
+  the null keeps 108–115%. Real accounts keep 45%, and 43% of windfalls are mostly gone (<25%
+  kept) within 6 months.
+- It stops falling after month 3 (44% → 45%): the balance settles at a new, slightly higher level,
+  which is what a set point predicts.
+- Top earners spend ~3 of every 4 windfall dollars within 3 months; the bottom 20% keep two-thirds.
+  Same gradient as the headline, measured a completely different way.
 - 94% of accounts individually show the pull-back.
 - **How the money leaves:** when the balance is high, the next month brings a big cash withdrawal.
   Spending, not transfers to other banks (those are about 0% for almost everyone).
@@ -153,6 +183,7 @@ is non-essential. This is the same rule the app's backup plan uses.
 - Only **36%** of a top earner's spending is non-essential (median).
 - Cut half of it → **78.7%** still run out within 3 months (median runway 2.4 months).
 - Cut all of it → **42.8%** still run out (median runway 3.2 months).
+- Sensitivity: using the *highest income quintile's* basic-needs share (60.6%, StatCan Table 11-10-0223-01) instead of the national average, cut half → 76.6%, cut all → **37.5%** (`deep_topearners.py` §F). The app keeps the national average; the conclusion doesn't change.
 - The median top earner would need to cut **91%** of their non-essential spending to reach 3 months;
   it's possible at all for 57% of them.
 
@@ -196,6 +227,21 @@ buffer grows only about 22% when income doubles.
 
 What this can't rule out: savings funded from income that never touches this bank (cash kept at
 home, a second job paid elsewhere). The data can't see that, and we say so (section 4.3).
+
+### 2.1 Verification pass (Nov 7, `analysis/verify_deep.py`, output in `output/verify_deep.txt`)
+Non-pensioners (n = 3,760). "As published": cushion D1 9.3 → D10 1.6 months, elasticity 0.26
+(uncorrected), Spearman −0.68, top 10% under 3 months on real EI 93.4%.
+
+| Check | Worry | Result | Verdict |
+| --- | --- | --- | --- |
+| **Hold-out** (random 50/50 split of accounts, 3 seeds, 6 halves) | We tried many angles; maybe we found noise | Every half: D10 1.6–1.7 months, D1 8.8–9.9, elasticity 0.25–0.26, Spearman −0.67 to −0.70, EI-cap 91.5–94.7% | **Holds** |
+| **Cash round-tripping** (deposit within 7 days and 10% of a recent withdrawal) | 99% of income is cash deposits. If top earners withdraw and re-deposit, "income" and "spending" are both inflated and the cushion ratio falls mechanically | Only 0.5% (bottom) to 3.6% (top) of deposits look like re-deposits. Removing them: D10 1.6 → 1.7, EI-cap 93% → 89% | **Holds** |
+| **Salary-like income only** (≥80% of money in arrives by bank transfer, n = 746) | Cash deposits may not be real income | Effect is *stronger*: Spearman −0.80, D10 1.5 months, every top-10% account under 3 months | **Holds, stronger** |
+| **Big cash withdrawals** (≥2× the account's usual one) | Cash leaving the bank could be saved at home | 41% of top-10% spending is big withdrawals (bottom 10%: 45%; middle ~20–25%). They recur (in ~40% of months), at similar amounts (variation 26%), mid-month, and more where bills aren't recorded: they look like rent/bills paid in cash. **Extreme upper bound:** if a full year of them had been saved, top 10% would hold 7.3 months | **Can't rule out; stated limit** |
+| **Windfall set point** (1.2a) | The thermostat might be a correlation artifact | Windfalls drain back (45% kept vs 115% null); top 20% keep 24–29% | **Holds; best mechanism evidence** |
+| **Thermostat, backward-looking baseline** (1.2) | The −0.20 null shows the measure is biased | Proper null −0.01, real −0.23; but only −0.07 if we skip a month | **Real but fast; partly timing** |
+| **Basic needs by income** (StatCan 11-10-0223-01, highest quintile 60.6% vs average 63.8%) | Richer households spend less of their budget on basics | Cut all non-essential: 42.8% → 37.5% still under 3 months; cut half: 78.7% → 76.6% | **Holds; 43% slightly pessimistic** |
+| **Seasonal pattern** (timing finding 3.1/3.3) | Seasonal factors might be overfit | Population pattern identical every year (Jan 1.57–1.70×, Jun 1.45–1.52×, Feb ~0.70×); 2021–23 vs 2024–25 correlation 0.99. Per account it's noisier (0.55) | **Pattern holds; per-customer timing is a model** |
 
 ---
 
@@ -379,7 +425,8 @@ Each problem was tested against the data; the evidence is in `analysis/verify_fo
 - **It's 1990s Czech data**, dates shifted and amounts converted to CAD. It's a cash economy (76% of spending is cash), unlike Canada today. The *pattern* (a comfort level in dollars) is what we claim, not the exact numbers.
 - **We only see one bank.** Savings funded from money that never touches this account can't be ruled out. The upper bound in 4D shows that money which *does* leave this bank can't explain it.
 - **"Money in" is deposits, not salary**, so EI amounts are approximate (and the real cap makes this matter less for high earners).
-- **The comfort number is observed behaviour, not proven psychology.** We show balances get pulled back to a level; we can't prove *why*.
+- **The comfort number is observed behaviour, not proven psychology.** We show balances get pulled back to a level (and windfalls drain back, 1.2a); we can't prove *why*.
+- **We can't follow cash.** 41% of top earners' spending is big cash withdrawals. They look like rent/bills paid in cash (recurring, similar amounts, mid-month), but if they were saved at home the headline would weaken (extreme upper bound: 7.3 months; section 2.1).
 - **Correlation, not cause**, for warning signs too (autopay is likely a marker of steady income).
 - **No household size.** A high income may support more people, which would make high earners' real cushion even thinner per person.
 - **Small groups for some findings:** 117 edge customers, 76 loan defaults.
@@ -557,7 +604,8 @@ One correction: most of statement frequency's apparent fragility was just income
 | `analysis/deep_plateau.py` | Comfort-number test, buffer elasticity, fragility gap [D1, D2] → `output/customers_plateau.csv` |
 | `analysis/deep_edge.py` | Edge group, autopay, statement frequency [D3–D5] → `output/customers_edge.csv` |
 | `analysis/stress_headline.py` | Stress test + savings-elsewhere check (section 2) |
-| `analysis/deep_topearners.py` | Why top earners run out: spending mix, income-drop natural experiment, cuts needed, EI-cap and scale sensitivity [D8] |
+| `analysis/deep_topearners.py` | Why top earners run out: spending mix, income-drop natural experiment, cuts needed, EI-cap and scale sensitivity, basic needs by income quintile [D8] |
+| `analysis/verify_deep.py` | Verification pass: hold-out, cash round-trips, salary-like income, big cash withdrawals, windfall set point [D9], stronger thermostat null, seasonal stability (section 2.1) → `output/verify_deep.txt` |
 | `build_engine_data.py` | App data (`web/public/engine.json`), judges' test fixture, layoff-timing simulation [D6] |
 | `web/` | The app (Next.js): engine, findings page, Gemini plan wording. `npm run verify` checks it against the judges' formulas |
 | `build_chart_data.py` | Chart data → `charts/charts.js` and `web/public/findings.json` |
@@ -567,7 +615,8 @@ Run order (from the repo root, with `.venv`):
 ```
 python build_customer_table.py
 cd analysis && python verify_formula.py && python explore_behaviour.py && python explore_time.py \
-  && python deep_plateau.py && python deep_edge.py && python stress_headline.py && cd ..
+  && python deep_plateau.py && python deep_edge.py && python stress_headline.py \
+  && python deep_topearners.py && python verify_deep.py && cd ..
 python build_engine_data.py && python build_chart_data.py
 cd web && npm install && npm run verify && npm run dev
 ```
@@ -579,5 +628,6 @@ accounts and 5 standard shocks (49,500 checks, `npm run verify`).
 ## Sources
 - PKDD'99 Discovery Challenge Financial dataset, CTU Prague: https://relational.fel.cvut.cz/dataset/Financial
 - Statistics Canada, Table 11-10-0222-01, Household spending 2023 (basic-needs share 63.8%, used in backup plans): https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1110022201
+- Statistics Canada, Table 11-10-0223-01, Household spending by household income quintile 2023 (highest quintile basic-needs share 60.6%, sensitivity check only): https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1110022301
 - Statistics Canada, Table 14-10-0223-01, average weekly earnings, August 2026 (scale comparison only): https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410022301
 - EI benefit rate and 2026 maximum: https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html

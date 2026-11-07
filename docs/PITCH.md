@@ -99,8 +99,9 @@ The judge picks an `account_id` and reads a twist card. Run it in this order eve
 
 **"How is the comfort number calculated?"**
 > The median month-end balance after the first three months of the account. Balances above it are
-> followed by net spending the next month, below it by net saving. We checked that this pull is
-> stronger than chance with a shuffled-order test.
+> followed by net spending the next month, below it by net saving. The cleanest proof: after a
+> windfall, accounts keep only 45% of it six months later (top earners 29%). With no comfort number
+> they'd keep all of it.
 
 **"How robust is it?"**
 > It holds in all 8 regions, every account age, both genders, couples and singles, every year
