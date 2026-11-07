@@ -39,7 +39,7 @@ questions for the team.
 | # | Track | Requirement | Status |
 | --- | --- | --- | --- |
 | T1 | Best Data Visualization & Storytelling | Judged on the story and charts | ✅ Findings page + charts |
-| T2 | **[MLH] Best Use of Gemini API** | Build with the Gemini API | ✅ **Live.** `GEMINI_API_KEY` and `GEMINI_MODEL=gemini-3.5-flash` set in Vercel; "Write it for the customer" returns Gemini text (verified, source = gemini). Template fallback kept for reliability |
+| T2 | **[MLH] Best Use of Gemini API** | Build with the Gemini API | ✅ **Live.** `GEMINI_API_KEY` and `GEMINI_MODEL=gemini-3.5-flash` set in Vercel; "Write it for the customer" returns Gemini text (verified, source = gemini). Template fallback kept for reliability. **Note:** the free-tier key hit its quota (429) on Nov 7, so the app was showing the template; needs billing or a fresh key before judging |
 
 ---
 
@@ -90,7 +90,8 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | P3 | "Plus half of each June and December bonus" | ASSUMPTION (half) |
 | P4 | Backup: target = max(3 months, shock length). Protected spending = max(labelled bills+insurance+loans, 63.8% of S); the rest is "non-essential"; cut needed = share of non-essential. 63.8% = Canadian basic-needs share (food from stores, main home, transportation, health care, clothing: $48,600 of $76,146), Statistics Canada Survey of Household Spending 2023, Table 11-10-0222-01 | DERIVED + sourced ESTIMATE (a national average applied to each customer) |
 | P5 | **Fixed.** Before: flexible = everything except labelled bills, so plans said e.g. "cut 97%" (71293). Now basic needs are protected (P4); if cutting all non-essential spending isn't enough, the app says so and shows the best it can do (71293: 4.3 months, needs extra income). Old note: for cash-bill customers that included their rent | ⚠️ Can produce unrealistic advice, e.g. "cut 97% of flexible spending" (account 71293, EI + rent 15%). We now add a note for cash-bill customers. **DECIDE:** say "not realistic" above some cut (e.g. 50%)? |
-| P6 | "The plan, written for the customer": Gemini (if a key is set) or a template, given only our computed numbers | Wording only; label says which wrote it |
+| P6 | Plan text (top of the plan section, written automatically once a scenario runs): template instantly, then Gemini given only our computed numbers. Gemini's reply is rejected unless it finished cleanly and is a plain letter; when backup cuts can't reach the target, it's sent the all-cuts amount and told not to call any cut sufficient | Wording only; a note says which wording is showing |
+| P7 | "What the plan changes" tiles and chart: no plan / backup cuts during the shock / start with 3 months saved / both | DERIVED projections from the same formulas; chart adds seasonal spending (labelled "projection") |
 
 ### 2.6 Plain-words scenario box
 | # | What | Type |
@@ -109,6 +110,7 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | F3 | Layoff timing chart | Subset: 3,547 non-pensioners whose savings run out within 10 years for every start month; seasonal factors per M2 |
 | F4 | "4,500 real bank customers" headline | **Removed** from the engine page (team decision: judges know the dataset). The findings page still states the source |
 | F5 | "Under real EI rules" in the pitch | Fine: deposits are the only income measure in the data and the judges' own definition |
+| F10 | Findings page accuracy notes | Each chart now has "How accurate is this, and what it doesn't say", plus a "How sure are we?" table and "What we can't rule out" list |
 | F6 | "88% flexible; cutting half brings 93% → 30%" | **Fixed.** Replaced everywhere with the basic-needs-protected numbers: 36% non-essential; cut half → 79% still run out; cut all → 43% |
 
 ---

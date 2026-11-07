@@ -191,3 +191,75 @@ export function GapLines({ cats, sub, kept, needed, fmt, tipFor }: {
     </div>
   );
 }
+
+// ------------------------------------------------------------- several lines over months (plan impact)
+export type Line = { name: string; color: string; values: number[]; dash?: boolean };
+
+export function MultiLine({ labels, lines, fmt, shade, target, height = 280, ariaLabel }: {
+  labels: string[]; lines: Line[]; fmt: (v: number) => string;
+  shade?: { to: number; label: string }; target?: { value: number; label: string };
+  height?: number; ariaLabel: string;
+}) {
+  const H = height, L = 70, R = 118, T = 16, B = 34, iw = W - L - R, ih = H - T - B;
+  const { ref, tip, show, hide } = useTip();
+  const [hover, setHover] = useState<number | null>(null);
+  const n = labels.length - 1;
+  const vals = lines.flatMap(l => l.values).concat(target ? [target.value] : []);
+  const ticks = niceTicks(Math.min(0, ...vals), Math.max(1, ...vals));
+  const lo = ticks[0], hi = ticks.at(-1)!;
+  const X = (k: number) => L + (k / Math.max(1, n)) * iw, Y = (v: number) => T + ((hi - v) / (hi - lo)) * ih;
+  const step = Math.max(1, Math.ceil(n / 8));
+  // end labels, nudged apart so they don't overlap
+  const ends = lines.map((l, i) => ({ i, y: Y(l.values[n]) })).sort((a, b) => a.y - b.y);
+  for (let j = 1; j < ends.length; j++) if (ends[j].y - ends[j - 1].y < 15) ends[j].y = ends[j - 1].y + 15;
+  return (
+    <div className="chart-wrap" ref={ref}>
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={ariaLabel}>
+        {ticks.map(v => (
+          <g key={v}>
+            <line x1={L} x2={L + iw} y1={Y(v)} y2={Y(v)} stroke={v === 0 ? "var(--axis)" : "var(--grid)"} strokeWidth={v === 0 ? 1.25 : 1} />
+            <text x={L - 8} y={Y(v) + 4} textAnchor="end">{fmt(v)}</text>
+          </g>
+        ))}
+        {shade && shade.to > 0 && (
+          <>
+            <rect x={X(0)} y={T} width={Math.max(0, X(Math.min(shade.to, n)) - X(0))} height={ih} fill="var(--series-1)" opacity={0.07} />
+            <text x={X(Math.min(shade.to, n)) - 6} y={T + 14} textAnchor="end">{shade.label}</text>
+          </>
+        )}
+        {target && (
+          <>
+            <line x1={L} x2={L + iw} y1={Y(target.value)} y2={Y(target.value)} stroke="var(--good)" strokeDasharray="5 4" strokeWidth={1.5} />
+            <text x={L + 6} y={Y(target.value) - 6} style={{ fill: "var(--good)" }}>{target.label}</text>
+          </>
+        )}
+        {labels.map((lab, k) => (k % step === 0 || k === n) && (
+          <text key={k} x={X(k)} y={H - 12} textAnchor="middle">{lab}</text>
+        ))}
+        {lines.map(l => (
+          <path key={l.name} d={l.values.map((v, k) => `${k ? "L" : "M"}${X(k).toFixed(1)} ${Y(v).toFixed(1)}`).join("")}
+            fill="none" stroke={l.color} strokeWidth={2.25} strokeLinejoin="round" strokeDasharray={l.dash ? "6 5" : undefined} />
+        ))}
+        {ends.map(e => (
+          <text key={e.i} className="lab" x={L + iw + 8} y={e.y + 4} style={{ fontSize: 12 }}>{lines[e.i].name}</text>
+        ))}
+        {hover !== null && (
+          <>
+            <line x1={X(hover)} x2={X(hover)} y1={T} y2={T + ih} stroke="var(--axis)" />
+            {lines.map(l => <circle key={l.name} cx={X(hover)} cy={Y(l.values[hover])} r={4.5} fill={l.color} stroke="var(--surface)" strokeWidth={2} />)}
+          </>
+        )}
+        <rect x={L} y={T} width={iw} height={ih} fill="transparent"
+          onMouseMove={e => {
+            const r = (e.currentTarget.ownerSVGElement as SVGSVGElement).getBoundingClientRect();
+            const x = ((e.clientX - r.left) * W) / r.width;
+            const k = Math.max(0, Math.min(n, Math.round(((x - L) / iw) * n)));
+            setHover(k);
+            show(X(k), T + 10, <><b>{labels[k]}</b>{lines.map(l => <span key={l.name}><br />{l.name}: <b>{fmt(l.values[k])}</b></span>)}</>);
+          }}
+          onMouseLeave={() => { setHover(null); hide(); }} />
+      </svg>
+      {tip && <div className="tip" style={{ left: tip.x, top: tip.y }}>{tip.html}</div>}
+    </div>
+  );
+}

@@ -194,10 +194,19 @@ shock hits, both based on their own numbers."*
 - Honest limit, stated in the app: 63.8% is a national average, not this customer's actual
   spending, and it comes from Canadian data while the customers are from a 1990s Czech bank.
 
-**"Write it for the customer."** The app can rewrite the plan in plain words using Google's Gemini
-model (gemini-3.5-flash). Gemini is only given the numbers the engine already calculated and is
-told not to compute or invent any. If Gemini is unavailable, a template using the same numbers is
-used, and the app says which one wrote it.
+**How the plan appears.** The plan section only shows once a scenario is run. It opens with the
+plan in plain words, written automatically: a template version appears instantly, then Google's
+Gemini (gemini-3.5-flash) rewords it about a second later. Gemini is only given the numbers the engine
+already calculated and is told not to compute or invent any. Its reply is only used if it finished
+cleanly and reads as a plain letter; otherwise (or if Google's quota is used up) the template stays, and
+a small note says which wording is showing.
+
+**What the plan changes (chart).** Four outcomes for the same scenario, as tiles and a 24-month
+balance chart: no plan; backup plan (cut the needed share of non-essential spending during the
+shock); goal plan first (start the shock with 3 months saved); both. Tiles use the same runway
+formula as everywhere else; the chart adds the customer's seasonal spending. For a high earner like
+71293 no single plan is enough (2.8 / 5.0 / 3.6 months against 6 needed), but both together are
+(6.3), which is the headline in one picture: build the cushion before the shock.
 
 ### 4.5 The plain-words scenario box
 Judges read a twist card; we type it in. A rule-based parser (not AI, so it's instant and works

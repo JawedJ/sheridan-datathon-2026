@@ -135,8 +135,13 @@ export function realWorld(c: Customer, s: Shock, eiMonthlyMax: number): Result {
 export type PathPoint = { k: number; month: number; balance: number; income: number; spending: number };
 
 /** Month-by-month balance with seasonal spending; income returns (with bonus months) after `duration`. */
-export function monthlyPath(c: Customer, s: Shock, real: Result, horizon = 24) {
-  let bal = real.bufferLeft;
+export function monthlyPath(c: Customer, s: Shock, real: Result, horizon = 24,
+  opts: { startBuffer?: number; cutDuringShock?: number } = {}) {
+  // startBuffer: savings before one-off costs (default: today's buffer). cutDuringShock: $/month less
+  // spending while the shock lasts (backup plan). Defaults reproduce the plain path exactly.
+  const oneOff = c.B - real.bufferLeft;
+  let bal = opts.startBuffer === undefined ? real.bufferLeft : opts.startBuffer - oneOff;
+  const cut = opts.cutDuringShock ?? 0;
   const pts: PathPoint[] = [{ k: 0, month: s.startMonth, balance: bal, income: 0, spending: 0 }];
   let runsOutAt: number | null = bal <= 0 ? 0 : null;
   let low = bal;
@@ -146,7 +151,7 @@ export function monthlyPath(c: Customer, s: Shock, real: Result, horizon = 24) {
     const shocked = k < s.duration;
     const bonus = !shocked && (m === 6 || m === 12) ? c.I * c.bonusPct : 0;
     const income = shocked ? real.income : c.I + bonus;
-    const spending = c.S * c.season[m - 1] + (shocked || s.incomePct === 100 ? extraBills : 0);
+    const spending = c.S * c.season[m - 1] + (shocked || s.incomePct === 100 ? extraBills : 0) - (shocked ? cut : 0);
     const next = bal + income - spending;
     if (runsOutAt === null && next < 0) runsOutAt = k + bal / (spending - income);
     bal = next;
