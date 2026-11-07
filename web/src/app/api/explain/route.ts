@@ -36,14 +36,16 @@ function template(s: Summary): string {
   return lines.join("\n\n");
 }
 
+export const maxDuration = 30;
+
 export async function POST(req: Request) {
   const s = (await req.json()) as Summary;
   const key = process.env.GEMINI_API_KEY;
   if (!key) return Response.json({ text: template(s), source: "template" });
 
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
   const prompt = `You are a friendly financial coach at a Canadian bank. Write a short plan (max 120 words, 3 short paragraphs, no headings, no bullet symbols) for this customer, speaking to them as "you".
-Use ONLY the numbers given below; do not compute new numbers or invent any. Amounts are monthly CAD unless stated.
+Use ONLY the numbers given below; do not compute new numbers or invent any. Amounts are monthly CAD unless stated; write them like $1,605. Write months like 7.8 months.
 Key idea to include: their balance settles at a "comfort number" and money above it tends to get spent; the fix is an automatic transfer into savings, not willpower.
 If a shock is given, say how long savings last under real rules and the cut needed. If real and standard runways differ, mention both briefly.
 
@@ -52,15 +54,16 @@ Data (JSON): ${JSON.stringify(s)}`;
     const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: "POST",
       headers: { "content-type": "application/json", "x-goog-api-key": key },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.4, maxOutputTokens: 400 } }),
-      signal: AbortSignal.timeout(12000),
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.4, maxOutputTokens: 2048 } }),
+      signal: AbortSignal.timeout(20000),
     });
-    if (!r.ok) throw new Error(`Gemini ${r.status}`);
+    if (!r.ok) throw new Error(`Gemini ${r.status}: ${(await r.text()).slice(0, 200)}`);
     const j = await r.json();
     const text: string | undefined = j?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("").trim();
     if (!text) throw new Error("empty");
     return Response.json({ text, source: "gemini" });
-  } catch {
+  } catch (err) {
+    console.error("explain: Gemini call failed, using template:", err instanceof Error ? err.message : err);
     return Response.json({ text: template(s), source: "template" });
   }
 }
