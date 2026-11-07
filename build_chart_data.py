@@ -1,6 +1,6 @@
 """Data for the headline charts -> charts/charts.js
 
-Run after build_app_data.py:  .venv/bin/python build_chart_data.py
+Run after build_engine_data.py:  .venv/bin/python build_chart_data.py
 All decile figures exclude pensioners (job loss doesn't apply to them), matching the stress test.
 """
 import json
@@ -72,4 +72,5 @@ out = {"deciles": deciles, "thermostat": thermo, "timing": timing_rows,
        "timing_n": int(timing.n.iloc[0]), "n_nonpension": int(len(t))}
 CHARTS.mkdir(exist_ok=True)
 (CHARTS / "charts.js").write_text("window.CHARTS = " + json.dumps(out, indent=1) + ";\n")
+(ROOT / "web" / "public" / "findings.json").write_text(json.dumps(out))
 print(json.dumps(out, indent=1))

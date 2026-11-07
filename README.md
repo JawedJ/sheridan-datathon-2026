@@ -18,6 +18,18 @@ level, they spend it back down the next month (top earners net −66% of a month
 automatically move money above a customer's comfort number into savings, and show their cushion
 in months, not dollars.
 
+## The app
+**Live: https://comfort-number.vercel.app**
+
+- **Engine:** enter any `account_id` and see the judges' numbers (income, spending, fixed costs,
+  buffer, runway) plus the customer's comfort number and cushion in months. Apply a shock (twist
+  cards or sliders for EI %, length, bills, one-off costs, start month) and compare the **official
+  formula** with **real-world rules** (EI maximum, pensions keep paying, cash-paid bills estimated).
+  Then get a goal plan (auto-transfer above the comfort number) and a backup plan (% of flexible
+  spending to cut). Gemini can rewrite the plan in plain words, using only the engine's numbers.
+- **Findings:** the four headline charts.
+- **Accuracy:** matches the judges' formulas exactly for all 4,500 accounts (`npm run verify`).
+
 ## What's in the repo
 | Path | What it is |
 | --- | --- |
@@ -29,7 +41,8 @@ in months, not dollars.
 | `docs/PITCH.md` | The 1-minute pitch, live-twist script, judge Q&A prep, demo video outline |
 | `docs/CHALLENGE.md` | The organizers' challenge brief and data dictionary |
 | `data/` | The provided dataset (not committed; add it locally) |
-| `app/` | Early throwaway prototype; the real app will be built separately |
+| `web/` | The app (Next.js on Vercel) |
+| `app/` | Early throwaway prototype |
 
 ## How we know it's real
 - Holds in all 8 regions, every account age, both genders, couples and singles, every year 2021–2025,
@@ -57,8 +70,8 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 cd analysis && ../.venv/bin/python verify_formula.py && ../.venv/bin/python explore_behaviour.py \
   && ../.venv/bin/python explore_time.py && ../.venv/bin/python deep_plateau.py \
   && ../.venv/bin/python deep_edge.py && ../.venv/bin/python stress_headline.py && cd ..
-.venv/bin/python build_app_data.py && .venv/bin/python build_chart_data.py
-python3 -m http.server 8766 --directory charts   # then open http://localhost:8766
+.venv/bin/python build_engine_data.py && .venv/bin/python build_chart_data.py
+cd web && npm install && npm run verify && npm run dev   # http://localhost:3000
 ```
 
 ## Data and sources

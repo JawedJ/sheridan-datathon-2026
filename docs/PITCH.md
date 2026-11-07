@@ -40,7 +40,7 @@ The judge picks an `account_id` and reads a twist card. Run it in this order eve
    - *If high income:* toggle the real EI cap. "Real EI maxes out at $729 a week, so actually it's M months."
    - *If they pay bills in cash ($0 household bills):* "The data can't see their bills, so a bills
      shock shows no change. Our estimate says it would cost them about Z."
-   - *If timing matters:* "And if this layoff hit in December instead of February, they'd have W fewer months."
+   - *If timing matters:* "And if this layoff hit in January instead of February, they'd have W fewer months." (Change "Shock starts in" to show it.)
 3. **The plan (≈60 s).**
    - **Goal plan:** "To reach 3 months of cushion they need $G more. Moving their comfort number up
      with an automatic transfer gets them there in T months."
@@ -112,11 +112,11 @@ The judge picks an `account_id` and reads a twist card. Run it in this order eve
 
 ---
 
-## 4. What the app needs for this pitch to work
+## 4. What the app needs for this pitch to work (all built: https://comfort-number.vercel.app)
 - Account lookup with the judges' five numbers, matching their answer key exactly.
 - **Comfort number**, and cushion shown in **months**.
 - Shock controls for every twist card, plus a **real EI cap** toggle next to the judges' number.
-- Shock **start month** (December vs February).
+- Shock **start month** (January vs February).
 - Goal plan (gap to 3 months, time to reach it with an auto-transfer) and backup plan (% of
   flexible spending to cut to reach 3 months).
 - Pensioner and $0-bills handling.

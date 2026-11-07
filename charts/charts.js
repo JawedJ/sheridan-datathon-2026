@@ -154,65 +154,65 @@ window.CHARTS = {
  "timing": [
   {
    "month": "Jan",
-   "runway": 7.45,
-   "worst_share": 18.0
+   "runway": 6.1,
+   "worst_share": 16.1
   },
   {
    "month": "Feb",
-   "runway": 9.2,
+   "runway": 7.8,
    "worst_share": 0.2
   },
   {
    "month": "Mar",
-   "runway": 8.4,
-   "worst_share": 4.2
+   "runway": 7.1,
+   "worst_share": 4.3
   },
   {
    "month": "Apr",
-   "runway": 8.2,
-   "worst_share": 6.0
+   "runway": 7.0,
+   "worst_share": 6.2
   },
   {
    "month": "May",
-   "runway": 7.7,
-   "worst_share": 10.1
+   "runway": 6.9,
+   "worst_share": 10.3
   },
   {
    "month": "Jun",
-   "runway": 7.2,
-   "worst_share": 18.7
+   "runway": 6.6,
+   "worst_share": 18.4
   },
   {
    "month": "Jul",
-   "runway": 8.2,
-   "worst_share": 1.5
+   "runway": 6.7,
+   "worst_share": 1.4
   },
   {
    "month": "Aug",
-   "runway": 8.3,
-   "worst_share": 3.6
+   "runway": 6.3,
+   "worst_share": 3.7
   },
   {
    "month": "Sep",
-   "runway": 8.3,
-   "worst_share": 4.6
+   "runway": 6.9,
+   "worst_share": 4.9
   },
   {
    "month": "Oct",
-   "runway": 8.1,
-   "worst_share": 6.8
+   "runway": 6.9,
+   "worst_share": 7.3
   },
   {
    "month": "Nov",
-   "runway": 7.5,
-   "worst_share": 8.8
+   "runway": 6.9,
+   "worst_share": 9.1
   },
   {
    "month": "Dec",
-   "runway": 6.9,
-   "worst_share": 17.7
+   "runway": 6.4,
+   "worst_share": 18.1
   }
  ],
- "timing_n": 4128,
+ "timing_n": 3547,
  "n_nonpension": 3760
 };

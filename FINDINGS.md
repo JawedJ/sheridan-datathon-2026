@@ -191,16 +191,17 @@ home, a second job paid elsewhere). The data can't see that, and we say so (sect
 ## 3. Supporting findings for the product
 These don't carry the headline, but they make the engine smarter and the advice more specific.
 
-### 3.1 When the shock hits changes runway by about 3 months [D6]
-Month-by-month simulation on EI 55% using each customer's own seasonal spending (blended 50/50 with
-everyone's pattern) and no bonuses while laid off:
-- **Best vs worst start month differs by 2.9 months** of runway for the median customer (4,128
-  customers with a finite runway).
-- Median runway by layoff month: **December 6.9**, June 7.2, January 7.4 … **February 9.2**.
-- The worst start month is December (17.7% of customers), January (18.0%) or June (18.7%) for
-  over half of all customers.
-- A January start lands within 0.5 months of the judges' formula (median), so the formula is
-  roughly a "typical month" answer that misses timing.
+### 3.1 When the shock hits changes runway by about 2.7 months [D6]
+Month-by-month simulation on EI (55% of I), with spending = S × each customer's seasonal factor
+(their own pattern blended 50/50 with everyone's) and no bonuses while laid off. This is the same
+model the app's balance chart uses (`build_engine_data.py`). Non-pensioners whose savings run out
+within 10 years for every start month (3,547 customers):
+- **Best vs worst start month differs by 2.7 months** of runway for the median customer.
+- Median runway by layoff month: **January 6.1** (worst), December 6.4, August 6.3, June 6.6 …
+  **February 7.8** (best).
+- A customer's worst start month is January, June or December for 52.6% of them (16.1%, 18.4%, 18.1%).
+- Earlier draft numbers (December 6.9 vs February 9.2) used a model based on average income and
+  spending; this version matches the judges' median-based definitions and the app.
 
 ### 3.2 Two bonus months a year, hidden by the median [4.2]
 - Money in jumps **+22% in June and +20% in December** (index vs the yearly average). That's driven by
@@ -546,8 +547,9 @@ One correction: most of statement frequency's apparent fragility was just income
 | `analysis/deep_edge.py` | Edge group, autopay, statement frequency [D3–D5] → `output/customers_edge.csv` |
 | `analysis/stress_headline.py` | Stress test + savings-elsewhere check (section 2) |
 | `analysis/deep_topearners.py` | Why top earners run out: spending mix, income-drop natural experiment, cuts needed, EI-cap and scale sensitivity [D8] |
-| `build_app_data.py` | Seasonal factors, bonus %, timing simulation [D6] → `output/timing_by_start_month.csv` (also writes data for the throwaway prototype in `app/`) |
-| `build_chart_data.py` | Chart data → `charts/charts.js` |
+| `build_engine_data.py` | App data (`web/public/engine.json`), judges' test fixture, layoff-timing simulation [D6] |
+| `web/` | The app (Next.js): engine, findings page, Gemini plan wording. `npm run verify` checks it against the judges' formulas |
+| `build_chart_data.py` | Chart data → `charts/charts.js` and `web/public/findings.json` |
 | `charts/index.html` | The four headline charts |
 
 Run order (from the repo root, with `.venv`):
@@ -555,12 +557,13 @@ Run order (from the repo root, with `.venv`):
 python build_customer_table.py
 cd analysis && python verify_formula.py && python explore_behaviour.py && python explore_time.py \
   && python deep_plateau.py && python deep_edge.py && python stress_headline.py && cd ..
-python build_app_data.py && python build_chart_data.py
+python build_engine_data.py && python build_chart_data.py
+cd web && npm install && npm run verify && npm run dev
 ```
-`app/` holds an early throwaway prototype; the real app will be built separately.
+The app lives in `web/` and is deployed at https://comfort-number.vercel.app. `app/` and `build_app_data.py` are an early throwaway prototype.
 
-Verification: account 20111 and 4 random accounts match an independent pure-Python recompute of
-the judges' formulas exactly.
+Verification: the app's engine matches the judges' formulas computed in Python exactly, for all 4,500
+accounts and 5 standard shocks (49,500 checks, `npm run verify`).
 
 ## Sources
 - PKDD'99 Discovery Challenge Financial dataset, CTU Prague: https://relational.fel.cvut.cz/dataset/Financial
