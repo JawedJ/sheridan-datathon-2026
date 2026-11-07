@@ -411,7 +411,7 @@ Each problem was tested against the data; the evidence is in `analysis/verify_fo
 | Zero median income | 14 | Kept; excluded from log-based elasticity (log 0 undefined) | stress test |
 | Income under $500/month | 118 | Kept; flagged as special cases for plans | 3.6 |
 | Pensioners (pension ≥ 50% of income) | 740 | Excluded from fragility rankings and elasticity; the engine should keep their pension during a job-loss shock | 3.3, 4D |
-| $0 labelled household bills | 1,225 | Judges' rule leaves them at $0; not estimated (the app states the limitation) | 3.4 |
+| $0 labelled household bills | 1,225 | Judges' rule leaves them at $0; not estimated (the app states the limitation). Very unlikely to truly have no bills: they spend as much as everyone else ($7,875 vs $7,238/mo), 96% of it as cash (vs 68%), while customers with bills pay a median $2,148/mo (40% of spending). 162 of them have a household-bills standing order, and 158 of those pay that exact amount every month by an **unlabelled** transfer: bills that are in the data but not tagged. The rest most likely pay bills in cash. `verify_deep.py` §6 | 3.4, 2.1 |
 | First 3 months of each account ("fill-up" from $0) | all | Excluded from comfort-number, split-half and year-by-year analysis | D1, 4D |
 | Partial first year (2020 opening wave) | — | Year-by-year test starts at 2021 and uses only full 12-month account-years | 4D |
 | Median income vs median spending from different months | 1,181 show a shortfall (97.5% of them false) | Report judges' number as-is; month-by-month view uses real averages | 3.1 |

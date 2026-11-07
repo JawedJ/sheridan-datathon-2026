@@ -217,3 +217,25 @@ pop_e, pop_l = early.mean(), late.mean()
 print(f"population pattern, 2021-23 vs 2024-25: correlation {np.corrcoef(pop_e, pop_l)[0, 1]:.2f}")
 tm = pd.read_csv(OUT / "timing_by_start_month.csv")
 print("published timing medians:", dict(zip(tm.start_month, tm.median_runway)))
+
+# ------------------------------------------------------------------ 6
+head("6. Customers with $0 recorded household bills: no bills, or bills we can't see?")
+zero = set(t.index[t.H == 0])
+so = pd.read_csv(DATA / "standing_orders.csv")
+tot = ms.groupby("account_id")[["household_bills", "cash_withdrawals_genuine", "money_out"]].sum()
+x = t.join(tot)
+x["zero"] = x.index.isin(zero)
+print("n:", x.zero.value_counts().to_dict())
+print("ever paid a labelled bill:", x.groupby("zero").apply(lambda d: (d.household_bills > 0).mean(), include_groups=False).round(3).to_dict())
+print("median monthly spending:", x.groupby("zero").S.median().round().to_dict())
+print("cash share of all spending:", (x.groupby("zero").cash_withdrawals_genuine.sum() / x.groupby("zero").money_out.sum()).round(3).to_dict())
+print("median owner age:", x.groupby("zero").owner_age.median().round(1).to_dict())
+withb = x[~x.zero]
+print(f"customers WITH bills: median ${withb.H.median():,.0f}/mo = {(withb.H / withb.S).median():.0%} of their spending")
+sb = so[(so.purpose == "household bills") & so.account_id.isin(zero)]
+txo = pd.read_csv(DATA / "transactions.csv", usecols=["account_id", "operation", "amount"], low_memory=False)
+txo = txo[txo.account_id.isin(sb.account_id) & txo.operation.isin(["transfer out to another bank", "bill payment"])]
+mm = txo.merge(sb[["account_id", "amount"]].rename(columns={"amount": "so_amt"}), on="account_id")
+paid = mm[(mm.amount - mm.so_amt).abs() <= 0.01 * mm.so_amt].account_id.nunique()
+print(f"$0-bill customers with a household-bills standing order: {sb.account_id.nunique()}; "
+      f"of them, paying that exact amount by unlabelled transfer: {paid}")
