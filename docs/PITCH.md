@@ -45,7 +45,7 @@ The judge picks an `account_id` and reads a twist card. Run it in this order eve
 3. **The plan (≈60 s).**
    - **Goal plan:** "To reach 3 months of cushion they need $G more. Moving their comfort number up
      with an automatic transfer gets them there in T months."
-   - **Backup plan:** "If the shock hits now: cutting X% of flexible spending stretches them to 3
+   - **Backup plan:** "If the shock hits now: cutting X% of non-essential spending (basic needs protected) stretches them to 3
      months. Their fixed costs are only F% of spending, so there's room."
 4. **Answer the question (≈30 s).** End with a yes/no: "So, do they make it? Under the official
    formula yes, under real EI no, unless they cut X%."
@@ -119,7 +119,7 @@ The judge picks an `account_id` and reads a twist card. Run it in this order eve
 - Shock controls for every twist card, plus a **real EI cap** toggle next to the judges' number.
 - Shock **start month** (January vs February).
 - Goal plan (gap to 3 months, time to reach it with an auto-transfer) and backup plan (% of
-  flexible spending to cut to reach 3 months).
+  non-essential spending to cut to reach 3 months, with basic needs protected).
 - Pensioner and $0-bills handling.
 - Charts 1–3 on a findings page for the pitch.
 

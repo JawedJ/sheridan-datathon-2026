@@ -71,8 +71,8 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | A1 | EI capped at $729/week = $3,159/month | Real 2026 Canadian policy (canada.ca) | I is **deposits**, not insurable earnings, and includes non-wage money; EI eligibility isn't checked | ESTIMATE |
 | A2 | EI cap applies **only to job losses** | EI only replaces income after a layoff | **Fixed.** Before, any income drop was capped (e.g. 71293 "income drops 30%" showed 2.8 months instead of 11.0; would have affected 2,780 customers). Now the scenario box marks layoff/EI wording as a job loss; "income drops X%" isn't; a checkbox under "Adjust the shock" controls it | fixed |
 | A3 | Pensioners keep their pension; only the rest of income drops | A layoff can't stop a pension | Pension part = I × lifetime pension share (approximate) | ESTIMATE |
-| A4 | Customers with $0 bills get estimated bills = 19.9% of S when a bills shock is applied | Their bills are invisible in the data | One share for everyone (the median among customers who do have bills); it's a guess, labelled on screen | ESTIMATE |
-| A5 | Label "Real-world rules" | — | It's our estimate of real rules, not real-world data. **DECIDE:** rename to "Real-world estimate"? | wording |
+| A4 | **Removed.** Customers with $0 bills used to get estimated bills (19.9% of S) when a bills shock was applied. Now no estimate: the app says their bills aren't recorded, so a bills increase can't be measured. Old row for reference: | Their bills are invisible in the data | One share for everyone (the median among customers who do have bills); it's a guess, labelled on screen | ESTIMATE |
+| A5 | Label "Real-world rules" | — | **Resolved:** with the bills estimate removed, this column only applies real policy (EI maximum for job losses, pensions continue) to the judges' own numbers, so the label is accurate. Deposits as income is the judges' definition | wording |
 
 ### 2.4 Month-by-month balance chart (collapsed under section 2)
 | # | What | Type |
@@ -86,10 +86,10 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | # | What | Type |
 | --- | --- | --- |
 | P1 | Goal target = 3 × S (3 months of spending) | ASSUMPTION (a standard rule of thumb) |
-| P2 | Monthly transfer = their lifetime average surplus (mean in − mean out); if under 2% of I, "trim flexible spending 5%" instead | DERIVED + ASSUMPTION (5%, 2%) |
+| P2 | Monthly transfer = their lifetime average surplus (mean in − mean out); if under 2% of I, "trim 10% of non-essential spending" instead | DERIVED + ASSUMPTION (5%, 2%) |
 | P3 | "Plus half of each June and December bonus" | ASSUMPTION (half) |
-| P4 | Backup: target = max(3 months, shock length); cut needed = share of flexible spending (S − F) | DERIVED |
-| P5 | **Flexible spending = everything except labelled bills, insurance and loans.** For cash-bill customers that includes their rent | ⚠️ Can produce unrealistic advice, e.g. "cut 97% of flexible spending" (account 71293, EI + rent 15%). We now add a note for cash-bill customers. **DECIDE:** say "not realistic" above some cut (e.g. 50%)? |
+| P4 | Backup: target = max(3 months, shock length). Protected spending = max(labelled bills+insurance+loans, 63.8% of S); the rest is "non-essential"; cut needed = share of non-essential. 63.8% = Canadian basic-needs share (food from stores, main home, transportation, health care, clothing: $48,600 of $76,146), Statistics Canada Survey of Household Spending 2023, Table 11-10-0222-01 | DERIVED + sourced ESTIMATE (a national average applied to each customer) |
+| P5 | **Fixed.** Before: flexible = everything except labelled bills, so plans said e.g. "cut 97%" (71293). Now basic needs are protected (P4); if cutting all non-essential spending isn't enough, the app says so and shows the best it can do (71293: 4.3 months, needs extra income). Old note: for cash-bill customers that included their rent | ⚠️ Can produce unrealistic advice, e.g. "cut 97% of flexible spending" (account 71293, EI + rent 15%). We now add a note for cash-bill customers. **DECIDE:** say "not realistic" above some cut (e.g. 50%)? |
 | P6 | "The plan, written for the customer": Gemini (if a key is set) or a template, given only our computed numbers | Wording only; label says which wrote it |
 
 ### 2.6 Plain-words scenario box
@@ -105,12 +105,12 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | F2 | Thermostat ("money above it gets spent") | Observational. We show balances are pulled back; we don't prove *why* (REFERENCE 11.4) |
 | F3 | Layoff timing chart | Subset: 3,547 non-pensioners whose savings run out within 10 years for every start month; seasonal factors per M2 |
 | F4 | "4,500 real bank customers" headline | **Removed** from the engine page (team decision: judges know the dataset). The findings page still states the source |
-| F5 | "Under real EI rules" in the pitch | Fine with A1's caveat (deposits ≠ insurable earnings) |
+| F5 | "Under real EI rules" in the pitch | Fine: deposits are the only income measure in the data and the judges' own definition |
+| F6 | **"88% of top earners' spending is flexible; cutting half brings 93% down to 30%"** (README, FINDINGS 1.4, PITCH Q&A) | ⚠️ **Built on the old "all cash is cuttable" assumption.** With basic needs protected (P4): only 36% is non-essential; cutting half → 79% still run out within 3 months; cutting all → 43%. **DECIDE:** replace the claim with the protected version |
 
 ---
 
 ## Part 3 — Decisions for the team (nothing changed yet)
 1. **T2** Set the Gemini key, or don't enter the Gemini track.
-2. **A5** Rename "Real-world rules" → "Real-world estimate"?
-3. **P5** Flag backup-plan cuts above some level (e.g. 50%) as unrealistic?
-4. **S1** Aim for a ~2:00 video.
+2. **F6** Replace the "cutting half brings 93% → 30%" claim with the basic-needs-protected numbers (79% / 43%).
+3. **S1** Aim for a ~2:00 video.

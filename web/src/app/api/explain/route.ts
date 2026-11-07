@@ -8,7 +8,7 @@ type Summary = {
   shock: { incomePct: number; billsPct: number; oneOffMonths: number; oneOffDollars: number; duration: number; startMonth: number } | null;
   official_runway: number; real_runway: number; real_notes: string[];
   goal: { target: number; gap: number; monthly_transfer: number; months_to_goal: number | null; months_with_bonus: number | null };
-  backup: { target_months: number; cut_share_of_flexible: number | null; cut_dollars: number; reachable: boolean } | null;
+  backup: { target_months: number; cut_share_of_non_essential: number | null; cut_dollars: number; reachable: boolean } | null;
 };
 
 const $ = (x: number) => "$" + Math.round(x).toLocaleString("en-CA");
@@ -21,10 +21,10 @@ function template(s: Summary): string {
   if (s.shock && s.backup) {
     lines.push(`If this shock hit, your savings would last ${months(s.real_runway)} under real rules` +
       (s.real_runway !== s.official_runway ? ` (${months(s.official_runway)} by the standard formula).` : "."));
-    if (s.backup.cut_share_of_flexible === 0) lines.push(`You'd get through ${s.backup.target_months} months without cutting back.`);
-    else if (s.backup.reachable && s.backup.cut_share_of_flexible !== null)
-      lines.push(`To last ${s.backup.target_months} months, cut about ${Math.round(s.backup.cut_share_of_flexible * 100)}% of your flexible spending (${$(s.backup.cut_dollars)} a month). Your fixed bills stay as they are.`);
-    else lines.push(`Cutting flexible spending alone won't cover ${s.backup.target_months} months, so plan for extra income or lower fixed costs.`);
+    if (s.backup.cut_share_of_non_essential === 0) lines.push(`You'd get through ${s.backup.target_months} months without cutting back.`);
+    else if (s.backup.reachable && s.backup.cut_share_of_non_essential !== null)
+      lines.push(`To last ${s.backup.target_months} months, cut about ${Math.round(s.backup.cut_share_of_non_essential * 100)}% of your non-essential spending (${$(s.backup.cut_dollars)} a month). Basic needs like food, housing and transportation stay as they are.`);
+    else lines.push(`Cutting non-essential spending alone won't cover ${s.backup.target_months} months, so plan for extra income or lower fixed costs.`);
   }
   if (s.goal.gap > 0) {
     lines.push(`Goal: build a 3-month cushion of ${$(s.goal.target)}. Set an automatic transfer of ${$(s.goal.monthly_transfer)} a month into savings` +

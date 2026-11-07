@@ -110,8 +110,9 @@ export function official(c: Customer, s: Shock): Result {
   return { income, spending, bufferLeft, gap, runway: judgesRunway(bufferLeft, gap), notes: [] };
 }
 
-/** Same formula with real-world rules: EI maximum (job losses only), pensions keep paying, cash-paid bills estimated. */
-export function realWorld(c: Customer, s: Shock, eiMonthlyMax: number, billsShare: number): Result {
+/** Same formula with real-world rules: EI maximum (job losses only) and pensions keep paying.
+ *  No estimates: if a customer's bills aren't in the data, a bills increase is reported as unmeasurable. */
+export function realWorld(c: Customer, s: Shock, eiMonthlyMax: number): Result {
   const notes: string[] = [];
   const jobLoss = s.jobLoss && s.incomePct < 100;   // EI only applies after a job loss, not e.g. reduced hours
   const pension = c.pensioner ? c.I * c.pensionShare : 0;
@@ -122,12 +123,10 @@ export function realWorld(c: Customer, s: Shock, eiMonthlyMax: number, billsShar
     earned = eiMonthlyMax;
   }
   const income = pension + earned;
-  let H = c.H;
   if (s.billsPct > 0 && c.billsZero) {
-    H = billsShare * c.S;
-    notes.push(`No bills show in the data (paid in cash), so bills are estimated at ${money(H)}/month.`);
+    notes.push("This customer's bills aren't recorded in the data (they pay in cash), so a bills increase can't be measured for them.");
   }
-  const spending = c.S + (s.billsPct / 100) * H;
+  const spending = c.S + (s.billsPct / 100) * c.H;
   const bufferLeft = c.B - s.oneOffMonths * c.S - s.oneOffDollars;
   const gap = spending - income;
   return { income, spending, bufferLeft, gap, runway: judgesRunway(bufferLeft, gap), notes };
@@ -158,6 +157,20 @@ export function monthlyPath(c: Customer, s: Shock, real: Result, horizon = 24) {
 }
 
 // ---------------------------------------------------------------- plans
+/** Share of household spending that goes to basic needs in Canada: food from stores, main home
+ *  (rent/mortgage, utilities, property tax, upkeep), transportation, health care and clothing.
+ *  Statistics Canada, Survey of Household Spending 2023, Table 11-10-0222-01, Canada, average per
+ *  household: $8,579 + $22,226 + $12,019 + $3,060 + $2,716 = $48,600 of $76,146 total current
+ *  consumption = 63.8%. Used only to stop plans from cutting basic needs; it's a national average,
+ *  not this customer's actual spending (the data can't show what cash was spent on). */
+export const ESSENTIAL_SHARE = 48600 / 76146;
+
+/** Spending we treat as protected: labelled bills/insurance/loans, or the Canadian basic-needs share
+ *  of their spending, whichever is larger. The rest is "non-essential" (an estimate). */
+export function essentialFloor(c: Customer): number {
+  return Math.max(c.F, ESSENTIAL_SHARE * c.S);
+}
+
 export type GoalPlan = {
   target: number; have: number; gap: number; cushionMonths: number; comfortMonths: number;
   monthlyTransfer: number; transferSource: "surplus" | "trim"; bonusBoost: number;
@@ -168,9 +181,9 @@ export function goalPlan(c: Customer, targetMonths = 3): GoalPlan {
   const target = targetMonths * c.S;
   const gap = Math.max(0, target - c.B);
   const surplus = Math.max(0, c.meanIn - c.meanOut);
-  const flex = Math.max(0, c.S - c.F);
+  const nonEssential = Math.max(0, c.S - essentialFloor(c));
   const transferSource = surplus >= 0.02 * c.I ? "surplus" : "trim";
-  const monthlyTransfer = transferSource === "surplus" ? surplus : 0.05 * flex;
+  const monthlyTransfer = transferSource === "surplus" ? surplus : 0.1 * nonEssential;
   const bonusBoost = c.bonusPct > 0 ? (0.5 * 2 * c.I * c.bonusPct) / 12 : 0;
   const m1 = monthlyTransfer > 0 ? gap / monthlyTransfer : null;
   const m2 = monthlyTransfer + bonusBoost > 0 ? gap / (monthlyTransfer + bonusBoost) : null;
@@ -183,26 +196,31 @@ export function goalPlan(c: Customer, targetMonths = 3): GoalPlan {
 }
 
 export type BackupPlan = {
-  targetMonths: number; flexible: number; fixedShare: number;
-  cutNeeded: number | null;         // share of flexible spending to cut to reach target (0 = none needed)
+  targetMonths: number;
+  essential: number;                // protected spending per month (see essentialFloor)
+  nonEssential: number;             // the rest of their usual spending: the most they could cut
+  cutNeeded: number | null;         // share of non-essential spending to cut to reach target (0 = none needed)
   cutDollars: number;
-  options: { cut: number; runway: number }[];
-  reachable: boolean;
+  options: { cut: number; runway: number }[];   // cut 25%, 50%, all of non-essential spending
+  reachable: boolean;               // false = even cutting all non-essential spending isn't enough
+  bestRunway: number;               // runway if they cut all non-essential spending
 };
 
-/** How much flexible spending to cut so the real-world runway reaches `target` months. */
+/** How much non-essential spending to cut so the real-world runway reaches `target` months.
+ *  Basic needs are never cut (see ESSENTIAL_SHARE). */
 export function backupPlan(c: Customer, real: Result, s: Shock): BackupPlan {
   const targetMonths = Math.max(3, s.incomePct < 100 ? s.duration : 3);
-  const flexible = Math.max(0, c.S - c.F);
-  const fixedShare = c.S > 0 ? c.F / c.S : 0;
-  const options = [0.1, 0.25, 0.5].map(cut => ({
-    cut, runway: judgesRunway(real.bufferLeft, real.gap - cut * flexible),
+  const essential = essentialFloor(c);
+  const nonEssential = Math.max(0, c.S - essential);
+  const options = [0.25, 0.5, 1].map(cut => ({
+    cut, runway: judgesRunway(real.bufferLeft, real.gap - cut * nonEssential),
   }));
-  if (real.bufferLeft <= 0) return { targetMonths, flexible, fixedShare, cutNeeded: null, cutDollars: 0, options, reachable: false };
+  const bestRunway = options[2].runway;
+  if (real.bufferLeft <= 0) return { targetMonths, essential, nonEssential, cutNeeded: null, cutDollars: 0, options, reachable: false, bestRunway };
   const neededSpending = real.bufferLeft / targetMonths + real.income;
   const cutDollars = Math.max(0, real.spending - neededSpending);
-  const cutNeeded = flexible > 0 ? cutDollars / flexible : cutDollars > 0 ? Infinity : 0;
-  return { targetMonths, flexible, fixedShare, cutNeeded, cutDollars, options, reachable: cutNeeded <= 1 };
+  const cutNeeded = nonEssential > 0 ? cutDollars / nonEssential : cutDollars > 0 ? Infinity : 0;
+  return { targetMonths, essential, nonEssential, cutNeeded, cutDollars, options, reachable: cutNeeded <= 1, bestRunway };
 }
 
 // ---------------------------------------------------------------- formatting

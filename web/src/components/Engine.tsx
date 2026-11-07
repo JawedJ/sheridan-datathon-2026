@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   type Customer, type EngineData, type Shock, MONTHS, NO_SHOCK, NO_SHORTFALL,
-  backupPlan, getCustomer, goalPlan, indexData, money, monthlyPath, official, realWorld, runwayText,
+  ESSENTIAL_SHARE, backupPlan, getCustomer, goalPlan, indexData, money, monthlyPath, official, realWorld, runwayText,
 } from "@/lib/engine";
 import { EXAMPLE_SCENARIOS, parseScenario } from "@/lib/scenario";
 import { BalanceChart } from "@/components/charts";
@@ -173,7 +173,7 @@ function AnswerPanel({ c, data, shock, setManual }: {
   c: Customer; data: EngineData; shock: Shock; setManual: (p: Partial<Shock>) => void;
 }) {
   const off = official(c, shock);
-  const real = realWorld(c, shock, data.meta.ei_monthly_max, data.meta.bills_share);
+  const real = realWorld(c, shock, data.meta.ei_monthly_max);
   const path = monthlyPath(c, shock, real, 24);
   const any = hasShock(shock);
   const jobLoss = shock.incomePct < 100;
@@ -272,7 +272,7 @@ function Slider({ label, value, min, max, step, show, onChange }: {
 
 // ================================================================== 3. plans
 function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock }) {
-  const real = realWorld(c, shock, data.meta.ei_monthly_max, data.meta.bills_share);
+  const real = realWorld(c, shock, data.meta.ei_monthly_max);
   const off = official(c, shock);
   const goal = goalPlan(c);
   const backup = backupPlan(c, real, shock);
@@ -295,7 +295,7 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
                 <li>
                   {goal.transferSource === "surplus"
                     ? <>Automatic transfer of <b>{money(goal.monthlyTransfer)}/mo</b> (their usual surplus)</>
-                    : <>Trim flexible spending 5% and save <b>{money(goal.monthlyTransfer)}/mo</b></>}
+                    : <>No regular surplus: trim 10% of non-essential spending and save <b>{money(goal.monthlyTransfer)}/mo</b></>}
                   {goal.monthsToGoal !== null && <> → there in <b>{goal.monthsToGoal} months</b></>}
                 </li>
                 {goal.bonusBoost > 0 && goal.monthsWithBonus !== null && (
@@ -317,18 +317,29 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
                 {real.runway >= NO_SHORTFALL || backup.cutNeeded === 0
                   ? `No cuts needed to last ${backup.targetMonths} months`
                   : backup.reachable && backup.cutNeeded !== null
-                    ? `Cut ${pct(backup.cutNeeded)} of flexible spending to last ${backup.targetMonths} months`
-                    : `Cutting flexible spending alone won't reach ${backup.targetMonths} months`}
+                    ? `Cut ${pct(backup.cutNeeded)} of non-essential spending to last ${backup.targetMonths} months`
+                    : `Cutting spending alone won't get them through ${backup.targetMonths} months`}
               </p>
+              {!backup.reachable && backup.cutNeeded !== null && backup.cutNeeded > 0 && (
+                <p>Even cutting all non-essential spending only stretches savings to <b>{runwayText(backup.bestRunway)}</b>. They&apos;d need extra income or help to cover the rest.</p>
+              )}
               <p className="note">
-                Fixed costs are {pct(backup.fixedShare)} of spending; {money(backup.flexible)}/mo is flexible
-                {c.billsZero ? " (their bills aren't visible in the data, so some of this may be rent)" : ""}.
+                Of their {money(c.S)}/mo spending, we protect {money(backup.essential)} for basic needs and treat {money(backup.nonEssential)} as non-essential.
               </p>
               <ul>
                 {backup.cutNeeded !== null && backup.cutNeeded > 0 && backup.reachable && <li>That&apos;s <b>{money(backup.cutDollars)}/mo</b> less spending</li>}
-                {backup.options.map(o => <li key={o.cut}>Cut {pct(o.cut)} → {runwayText(o.runway)}</li>)}
+                {backup.options.map(o => <li key={o.cut}>{o.cut === 1 ? "Cut all non-essential spending" : `Cut ${pct(o.cut)} of non-essential`} → {runwayText(o.runway)}</li>)}
                 {c.bonusPct > 0 && shock.jobLoss && shock.incomePct < 100 && <li>A layoff also means losing the June and December bonus</li>}
               </ul>
+              <details className="more">
+                <summary>How we decide what&apos;s essential</summary>
+                <p className="note">
+                  The bank data doesn&apos;t say what cash was spent on (76% of all spending is unlabelled cash withdrawals).
+                  So we protect whichever is larger: their labelled bills, insurance and loan payments ({money(c.F)}/mo), or {Math.round(ESSENTIAL_SHARE * 100)}% of their spending,
+                  the share Canadian households spend on basic needs (food from stores, home, transportation, health care, clothing;
+                  Statistics Canada, Survey of Household Spending 2023). It&apos;s a national average, not this customer&apos;s actual spending.
+                </p>
+              </details>
               <p className="tip-line">
                 {[1, 6, 12].includes(shock.startMonth)
                   ? `${MONTHS[shock.startMonth - 1]} is one of the hardest months to start: spending peaks in January and June.`
@@ -380,6 +391,6 @@ function summary({ c, shock, off, real, goal, backup, anyShock }: Parameters<typ
     bonus_pct: c.bonusPct, shock: anyShock ? shock : null,
     official_runway: off.runway, real_runway: real.runway, real_notes: real.notes,
     goal: { target: r1(goal.target), gap: r1(goal.gap), monthly_transfer: r1(goal.monthlyTransfer), months_to_goal: goal.monthsToGoal, months_with_bonus: goal.monthsWithBonus },
-    backup: anyShock ? { target_months: backup.targetMonths, cut_share_of_flexible: backup.cutNeeded, cut_dollars: r1(backup.cutDollars), reachable: backup.reachable } : null,
+    backup: anyShock ? { target_months: backup.targetMonths, cut_share_of_non_essential: backup.cutNeeded, cut_dollars: r1(backup.cutDollars), reachable: backup.reachable } : null,
   };
 }

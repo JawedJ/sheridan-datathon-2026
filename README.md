@@ -25,8 +25,8 @@ in months, not dollars.
   buffer, runway) plus the customer's comfort number and cushion in months. Apply a shock (twist
   cards or sliders for EI %, length, bills, one-off costs, start month) and compare the **official
   formula** with **real-world rules** (EI maximum, pensions keep paying, cash-paid bills estimated).
-  Then get a goal plan (auto-transfer above the comfort number) and a backup plan (% of flexible
-  spending to cut). Gemini can rewrite the plan in plain words, using only the engine's numbers.
+  Then get a goal plan (auto-transfer above the comfort number) and a backup plan (% of non-essential
+  spending to cut, with basic needs protected). Gemini can rewrite the plan in plain words, using only the engine's numbers.
 - **Findings:** the four headline charts.
 - **Accuracy:** matches the judges' formulas exactly for all 4,500 accounts (`npm run verify`).
 
@@ -81,5 +81,6 @@ cd web && npm install && npm run verify && npm run dev   # http://localhost:3000
   Dataset Repository: https://relational.fel.cvut.cz/dataset/Financial. Provided by Tangerine with
   dates shifted to 2020–2025 and amounts in CAD.
 - **Statistics Canada**, Table 14-10-0223-01, average weekly earnings (Aug 2026), used only to compare our customers' incomes with Canada's: https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410022301
+- **Statistics Canada**, Table 11-10-0222-01, Household spending 2023: basic needs are 63.8% of household spending; the app never cuts this share in backup plans: https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1110022201
 - **Government of Canada**, EI regular benefits (55% rate, $729/week maximum in 2026):
   https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html

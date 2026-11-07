@@ -143,7 +143,12 @@ Top and middle earners spend much less when money stops coming in; the bottom 30
 Caveat: some of this is mechanical. People withdraw cash after deposits arrive, so a month with no
 deposit has fewer withdrawals anyway. It shows spending *can* drop, not that it's painless.
 
-**How much cutting would rescue them (real EI cap):**
+> **Caveat (added after the app's basic-needs rule):** the numbers below treat all spending except labelled
+> bills as cuttable. Protecting basic needs (63.8% of spending, Statistics Canada Survey of Household Spending
+> 2023): only 36% of a top earner's spending is non-essential; cutting half of it → 78.7% still run out within
+> 3 months; cutting all of it → 42.8%; median cut needed 91%.
+
+**How much cutting would rescue them (real EI cap, old "all cash is cuttable" assumption):**
 - To reach 3 months of runway, the median top-10% customer must cut **39%** of flexible spending
   (D9: 20%). For 99% of them, that's possible without touching fixed costs.
 - Cut flexible spending 25% → 72% still run out within 3 months. Cut 50% → **30%**.
@@ -324,8 +329,8 @@ Each problem was tested against the data; the evidence is in `analysis/verify_fo
 - Their spending is **99.7% cash withdrawals** (vs 59% for other customers). They almost certainly
   pay rent and utilities in cash, so the bills are invisible in the data.
 - So the bills shock adds $0 to their spending and they look immune to rising bills. They aren't.
-- **Fix to present:** for zero-bill accounts, estimate bills as the typical bills share of
-  spending (median 19.9% for customers who do have bills), and label it as an estimate.
+- **What we do:** no estimate. The app says these customers' bills aren't recorded, so a bills increase
+  can't be measured for them. (An earlier version estimated bills at 19.9% of spending; removed as a guess.)
 
 #### [3.5] VERIFIED — Most spending can't be classified, so "fixed vs flexible" is a guess
 - 76% of money out is cash withdrawals with no purpose attached. We know how much leaves, not
@@ -355,7 +360,7 @@ Each problem was tested against the data; the evidence is in `analysis/verify_fo
 | Zero median income | 14 | Kept; excluded from log-based elasticity (log 0 undefined) | stress test |
 | Income under $500/month | 118 | Kept; flagged as special cases for plans | 3.6 |
 | Pensioners (pension ≥ 50% of income) | 740 | Excluded from fragility rankings and elasticity; the engine should keep their pension during a job-loss shock | 3.3, 4D |
-| $0 labelled household bills | 1,225 | Judges' rule leaves them at $0; the engine can offer an estimate (19.9% of spending), clearly labelled | 3.4 |
+| $0 labelled household bills | 1,225 | Judges' rule leaves them at $0; not estimated (the app states the limitation) | 3.4 |
 | First 3 months of each account ("fill-up" from $0) | all | Excluded from comfort-number, split-half and year-by-year analysis | D1, 4D |
 | Partial first year (2020 opening wave) | — | Year-by-year test starts at 2021 and uses only full 12-month account-years | 4D |
 | Median income vs median spending from different months | 1,181 show a shortfall (97.5% of them false) | Report judges' number as-is; month-by-month view uses real averages | 3.1 |
@@ -568,5 +573,6 @@ accounts and 5 standard shocks (49,500 checks, `npm run verify`).
 
 ## Sources
 - PKDD'99 Discovery Challenge Financial dataset, CTU Prague: https://relational.fel.cvut.cz/dataset/Financial
+- Statistics Canada, Table 11-10-0222-01, Household spending 2023 (basic-needs share 63.8%, used in backup plans): https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1110022201
 - Statistics Canada, Table 14-10-0223-01, average weekly earnings, August 2026 (scale comparison only): https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410022301
 - EI benefit rate and 2026 maximum: https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html
