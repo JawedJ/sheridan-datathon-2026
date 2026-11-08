@@ -142,7 +142,7 @@ function CustomerPanel({ c, data, idInput, setIdInput, onLookup, onRandom, onExa
   const tags: string[] = [];
   if (c.pensioner) tags.push("Pensioner");
   if (c.bonusPct > 0) tags.push(`June & Dec bonus +${pct(c.bonusPct)}`);
-  if (c.billsZero) tags.push("Bills paid in cash (not in data)");
+  if (c.billsZero) tags.push("Bills not recorded");
   if (c.onEdge) tags.push("Often near zero");
   if (c.everNegative) tags.push("Has gone below zero");
   if (c.irregular) tags.push("Irregular income");
@@ -164,7 +164,7 @@ function CustomerPanel({ c, data, idInput, setIdInput, onLookup, onRandom, onExa
         <Stat k="I" label="Money in" value={money(c.I)} unit="/mo" />
         <Stat k="S" label="Spending" value={money(c.S)} unit="/mo" />
         <Stat k="F" label="Fixed costs" value={money(c.F)} unit="/mo" note="bills + insurance + loans" />
-        <Stat k="H" label="Household bills" value={money(c.H)} unit="/mo" note={c.H === 0 ? "not recorded (likely paid in cash)" : "rent & utilities"} />
+        <Stat k="H" label="Household bills" value={money(c.H)} unit="/mo" note={c.H === 0 ? "not recorded in the data" : "rent & utilities"} />
         <Stat k="B" label="Savings buffer" value={money(c.B)} note="avg. daily balance, last 6 months" />
         <Stat k="P" label="Loan payment" value={c.P ? money(c.P) : "None"} unit={c.P ? "/mo" : ""} note={c.P ? "loan still running" : "no loan running"} />
       </div>

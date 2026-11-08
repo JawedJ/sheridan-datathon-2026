@@ -132,7 +132,7 @@ export function realWorld(c: Customer, s: Shock, eiMonthlyMax: number): Result {
   }
   const income = pension + earned;
   if (s.billsPct > 0 && c.billsZero) {
-    notes.push("This customer's bills aren't recorded in the data (they pay in cash), so a bills increase can't be measured for them.");
+    notes.push("This customer's household bills aren't recorded in the data, so a percentage bills increase can't be measured for them.");
   }
   const spending = c.S + (s.billsPct / 100) * c.H + otherSpending(c, s);
   const bufferLeft = c.B - s.oneOffMonths * c.S - s.oneOffDollars;

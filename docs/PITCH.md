@@ -60,7 +60,7 @@ covers Y months of spending."*
 - **Official formula first:** "By your formula, they last N months."
 - **Real-world column, only if it differs:** "With the real EI maximum, $729 a week, it's M months."
   (It only differs for job losses of higher earners, or pensioners, whose pension keeps paying.)
-- **If H is $0:** "Their household bills aren't recorded; they most likely pay them in cash. So a
+- **If H is $0:** "Their household bills aren't recorded in the data. So a
   bills increase can't change their number. That's a limit of the data, and we don't guess it."
 
 **3. The plan (≈60 s).** Scroll to section 3:
@@ -126,7 +126,8 @@ Brief's own cards: "Laid off, EI 55% for 6 months" · "Furnace costs a full mont
 
 **"What about customers with no household bills?"**
 > 1,225 have none recorded. They spend as much as everyone else, but 96% of it leaves as cash, so
-> they most likely pay bills in cash. We don't invent a number; the app says it's not recorded.
+> their bills are probably paid from that, but we can't verify it. So we don't invent a number; the app
+> just says they're not recorded.
 
 **"This is old Czech data. Does it apply to Canadians?"**
 > The dollar amounts don't, which is why we only claim the pattern. It holds if we halve or double

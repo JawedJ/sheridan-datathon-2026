@@ -34,12 +34,6 @@ export default function FindingsPage() {
           From 4,500 real bank accounts (PKDD&apos;99 Financial dataset, amounts in CAD). Pensioners are left out of income
           comparisons because a job loss doesn&apos;t apply to them ({d.n_nonpension.toLocaleString()} customers).
         </p>
-        <Caveats title="Before you read the charts" items={[
-          <>The data is the PKDD&apos;99 Czech bank dataset (1990s), with dates moved to 2020–2025 and amounts converted to CAD. We claim the <b>pattern</b>, not the exact dollar amounts.</>,
-          <>&quot;Income&quot; means money deposited into the account (the judges&apos; definition). There are no pay stubs, and 99% of deposits are cash.</>,
-          <>Every chart shows group medians. Individual customers vary a lot around them; the engine shows any one customer&apos;s own numbers.</>,
-          <>We only see this one bank account. Savings kept somewhere else are invisible to us (see the limits at the bottom).</>,
-        ]} />
       </div>
 
       <div className="kpis">
@@ -133,22 +127,13 @@ export default function FindingsPage() {
         </table>
         <h3 style={{ fontSize: 15, margin: "16px 0 4px" }}>What we can&apos;t rule out</h3>
         <ul className="limits">
-          <li><b>Cash kept at home.</b> 41% of top earners&apos; spending is large cash withdrawals. They look like rent or bills paid in cash (they repeat at similar amounts, mid-month, and are more common when no bills are recorded), but we can&apos;t follow cash once it leaves the bank. If a full year of them had been saved instead, top earners would hold about 7 months, not 1.6.</li>
+          <li><b>Cash kept at home.</b> 41% of top earners&apos; spending is large cash withdrawals. They repeat at similar amounts around mid-month, and are more common when no bills are recorded, but we can&apos;t follow cash once it leaves the bank. If a full year of them had been saved instead, top earners would hold about 7 months, not 1.6.</li>
           <li><b>Savings at other banks.</b> Money sent to other banks can&apos;t explain it: counting every such dollar as savings moves top earners from 1.9 to only 2.4 months. Money that never touches this account is invisible.</li>
           <li><b>Household size.</b> The data doesn&apos;t say how many people an income supports.</li>
           <li><b>Old data, new labels.</b> The amounts and habits come from a 1990s cash economy. The pattern should be checked on today&apos;s Canadian customers.</li>
         </ul>
         <p className="muted" style={{ margin: "8px 0 0" }}>Every number here can be reproduced from the repo; full method in FINDINGS.md and docs/REPORT.md.</p>
       </section>
-    </div>
-  );
-}
-
-function Caveats({ title = "How accurate is this, and what it doesn't say", items }: { title?: string; items: React.ReactNode[] }) {
-  return (
-    <div className="caveats">
-      <div className="caveats-title">{title}</div>
-      <ul>{items.map((it, i) => <li key={i}>{it}</li>)}</ul>
     </div>
   );
 }
