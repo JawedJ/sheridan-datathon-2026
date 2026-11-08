@@ -42,6 +42,7 @@ in months, not dollars.
 | [`docs/REPORT.md`](docs/REPORT.md) | **Start here to prepare for judges:** the full story, every decision and deviation from the brief with its justification, cleaning, limits, and answers to likely questions |
 | [`docs/HONESTY.md`](docs/HONESTY.md) | Rules check and exactly how we use the data: what's raw, what's the judges' formula, what's our estimate or assumption |
 | [`docs/REFERENCE.md`](docs/REFERENCE.md) | Everything in one place: data, every formula, cleaning log, all findings and numbers, app calculations, corrections |
+| `docs/NOTES.md` | **Speaker notes:** pitch, live-demo talking points (incl. data cleaning and formula problems), short Q&A answers |
 | `docs/PITCH.md` | The 1-minute pitch, live-twist script, judge Q&A prep, demo video outline |
 | `docs/CHALLENGE.md` | The organizers' challenge brief and data dictionary |
 | `data/` | The provided dataset (not committed; add it locally) |

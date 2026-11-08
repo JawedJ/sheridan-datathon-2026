@@ -1,5 +1,8 @@
 # Pitch — The Comfort Number
 
+> **Presenting?** Use `docs/NOTES.md`: the pitch, what to point out at each step of the live demo
+> (including the Data Use points), and short answers to likely questions, on one page.
+
 Judging slot is about 5 minutes: **1 min pitch → 3 min live twist → 1 min questions.**
 Judged on Discovery 35%, Data Use 25%, Communication 25%, Impact 15%.
 App: https://comfort-number.vercel.app (engine on the home page, charts under Findings).
@@ -24,8 +27,8 @@ Three numbers to remember, and nothing else:
 | 0:00–0:10 | Findings page title | "Who runs out of money faster after a layoff: someone earning six thousand a month, or twenty-five thousand? In 4,500 bank accounts, it's the **high earner**." |
 | 0:10–0:22 | Chart 1 (savings level off) | "The lowest earners hold **11 months** of spending in savings. The top 10% hold **1.6**. Their savings level off around $33,000, but three months of their spending costs $72,000." |
 | 0:22–0:37 | Windfall chart (second chart) | "Why? People save to a **dollar number**, not to a number of months. When top earners get a windfall, they spend **three of every four dollars** within three months. Their balance drifts back to the same level. We call it their **comfort number**." |
-| 0:37–0:50 | Point at the 93% number at the top of the page | "With real EI, which caps at $729 a week, **93%** of top earners would run out within three months. The official formula says 26%. And cutting back after the layoff isn't enough: even cutting everything non-essential leaves 43% short." |
-| 0:50–1:00 | Switch to the engine | "So the fix has to come **before** the shock. Our engine finds each customer's comfort number and builds the cushion first. Give us an account and a twist card." |
+| 0:37–0:50 | Point at the 93% number at the top of the page | "We matched your formula on all 4,500 accounts, then fixed where it breaks. With the real EI cap of $729 a week, **93%** of top earners run out within three months. Your formula says 26%." |
+| 0:50–1:00 | Switch to the engine | "So the fix has to come **before** the shock. Our plan builds the cushion first, so they cut less when it hits. Give us an account and a twist card." |
 
 **One-line version** (Devpost, video intro):
 > People save to a dollar number, not a number of months, so the more you earn, the more fragile you
