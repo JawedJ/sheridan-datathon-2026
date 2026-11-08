@@ -270,109 +270,77 @@ function Slider({ label, value, min, max, step, show, onChange }: {
   );
 }
 
-// ================================================================== 3. plans
-function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock }) {
-  const real = realWorld(c, shock, data.meta.ei_monthly_max);
-  const off = official(c, shock);
-  const goal = goalPlan(c);
-  const backup = backupPlan(c, real, shock);
-  const any = hasShock(shock);
-  // The goal plan is for normal times (the brief: "a goal plan, like building an emergency fund"), so it
-  // always shows. The backup plan is "for if the shock hits", so it and the outcome chart need a scenario.
-  return (
-    <section className="card">
-      <h2 className="section-title">3 · The plan</h2>
-      {any && <PlanStory c={c} shock={shock} off={off} real={real} goal={goal} backup={backup} />}
-      <div className="plans">
-        <div className="plan-block">
-          <h3 className="plan-title">Goal plan: before a shock</h3>
-          <p className="plan-lead">Build a 3-month emergency fund</p>
-          {goal.gap === 0 ? (
-            <p>Already there: <b>{goal.cushionMonths.toFixed(1)} months</b> saved. Next goal: 6 months ({money(6 * c.S)}).</p>
-          ) : (
-            <>
-              <div className="progress" aria-label={`${pct(goal.have / goal.target)} of target`}>
-                <div style={{ width: pct(Math.min(1, goal.have / goal.target)) }} />
-              </div>
-              <p className="note">{money(goal.have)} of {money(goal.target)} · {money(goal.gap)} to go</p>
-              <ul>
-                <li>
-                  {goal.transferSource === "surplus"
-                    ? <>Automatic transfer of <b>{money(goal.monthlyTransfer)}/mo</b> (their usual surplus)</>
-                    : <>No regular surplus: trim 10% of non-essential spending and save <b>{money(goal.monthlyTransfer)}/mo</b></>}
-                  {goal.monthsToGoal !== null && <> → there in <b>{goal.monthsToGoal} months</b></>}
-                </li>
-              </ul>
-              <p className="tip-line">Their balance settles around {money(c.comfort)} and extra money gets spent. An automatic transfer raises that level without relying on willpower.</p>
-            </>
-          )}
-        </div>
-
-        <div className="plan-block">
-          <h3 className="plan-title">Backup plan: if it hits</h3>
-          {!any ? (
-            <p className="muted" style={{ margin: 0 }}>Run a scenario above to see what they&apos;d cut if it hits, and how long their savings last with and without each plan.</p>
-          ) : (
-            <>
-              <p className="plan-lead">
-                {real.runway >= NO_SHORTFALL || backup.cutNeeded === 0
-                  ? `No cuts needed to last ${backup.targetMonths} months`
-                  : backup.reachable && backup.cutNeeded !== null
-                    ? `Cut ${pct(backup.cutNeeded)} of non-essential spending to last ${backup.targetMonths} months`
-                    : `Cutting spending alone won't get them through ${backup.targetMonths} months`}
-              </p>
-              {!backup.reachable && backup.cutNeeded !== null && backup.cutNeeded > 0 && (
-                <p>Even cutting all non-essential spending only stretches savings to <b>{runwayText(backup.bestRunway)}</b>. They&apos;d need extra income or help to cover the rest.</p>
-              )}
-              <p className="note">
-                Of their {money(c.S)}/mo spending, we protect {money(backup.essential)} for basic needs and treat {money(backup.nonEssential)} as non-essential.
-              </p>
-              <ul>
-                {backup.cutNeeded !== null && backup.cutNeeded > 0 && backup.reachable && <li>That&apos;s <b>{money(backup.cutDollars)}/mo</b> less spending</li>}
-                {backup.options.map(o => <li key={o.cut}>{o.cut === 1 ? "Cut all non-essential spending" : `Cut ${pct(o.cut)} of non-essential`} → {runwayText(o.runway)}</li>)}
-              </ul>
-              <details className="more">
-                <summary>How we decide what&apos;s essential</summary>
-                <p className="note">
-                  The bank data doesn&apos;t say what cash was spent on (76% of all spending is unlabelled cash withdrawals).
-                  So we protect whichever is larger: their labelled bills, insurance and loan payments ({money(c.F)}/mo), or {Math.round(ESSENTIAL_SHARE * 100)}% of their spending,
-                  the share Canadian households spend on basic needs (food from stores, home, transportation, health care, clothing;
-                  Statistics Canada, Survey of Household Spending 2023). It&apos;s a national average, not this customer&apos;s actual spending.
-                </p>
-              </details>
-              <p className="tip-line">
-                {[1, 6, 12].includes(shock.startMonth)
-                  ? `${MONTHS[shock.startMonth - 1]} is one of the hardest months to start: spending peaks in January and June.`
-                  : "Timing matters: the same shock starting in December or January leaves less room."}
-              </p>
-            </>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ================================================================== the plan's story: text, outcomes, chart
+// ================================================================== 3. the plan
+// The goal plan is for normal times (the brief: "a goal plan, like building an emergency fund"), so it
+// always shows. The backup plan is "for if the shock hits", so it and the outcomes need a scenario.
 type ImpactProps = {
   c: Customer; shock: Shock; off: ReturnType<typeof official>; real: ReturnType<typeof realWorld>;
   goal: ReturnType<typeof goalPlan>; backup: ReturnType<typeof backupPlan>;
 };
 
 const GREY = "var(--text-3)", BLUE = "var(--series-1)", ORANGE = "var(--series-2)", INK = "var(--text)";
+const mo = (x: number) => (x >= NO_SHORTFALL ? "No shortfall" : `${x.toFixed(1)} mo`);
 
-function PlanStory(props: ImpactProps) {
-  const { c, real, goal, backup } = props;
+function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock }) {
+  const real = realWorld(c, shock, data.meta.ei_monthly_max);
+  const off = official(c, shock);
+  const goal = goalPlan(c);
+  const backup = backupPlan(c, real, shock);
+  const any = hasShock(shock);
+
   const oneOff = c.B - real.bufferLeft;
   const goalStart = Math.max(c.B, goal.target);
-  const goalFirstRunway = goal.gap > 0 ? judgesRunway(goalStart - oneOff, real.gap) : null;
   const cutShare = backup.cutNeeded === null ? 1 : Math.min(1, backup.cutNeeded);
   const cut = cutShare * backup.nonEssential;
+  const backupRunway = judgesRunway(real.bufferLeft, real.gap - cut);
+  const goalFirstRunway = goal.gap > 0 ? judgesRunway(goalStart - oneOff, real.gap) : null;
   const bothRunway = goalFirstRunway !== null && cut > 0 ? judgesRunway(goalStart - oneOff, real.gap - cut) : null;
+  const props = { c, shock, off, real, goal, backup };
+
+  return (
+    <section className="card">
+      <h2 className="section-title">3 · The plan</h2>
+      {any && <Letter {...props} goalFirstRunway={goalFirstRunway} bothRunway={bothRunway} />}
+      {any && (
+        <Outcomes need={backup.targetMonths} real={real} cut={cut} cutShare={cutShare} backupRunway={backupRunway}
+          goalStart={goalStart} goalFirstRunway={goalFirstRunway} bothRunway={bothRunway} />
+      )}
+      <div className="steps">
+        <GoalStep c={c} goal={goal} />
+        {any ? <BackupStep c={c} real={real} backup={backup} /> : (
+          <div className="step step-empty">
+            <div className="step-kicker">Step 2 · If a shock hits</div>
+            <p className="muted" style={{ margin: 0 }}>Run a scenario above to see the backup plan and how long their savings last.</p>
+          </div>
+        )}
+      </div>
+      {any && (
+        <PlanChart c={c} shock={shock} real={real} cut={cut} goalStart={goalStart}
+          showGoal={goalFirstRunway !== null} showBoth={bothRunway !== null} />
+      )}
+    </section>
+  );
+}
+
+function Outcomes({ need, real, cut, cutShare, backupRunway, goalStart, goalFirstRunway, bothRunway }: {
+  need: number; real: ReturnType<typeof realWorld>; cut: number; cutShare: number; backupRunway: number;
+  goalStart: number; goalFirstRunway: number | null; bothRunway: number | null;
+}) {
+  const cutLabel = cutShare >= 1 ? "Cut all non-essential" : `Cut ${pct(cutShare)} of non-essential`;
   return (
     <>
-      <Letter {...props} goalFirstRunway={goalFirstRunway} bothRunway={bothRunway} />
-      <ShockImpact {...props} goalStart={goalStart} goalFirstRunway={goalFirstRunway} cutShare={cutShare} cut={cut} bothRunway={bothRunway} />
+      <p className="impact-lead">How long savings last. They need <b>{need} months</b>.</p>
+      <div className="outcomes">
+        <Outcome color={GREY} dash name="No plan" value={mo(real.runway)} detail="Spending as usual" ok={real.runway >= need} />
+        <Outcome color={ORANGE} name="Backup plan" value={mo(cut > 0 ? backupRunway : real.runway)}
+          detail={cut > 0 ? `${cutLabel} (${money(cut)}/mo)` : "No cuts needed"} ok={(cut > 0 ? backupRunway : real.runway) >= need} />
+        <Outcome color={BLUE} name="Goal plan first" value={goalFirstRunway !== null ? mo(goalFirstRunway) : "Already there"}
+          detail={goalFirstRunway !== null ? `Start with ${money(goalStart)} saved` : "Already has 3 months saved"}
+          ok={goalFirstRunway !== null ? goalFirstRunway >= need : null} />
+        {bothRunway !== null && (
+          <Outcome color={INK} name="Both plans" value={mo(bothRunway)} detail="Save first, then cut back" ok={bothRunway >= need} />
+        )}
+      </div>
     </>
   );
 }
@@ -392,56 +360,117 @@ function Outcome({ color, dash, name, value, detail, ok }: {
   );
 }
 
-function ShockImpact({ c, shock, real, backup, goalStart, goalFirstRunway, cutShare, cut, bothRunway }: ImpactProps &
-  { goalStart: number; goalFirstRunway: number | null; cutShare: number; cut: number; bothRunway: number | null }) {
-  const H = 24;
+function GoalStep({ c, goal }: { c: Customer; goal: ReturnType<typeof goalPlan> }) {
+  return (
+    <div className="step">
+      <div className="step-kicker">Step 1 · Before a shock</div>
+      <div className="step-title">Build a 3-month emergency fund</div>
+      {goal.gap === 0 ? (
+        <>
+          <div className="step-big">Already there</div>
+          <div className="step-sub">{goal.cushionMonths.toFixed(1)} months saved. Next goal: 6 months ({money(6 * c.S)}).</div>
+        </>
+      ) : goal.monthlyTransfer > 0 ? (
+        <>
+          <div className="step-big">{money(goal.monthlyTransfer)}<small>/mo into savings</small></div>
+          <div className="step-sub">
+            {goal.transferSource === "surplus" ? "Automatic transfer of their usual surplus" : "From trimming 10% of non-essential spending"}
+            {goal.monthsToGoal !== null && <> · ready in <b>{goal.monthsToGoal} months</b></>}
+          </div>
+          <div className="progress" aria-label={`${pct(goal.have / goal.target)} of target`}>
+            <div style={{ width: pct(Math.min(1, goal.have / goal.target)) }} />
+          </div>
+          <div className="step-meta"><span>{money(goal.have)} saved</span><span>goal {money(goal.target)}</span></div>
+        </>
+      ) : (
+        <div className="step-sub">No money left over each month to transfer.</div>
+      )}
+      <p className="step-why">Without it, their balance keeps settling around {money(c.comfort)}.</p>
+    </div>
+  );
+}
+
+function BackupStep({ c, real, backup }: { c: Customer; real: ReturnType<typeof realWorld>; backup: ReturnType<typeof backupPlan> }) {
   const need = backup.targetMonths;
-  const backupRunway = judgesRunway(real.bufferLeft, real.gap - cut);
+  const noCuts = real.runway >= NO_SHORTFALL || backup.cutNeeded === 0;
+  const scale = Math.max(need, ...backup.options.map(o => Math.min(o.runway, need * 2)), real.runway < NO_SHORTFALL ? real.runway : 0);
+  const bars = [{ label: "No cuts", runway: real.runway }, ...backup.options.map(o => ({ label: o.cut === 1 ? "Cut all" : `Cut ${pct(o.cut)}`, runway: o.runway }))];
+  return (
+    <div className="step">
+      <div className="step-kicker">Step 2 · If it hits</div>
+      <div className="step-title">
+        {noCuts ? "No cuts needed" : backup.reachable ? "Cut non-essential spending" : "Cutting back isn't enough on its own"}
+      </div>
+      {noCuts ? (
+        <div className="step-big">{mo(real.runway)}<small> without changes</small></div>
+      ) : backup.reachable && backup.cutNeeded !== null ? (
+        <>
+          <div className="step-big">{money(backup.cutDollars)}<small>/mo less spending</small></div>
+          <div className="step-sub">{pct(backup.cutNeeded)} of non-essential spending · lasts {need} months</div>
+        </>
+      ) : (
+        <>
+          <div className="step-big">{mo(backup.bestRunway)}<small> at most</small></div>
+          <div className="step-sub">even cutting all {money(backup.nonEssential)}/mo of non-essential spending</div>
+        </>
+      )}
+      {!noCuts && (
+        <div className="cutbars" aria-label="How long savings last at each level of cutting">
+          {bars.map(b => {
+            const w = Math.min(1, Math.min(b.runway, scale) / scale);
+            const ok = b.runway >= need;
+            return (
+              <div key={b.label} className="cutbar">
+                <span className="cutbar-label">{b.label}</span>
+                <span className="cutbar-track">
+                  <span className={"cutbar-fill" + (ok ? " ok" : "")} style={{ width: `${w * 100}%` }} />
+                  <span className="cutbar-need" style={{ left: `${(need / scale) * 100}%` }} />
+                </span>
+                <span className="cutbar-value">{mo(b.runway)}</span>
+              </div>
+            );
+          })}
+          <div className="cutbar-key">Line = {need} months needed</div>
+        </div>
+      )}
+      <details className="more">
+        <summary>Basic needs protected: {money(backup.essential)}/mo</summary>
+        <p className="note">
+          The data doesn&apos;t say what cash was spent on, so we protect whichever is larger: their labelled bills, insurance and
+          loan payments ({money(c.F)}/mo), or {Math.round(ESSENTIAL_SHARE * 100)}% of their spending, the share Canadian households spend on
+          basic needs (Statistics Canada, Survey of Household Spending 2023). Only the rest ({money(backup.nonEssential)}/mo) is treated as cuttable.
+        </p>
+      </details>
+    </div>
+  );
+}
+
+function PlanChart({ c, shock, real, cut, goalStart, showGoal, showBoth }: {
+  c: Customer; shock: Shock; real: ReturnType<typeof realWorld>; cut: number; goalStart: number; showGoal: boolean; showBoth: boolean;
+}) {
+  const H = 24;
   const none = monthlyPath(c, shock, real, H);
   const withCut = monthlyPath(c, shock, real, H, { cutDuringShock: cut });
   const first = monthlyPath(c, shock, real, H, { startBuffer: goalStart });
   const both = monthlyPath(c, shock, real, H, { startBuffer: goalStart, cutDuringShock: cut });
-  const cutText = cutShare >= 1 ? "Cut all non-essential spending" : `Cut ${pct(cutShare)} of non-essential spending`;
   const labels = none.pts.map(p => (p.k === 0 ? "Start" : MONTHS[(p.month + 10) % 12]));
   const lines = [
     { name: "No plan", color: GREY, dash: true, values: none.pts.map(p => p.balance) },
     ...(cut > 0 ? [{ name: "Backup plan", color: ORANGE, values: withCut.pts.map(p => p.balance) }] : []),
-    ...(goalFirstRunway !== null ? [{ name: "Goal plan first", color: BLUE, values: first.pts.map(p => p.balance) }] : []),
-    ...(bothRunway !== null ? [{ name: "Both plans", color: INK, values: both.pts.map(p => p.balance) }] : []),
+    ...(showGoal ? [{ name: "Goal plan first", color: BLUE, values: first.pts.map(p => p.balance) }] : []),
+    ...(showBoth ? [{ name: "Both plans", color: INK, values: both.pts.map(p => p.balance) }] : []),
   ];
-  const r = (x: number) => (x >= NO_SHORTFALL ? "No shortfall" : `${x.toFixed(1)} months`);
   return (
-    <>
-      <p className="impact-lead">
-        Savings during this scenario under real-world rules. The customer needs them to last <b>{need} months</b>.
-      </p>
-      <div className="outcomes">
-        <Outcome color={GREY} dash name="No plan" value={r(real.runway)} detail="Keeps spending as usual" ok={real.runway >= need} />
-        <Outcome color={ORANGE} name="Backup plan (after the shock)"
-          value={cut > 0 ? r(backupRunway) : r(real.runway)}
-          detail={cut > 0 ? `${cutText} (${money(cut)}/mo)` : "No cuts needed"}
-          ok={(cut > 0 ? backupRunway : real.runway) >= need} />
-        <Outcome color={BLUE} name="Goal plan (before the shock)"
-          value={goalFirstRunway !== null ? r(goalFirstRunway) : "Already there"}
-          detail={goalFirstRunway !== null ? `Start with ${money(goalStart)} saved (3 months), no cuts` : "They already have 3 months saved"}
-          ok={goalFirstRunway !== null ? goalFirstRunway >= need : null} />
-        {bothRunway !== null && (
-          <Outcome color={INK} name="Both plans" value={r(bothRunway)}
-            detail={`3 months saved first, then ${cutText.toLowerCase()} if it hits`} ok={bothRunway >= need} />
-        )}
-      </div>
+    <div className="plan-chart">
+      <div className="step-kicker">Savings month by month</div>
       <MultiLine labels={labels} lines={lines} fmt={kfmt} shade={shock.incomePct < 100 ? { to: shock.duration, label: "shock period" } : undefined}
-        ariaLabel="Savings month by month: no plan, backup plan, goal plan first" />
-      <p className="note">
-        Projection with their usual seasonal spending (January and June run high). Income returns after the shock ends.
-        {goalFirstRunway !== null && goalFirstRunway > (cut > 0 ? backupRunway : real.runway) &&
-          <> Building the cushion <b>before</b> a shock does more than cutting back after it.</>}
-      </p>
-    </>
+        ariaLabel="Savings month by month: no plan, backup plan, goal plan first, both" />
+      <p className="note">Projection using their usual seasonal spending. Below $0 means they&apos;ve run out.</p>
+    </div>
   );
 }
 
-// ------------------------------------------------------------------ the letter: instant template, then Gemini
+// ------------------------------------------------------------------ the summary: instant template, then Gemini
 const letterCache = new Map<string, { text: string; src: string }>();
 
 function Letter(props: ImpactProps & { goalFirstRunway: number | null; bothRunway: number | null }) {
@@ -462,13 +491,10 @@ function Letter(props: ImpactProps & { goalFirstRunway: number | null; bothRunwa
   }, [key]);
   const got = letterCache.get(key);
   const text = got?.text ?? template(s);
-  const note = !got ? "Personalising the wording with Gemini…"
-    : got.src === "gemini" ? "Worded by Gemini from the engine's numbers below; every number comes from the engine."
-    : got.src === "fallback" ? "Standard wording (Gemini unavailable right now); every number comes from the engine."
-    : "Standard wording; every number comes from the engine.";
+  const note = !got ? "Personalising with Gemini…" : got.src === "gemini" ? "Worded by Gemini · numbers from the engine" : "Numbers from the engine";
   return (
     <div className="story">
-      <div className={"story-text" + (got ? "" : " pending")}>{text}</div>
+      <p className={"story-text" + (got ? "" : " pending")}>{text}</p>
       <p className="note">{!got && <span className="dot" />}{note}</p>
     </div>
   );

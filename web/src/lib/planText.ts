@@ -18,33 +18,33 @@ export type Summary = {
 export const $ = (x: number) => "$" + Math.round(x).toLocaleString("en-CA");
 const months = (r: number) => (r >= 120 ? "more than 10 years (no shortfall)" : `${r.toFixed(1)} months`);
 
+/** The plan in 2-3 short sentences: where they stand, what gets them through, what to do now. */
 export function template(s: Summary): string {
-  const lines: string[] = [];
-  lines.push(`Right now you have ${$(s.buffer)} saved, about ${s.cushion_months} months of your usual spending. ` +
-    `Your balance tends to settle around ${$(s.comfort_number)}, and money above that usually gets spent the following month.`);
-  if (s.shock && s.backup) {
-    if (s.buffer_after_shock !== s.buffer)
-      lines.push(`The one-off cost would leave ${$(Math.max(0, s.buffer_after_shock))} in savings.`);
-    lines.push(`If this shock hit, your savings would last ${months(s.real_runway)} under real rules` +
-      (s.real_runway !== s.official_runway ? ` (${months(s.official_runway)} by the standard formula).` : "."));
-    if (s.backup.cut_share_of_non_essential === 0) lines.push(`You'd get through ${s.backup.target_months} months without cutting back.`);
-    else if (s.backup.reachable && s.backup.cut_share_of_non_essential !== null)
-      lines.push(`To last ${s.backup.target_months} months, cut about ${Math.round(s.backup.cut_share_of_non_essential * 100)}% of your non-essential spending (${$(s.backup.cut_dollars)} a month). Basic needs like food, housing and transportation stay as they are.`);
-    else lines.push(`Cutting back alone won't cover ${s.backup.target_months} months: even cutting all non-essential spending (${$(s.backup.cut_dollars)} a month) only stretches savings to ${months(s.backup.runway_if_cut_all)}. Plan for extra income or lower fixed costs too.`);
-    if (s.goal_first_runway !== null && s.goal_first_runway > s.real_runway)
-      lines.push(`If you'd built the 3-month cushion first, the same shock would last ${months(s.goal_first_runway)}` +
-        (s.both_runway !== null && s.both_runway > s.goal_first_runway
-          ? `, and ${months(s.both_runway)} if you also cut back when it hits.` : "."));
+  const out: string[] = [];
+  const goalLine = s.goal.gap > 0 && s.goal.monthly_transfer > 0 && s.goal.months_to_goal
+    ? `Setting aside ${$(s.goal.monthly_transfer)} a month automatically builds a 3-month cushion of ${$(s.goal.target)} in about ${s.goal.months_to_goal} months.`
+    : s.goal.gap === 0 ? "You already have a 3-month cushion." : null;
+  if (!s.shock || !s.backup) {
+    out.push(`You have ${$(s.buffer)} saved, about ${s.cushion_months} months of your usual spending.`);
+    if (goalLine) out.push(goalLine);
+    return out.join(" ");
   }
-  if (s.goal.gap > 0) {
-    lines.push(`Goal: build a 3-month cushion of ${$(s.goal.target)}. Set an automatic transfer of ${$(s.goal.monthly_transfer)} a month into savings` +
-      (s.goal.months_to_goal ? ` and you'll be there in about ${s.goal.months_to_goal} months.` : "."));
+  const need = s.backup.target_months;
+  if (s.real_runway >= need) {
+    out.push(`Your savings would last ${months(s.real_runway)} in this scenario, enough to get through it.`);
   } else {
-    lines.push(`You already have a 3-month cushion. A good next goal is 6 months.`);
+    out.push(`Your savings would last ${months(s.real_runway)} in this scenario, short of the ${need} months you need.`);
+    const share = s.backup.cut_share_of_non_essential;
+    if (s.backup.reachable && share)
+      out.push(`Cutting ${Math.round(share * 100)}% of your non-essential spending (${$(s.backup.cut_dollars)} a month) would get you there.`);
+    else if (s.both_runway !== null && s.both_runway >= need)
+      out.push(`Cutting back alone isn't enough, but with a 3-month cushion saved first, cutting back would last ${months(s.both_runway)}.`);
+    else
+      out.push(`Even cutting all non-essential spending only reaches ${months(s.backup.runway_if_cut_all)}, so you'd also need extra income or help.`);
   }
-  return lines.join("\n\n");
+  if (goalLine) out.push(goalLine);
+  return out.join(" ");
 }
-
 
 /** Every number Gemini writes must already be in the template; otherwise its wording is not used. */
 export function numbersMatch(rewrite: string, source: string): boolean {

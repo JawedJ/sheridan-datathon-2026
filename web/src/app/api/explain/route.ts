@@ -19,8 +19,7 @@ export async function POST(req: Request) {
 Rules:
 - Keep every number exactly as written. Do not add, remove, round or calculate any number.
 - Do not add any fact or advice that isn't in the plan.
-- No greeting, no sign-off, no headings, no lists, no bold. At most 120 words in 2 or 3 short paragraphs.
-- Make the key idea clear: their balance settles at a comfort number, so the fix is an automatic transfer, not willpower.
+- No greeting, no sign-off, no headings, no lists, no bold. One short paragraph, at most 60 words.
 
 Plan:
 ${plan}`;

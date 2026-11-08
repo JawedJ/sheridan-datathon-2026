@@ -212,6 +212,8 @@ used up) the template stays, and a small note says which wording is showing. We 
 Gemini, given raw numbers, misdescribed a furnace as an income shock and quoted savings before the
 one-off cost.
 
+**Layout (simplified Nov 7).** The plan reads top to bottom: a 2-3 sentence summary (where they stand, what gets them through, what to do now); four outcome tiles; two step cards, each built around one action number (Step 1, before a shock: $X/month into savings with a progress bar; Step 2, if it hits: $Y/month less spending, with bars showing how far each level of cutting gets them against the months needed); then the chart. The June/December "bonus" boost was removed (the extra income is unlabelled, so calling it a bonus was guesswork).
+
 **What the plan changes (chart).** Four outcomes for the same scenario, as tiles and a 24-month
 balance chart: no plan; backup plan (cut the needed share of non-essential spending during the
 shock); goal plan first (start the shock with 3 months saved); both. Tiles use the same runway
