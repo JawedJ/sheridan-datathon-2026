@@ -232,6 +232,33 @@ export function backupPlan(c: Customer, real: Result, s: Shock): BackupPlan {
   return { targetMonths, essential, nonEssential, cutNeeded, cutDollars, options, reachable: cutNeeded <= 1, bestRunway };
 }
 
+/** One plan in two phases: build the 3-month cushion now (the goal plan), then, if the shock hits,
+ *  cut only as much non-essential spending as still needed (the backup plan). Same runway formula. */
+export type FullPlan = {
+  need: number;              // months the savings must last
+  saveFirst: boolean;        // false = they already have 3 months saved
+  startBuffer: number;       // savings when the shock hits, before one-off costs
+  cutDollars: number;        // non-essential spending to cut per month once it hits (capped at all of it)
+  cutShare: number;          // ... as a share of non-essential spending
+  reachable: boolean;        // false = even the cushion plus cutting everything isn't enough
+  runway: number;            // months the plan lasts
+};
+
+export function fullPlan(c: Customer, real: Result, s: Shock, goal: GoalPlan): FullPlan {
+  const need = Math.max(3, s.incomePct < 100 ? s.duration : 3);
+  const nonEssential = Math.max(0, c.S - essentialFloor(c));
+  const startBuffer = Math.max(c.B, goal.target);
+  const buffer = startBuffer - (c.B - real.bufferLeft);
+  const wanted = buffer > 0 ? Math.max(0, real.spending - (buffer / need + real.income)) : nonEssential;
+  const cutDollars = Math.min(wanted, nonEssential);
+  return {
+    need, saveFirst: goal.gap > 0, startBuffer, cutDollars,
+    cutShare: nonEssential > 0 ? cutDollars / nonEssential : 0,
+    reachable: buffer > 0 && wanted <= nonEssential + 0.5,
+    runway: judgesRunway(buffer, real.gap - cutDollars),
+  };
+}
+
 // ---------------------------------------------------------------- formatting
 export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 

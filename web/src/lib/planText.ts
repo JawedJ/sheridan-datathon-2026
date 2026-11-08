@@ -4,45 +4,35 @@
 export type Summary = {
   account: number; income: number; spending: number; fixed: number; buffer: number;
   comfort_number: number; cushion_months: number; pensioner: boolean;
-  shock: { incomePct: number; billsPct: number; oneOffMonths: number; oneOffDollars: number; duration: number; startMonth: number } | null;
+  shock: unknown;
   official_runway: number; real_runway: number; real_notes: string[];
-  shock_description: string | null;   // the scenario in plain words, so the wording can't misdescribe it
+  shock_description: string | null;   // the scenario in plain words
   buffer_after_shock: number;          // savings left after any one-off cost
-  goal_first_runway: number | null;   // same shock, if they'd reached the 3-month goal first
-  both_runway: number | null;         // goal first AND the backup cuts
+  essential: number;                   // basic-needs spending protected per month
   goal: { target: number; gap: number; monthly_transfer: number; months_to_goal: number | null };
-  backup: { target_months: number; cut_share_of_non_essential: number | null; cut_dollars: number; reachable: boolean;
-    non_essential_dollars: number; runway_if_cut_all: number } | null;
+  plan: { need: number; save_first: boolean; cut_dollars: number; cut_share: number; reachable: boolean; runway: number };
 };
 
 export const $ = (x: number) => "$" + Math.round(x).toLocaleString("en-CA");
 const months = (r: number) => (r >= 120 ? "more than 10 years (no shortfall)" : `${r.toFixed(1)} months`);
 
-/** The plan in 2-3 short sentences: where they stand, what gets them through, what to do now. */
+/** The plan in 2-3 short sentences: without a plan, what the plan is, where it leaves them. */
 export function template(s: Summary): string {
-  const out: string[] = [];
-  const goalLine = s.goal.gap > 0 && s.goal.monthly_transfer > 0 && s.goal.months_to_goal
-    ? `Setting aside ${$(s.goal.monthly_transfer)} a month automatically builds a 3-month cushion of ${$(s.goal.target)} in about ${s.goal.months_to_goal} months.`
-    : s.goal.gap === 0 ? "You already have a 3-month cushion." : null;
-  if (!s.shock || !s.backup) {
-    out.push(`You have ${$(s.buffer)} saved, about ${s.cushion_months} months of your usual spending.`);
-    if (goalLine) out.push(goalLine);
-    return out.join(" ");
-  }
-  const need = s.backup.target_months;
-  if (s.real_runway >= need) {
-    out.push(`Your savings would last ${months(s.real_runway)} in this scenario, enough to get through it.`);
-  } else {
-    out.push(`Your savings would last ${months(s.real_runway)} in this scenario, short of the ${need} months you need.`);
-    const share = s.backup.cut_share_of_non_essential;
-    if (s.backup.reachable && share)
-      out.push(`Cutting ${Math.round(share * 100)}% of your non-essential spending (${$(s.backup.cut_dollars)} a month) would get you there.`);
-    else if (s.both_runway !== null && s.both_runway >= need)
-      out.push(`Cutting back alone isn't enough, but with a 3-month cushion saved first, cutting back would last ${months(s.both_runway)}.`);
-    else
-      out.push(`Even cutting all non-essential spending only reaches ${months(s.backup.runway_if_cut_all)}, so you'd also need extra income or help.`);
-  }
-  if (goalLine) out.push(goalLine);
+  const p = s.plan, g = s.goal, out: string[] = [];
+  const save = p.save_first && g.monthly_transfer > 0 && g.months_to_goal
+    ? `set aside ${$(g.monthly_transfer)} a month for ${g.months_to_goal} months to build a ${$(g.target)} emergency fund`
+    : null;
+  const cut = p.cut_dollars > 0 ? `cut non-essential spending by ${$(p.cut_dollars)} a month` : null;
+  out.push(s.real_runway >= p.need
+    ? `Without a plan, your savings would last ${months(s.real_runway)}, enough for the ${p.need} months you need.`
+    : `Without a plan, your savings would last ${months(s.real_runway)}, short of the ${p.need} months you need.`);
+  if (save && cut) out.push(`The plan: ${save} now, and if it happens, ${cut}.`);
+  else if (save) out.push(`The plan: ${save} now; with that in place you wouldn't need to cut back.`);
+  else if (cut) out.push(`The plan: if it happens, ${cut}.`);
+  else out.push(`No changes are needed, but keep at least ${$(g.target)} in savings.`);
+  if (save || cut) out.push(p.reachable
+    ? `That makes your savings last ${months(p.runway)}.`
+    : `Even then, your savings last ${months(p.runway)}, so you'd also need extra income or help.`);
   return out.join(" ");
 }
 

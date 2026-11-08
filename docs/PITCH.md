@@ -63,12 +63,12 @@ covers Y months of spending."*
 - **If H is $0:** "Their household bills aren't recorded in the data. So a
   bills increase can't change their number. That's a limit of the data, and we don't guess it."
 
-**3. The plan (≈60 s).** Scroll to section 3:
-- Read the first sentence or two of the plan text.
-- Point at the four tiles: **No plan / Backup plan / Goal plan first / Both.**
-  *"Cutting back after the shock gets them to A months. Having the 3-month cushion first gets them
-  to B. Both together, C."*
-- Goal plan: *"An automatic transfer of $T a month builds that cushion in G months."*
+**3. The plan (≈60 s).** Scroll to section 3, "Their plan":
+- Point at the two boxes: *"Without a plan, A months. With the plan, B months. They need N."*
+- Read the two numbered actions:
+  1. **Now (goal plan):** *"Move $T a month into savings automatically for G months, until they have 3 months saved."*
+  2. **If it hits (backup plan):** *"Then cut non-essential spending by $C a month. Basic needs stay protected."*
+- If a judge asks why both: *"For high earners, saving alone or cutting alone isn't enough. Saving first means they cut less."*
 
 **4. Answer the card (≈20 s).** End with a clear yes or no:
 *"So, do they make it? By the official formula yes, with real EI no. Our plan gets them there."*
@@ -77,14 +77,14 @@ covers Y months of spending."*
 
 | Account | Who | Card | Official | Real | What to say |
 | --- | --- | --- | ---: | ---: | --- |
-| **71293** | High earner, $21,513/mo in, 2.4 months saved | Laid off, EI 55%, 6 months | 6.2 | **2.8** | The EI cap is the story. Backup alone 5.0, cushion first 3.6, **both 6.3: makes it** |
-| **20111** | Judges' example, H = $0 | Laid off, EI 55%, 6 months | 3.4 | 3.2 | Cut 81% of non-essential ($2,505/mo) to reach 6 months; cushion first + cuts = 8.8 |
-| 20111 | | Furnace (1 month of spending) | 4.0 | 4.0 | Makes 3 months without cuts. No-shock runway is only 7.8 because of the median quirk |
-| 20111 | | Bills up 15% | no change | no change | H = $0: the bills shock can't change their number (paid in cash) |
-| **22998** | On the edge, 1.5 months saved, H = $0 | Furnace | **1.9** | 1.9 | Doesn't make 3 months; cut 25% of non-essential ($805/mo) |
-| 22998 | | Laid off, EI 55%, 6 months | 2.5 | 2.3 | Cutting can't reach 6 months (best 5.2); cushion first + cuts = 10.5 |
-| **93255** | Pensioner, 14.8 months saved | Any card | no shortfall | no shortfall | Income covers spending; a layoff can't stop a pension |
-| **98208** | Top earner, H = $0 | Laid off, EI 55%, 6 months | 4.7 | **2.1** | Even cutting everything only gets 3.6; both plans 5.8, still short |
+| **71293** | High earner, $21,513/mo in, 2.4 months saved | Laid off, EI 55%, 6 months | 6.2 | **2.8** | The EI cap is the story. Plan: save $1,605/mo for 8 months, then cut $6,427/mo if it hits → **6.0 months, makes it** |
+| **20111** | Judges' example, H = $0 | Laid off, EI 55%, 6 months | 3.4 | 3.2 | Plan: save $286/mo for 29 months, then cut $1,141/mo (37%) → 6.0 months |
+| 20111 | | Furnace (1 month of spending) | 4.0 | 4.0 | Makes 3 months without cuts; with the fund, 7.6. No-shock runway is only 7.8 because of the median quirk |
+| 20111 | | Bills up 15% | no change | no change | H = $0: their bills aren't recorded, so a % bills shock can't change their number |
+| **22998** | On the edge, 1.5 months saved, H = $0 | Furnace | **1.9** | 1.9 | Doesn't make 3 months. Plan: save $297/mo (46 months); then no cuts needed → 7.9 |
+| 22998 | | Laid off, EI 55%, 6 months | 2.5 | 2.3 | Plan: save first, then cut $1,327/mo (41%) → 6.0 months |
+| **93255** | Pensioner, 14.8 months saved | Any card | no shortfall | no shortfall | Income covers spending; a layoff can't stop a pension. Plan: keep the fund |
+| **98208** | Top earner, H = $0 | Laid off, EI 55%, 6 months | 4.7 | **2.1** | Even saving first ($2,667/mo for 11 months) and cutting everything only reaches 5.8: needs extra income or help |
 
 Brief's own cards: "Laid off, EI 55% for 6 months" · "Furnace costs a full month of spending" ·
 "Laid off (EI 55%) + household bills up 15%" · "Rent up 25% starting in January".
