@@ -330,6 +330,18 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
             <PlanItem n={1} title={`Aim for ${money(goal.target)} in savings (3 months of spending)`}
               why="They have no money left over each month, so this needs a spending change first." />
           )}
+          {plan.saveFirst && (
+            <div className="fund">
+              <div className="fund-row">
+                <span>Saved now: <b>{money(c.B)}</b> ({goal.cushionMonths.toFixed(1)} months)</span>
+                <span>Goal: <b>{money(goal.target)}</b> (3 months)</span>
+              </div>
+              <div className="progress fund-bar" aria-label={`${pct(goal.have / goal.target)} of the goal`}>
+                <div style={{ width: pct(Math.min(1, goal.have / goal.target)) }} />
+              </div>
+              <div className="fund-left">{pct(Math.min(1, goal.have / goal.target))} of the way there · {money(goal.gap)} to go</div>
+            </div>
+          )}
         </div>
 
         <div className="phase">
