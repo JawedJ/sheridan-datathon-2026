@@ -71,6 +71,8 @@ Furnace on 22998: 1.9 months, short of 3; with the emergency fund, no cuts neede
 **How we cleaned and questioned the data**
 - We never edit the raw files, and we don't fill gaps with guesses. Everything is code anyone can rerun.
 - No customers removed: the judges can pick any of the 4,500.
+- We checked the data adds up: no missing months, every month-end balance = last month + in − out (180,826 checks,
+  off by at most $0.14), monthly totals match the 1 million transactions exactly.
 - Pensioners (740) are kept in the engine but left out of income comparisons: a layoff can't stop a pension.
 - The first 3 months of each account are skipped when measuring habits: accounts start at $0 and fill up.
 - 2020 is a partial year (accounts still opening), so year-by-year checks use 2021–2025.

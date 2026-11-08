@@ -425,6 +425,9 @@ Each problem was tested against the data; the evidence is in `analysis/verify_fo
 | Owners under 18 | 56 | Kept; flagged as a curiosity | 4.14 |
 | District 69 missing 2022 values | 1 district | 2022 columns not used anywhere | — |
 | Weekdays, round amounts, bank codes | — | Treated as artifacts; no findings built on them | 5 |
+| **Integrity checks** (`analysis/check_integrity.py`) | — | Nothing changed. No gaps in any account's months; month-end balance = previous + in − out for all 180,826 account-months (max difference $0.14); monthly in/out = the transactions exactly; parts add up to totals; every account starts at $0; no negative amounts; all 4,500 accounts present | — |
+| Repeated transactions (same account, day, type, amount) | 1,368 extra rows (0.13%) | Kept: mostly interest and fees; can't tell real from copies, and the judges' monthly totals include them | — |
+| Transaction-level running balance | — | Doesn't line up row by row because transactions within a day have no time, so their order is unknown (94.5% reconcile when order is ignored). Not used: all formulas use the monthly file, which reconciles exactly | — |
 
 ### 4.3 Limits: what we can't claim [5B]
 - **It's 1990s Czech data**, dates shifted and amounts converted to CAD. It's a cash economy (76% of spending is cash), unlike Canada today. The *pattern* (a comfort level in dollars) is what we claim, not the exact numbers.
