@@ -162,7 +162,7 @@ January spending runs about 45% above average and June about 39% above, while Fe
 below. Two-thirds of customers also receive roughly 50% more money in June and December. That
 looks like a bonus, but the data doesn't label it, so the app doesn't use it (removed as guesswork).
 
-The separate month-by-month chart under section 2 was removed for a cleaner screen; the same month-by-month model now drives only the plan chart ("What the plan changes"):
+The separate month-by-month chart was removed, and the plan chart now uses flat monthly spending (the same numbers as every runway on screen) and covers only the months they need. With seasonal spending, about half of the plans that "make it" dipped below $0 on the chart (e.g. 71293 ended at -$997 in a high-spending June), contradicting the numbers. Seasonal spending is still used for the layoff-timing finding (findings page, chart 4). The model it used:
 - spending each month = S × a seasonal factor. The factor is 50% the customer's own pattern and
   50% everyone's, so one unusual January doesn't dominate. That blend is our choice.
 - during the shock, income is the real-world shock income; afterwards it returns to I.

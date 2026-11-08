@@ -374,9 +374,10 @@ function PlanItem({ n, title, why }: { n: number; title: React.ReactNode; why: R
 }
 
 function PlanChart({ c, shock, real, plan }: { c: Customer; shock: Shock; real: ReturnType<typeof realWorld>; plan: FullPlan }) {
-  const H = 24;
-  const none = monthlyPath(c, shock, real, H);
-  const withPlan = monthlyPath(c, shock, real, H, { startBuffer: plan.startBuffer, cutDuringShock: plan.cutDollars });
+  const H = plan.need;   // only the months they need to get through, nothing after
+  // Flat monthly spending, the same numbers as every runway on the page, so the chart can't contradict them.
+  const none = monthlyPath(c, shock, real, H, { seasonal: false });
+  const withPlan = monthlyPath(c, shock, real, H, { startBuffer: plan.startBuffer, cutDuringShock: plan.cutDollars, seasonal: false });
   const labels = none.pts.map(p => (p.k === 0 ? "Start" : MONTHS[(p.month + 10) % 12]));
   const lines = [
     { name: "Without a plan", color: GREY, dash: true, values: none.pts.map(p => p.balance) },
@@ -384,10 +385,10 @@ function PlanChart({ c, shock, real, plan }: { c: Customer; shock: Shock; real: 
   ];
   return (
     <div className="plan-chart">
-      <div className="step-kicker">Savings month by month</div>
-      <MultiLine labels={labels} lines={lines} fmt={kfmt} shade={shock.incomePct < 100 ? { to: shock.duration, label: "shock period" } : undefined}
+      <div className="step-kicker">Savings over the {H} months they need</div>
+      <MultiLine labels={labels} lines={lines} fmt={kfmt}
         ariaLabel="Savings month by month, without and with the plan" />
-      <p className="note">Projection using their usual seasonal spending. Below $0 means they&apos;ve run out.</p>
+      <p className="note">Same monthly numbers as the runways above. Below $0 means they&apos;ve run out before the end.</p>
     </div>
   );
 }

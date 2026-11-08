@@ -75,7 +75,7 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | A4 | **Removed.** Customers with $0 bills used to get estimated bills (19.9% of S) when a bills shock was applied. Now no estimate: the app says their bills aren't recorded, so a bills increase can't be measured. Old row for reference: | Their bills are invisible in the data | One share for everyone (the median among customers who do have bills); it's a guess, labelled on screen | ESTIMATE |
 | A5 | Label "Real-world rules" | — | **Resolved:** with the bills estimate removed, this column only applies real policy (EI maximum for job losses, pensions continue) to the judges' own numbers, so the label is accurate. Deposits as income is the judges' definition | wording |
 
-### 2.4 Month-by-month model (now only used by the plan chart; the separate chart was removed)
+### 2.4 Month-by-month model (plan chart now uses flat spending over the months needed; seasonal factors only feed the timing finding)
 | # | What | Type |
 | --- | --- | --- |
 | M1 | Spending each month = S × a seasonal factor | DERIVED + ASSUMPTION |

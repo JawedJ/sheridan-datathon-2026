@@ -143,7 +143,7 @@ export type PathPoint = { k: number; month: number; balance: number; income: num
 
 /** Month-by-month balance with seasonal spending; usual income returns after `duration`. */
 export function monthlyPath(c: Customer, s: Shock, real: Result, horizon = 24,
-  opts: { startBuffer?: number; cutDuringShock?: number } = {}) {
+  opts: { startBuffer?: number; cutDuringShock?: number; seasonal?: boolean } = {}) {
   // startBuffer: savings before one-off costs (default: today's buffer). cutDuringShock: $/month less
   // spending while the shock lasts (backup plan). Defaults reproduce the plain path exactly.
   const oneOff = c.B - real.bufferLeft;
@@ -157,7 +157,7 @@ export function monthlyPath(c: Customer, s: Shock, real: Result, horizon = 24,
     const m = ((s.startMonth - 1 + k) % 12) + 1;
     const shocked = k < s.duration;
     const income = shocked ? real.income : c.I;
-    const spending = c.S * c.season[m - 1] + (shocked || s.incomePct === 100 ? extraBills : 0) - (shocked ? cut : 0);
+    const spending = c.S * (opts.seasonal === false ? 1 : c.season[m - 1]) + (shocked || s.incomePct === 100 ? extraBills : 0) - (shocked ? cut : 0);
     const next = bal + income - spending;
     if (runsOutAt === null && next < 0) runsOutAt = k + bal / (spending - income);
     bal = next;
