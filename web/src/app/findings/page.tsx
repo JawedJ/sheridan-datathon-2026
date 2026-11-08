@@ -58,7 +58,7 @@ export default function FindingsPage() {
         </div>
         <GapLines cats={d.deciles.map(x => "D" + x.decile)} sub={d.deciles.map(x => kfmt(x.income) + "/mo")}
           kept={d.deciles.map(x => x.comfort)} needed={d.deciles.map(x => x.three_months)} fmt={kfmt}
-          tipFor={i => { const x = d.deciles[i]; return <><b>Income group {x.decile}</b> ({money(x.income)}/mo)<br />Balance settles at <b>{money(x.comfort)}</b><br />3 months of spending: <b>{money(x.three_months)}</b><br />Covers {x.cushion_months.toFixed(1)} months · n={x.n}</>; }} />
+          tipFor={i => { const x = d.deciles[i]; return <><b>Income group {x.decile}</b> ({money(x.income)}/mo)<br />Balance settles at <b>{money(x.comfort)}</b><br />3 months of spending: <b>{money(x.three_months)}</b><br />Covers {x.cushion_months.toFixed(1)} months</>; }} />
       </section>
 
       <section className="card">
@@ -76,7 +76,7 @@ export default function FindingsPage() {
             { name: "Bottom 20%", color: "var(--series-2)", values: d.thermostat.map(t => t.bottom20) },
             { name: "Top 20%", color: "var(--series-1)", values: d.thermostat.map(t => t.top20) },
           ]}
-          tipFor={i => { const t = d.thermostat[i]; return <><b>Balance {t.position.toLowerCase()}</b><br />Bottom 20%: <b>{signed(t.bottom20)}</b> of usual income next month<br />Top 20%: <b>{signed(t.top20)}</b><br />{t.bottom20_n.toLocaleString()} / {t.top20_n.toLocaleString()} account-months</>; }} />
+          tipFor={i => { const t = d.thermostat[i]; return <><b>Balance {t.position.toLowerCase()}</b><br />Bottom 20%: <b>{signed(t.bottom20)}</b> of usual income next month<br />Top 20%: <b>{signed(t.top20)}</b></>; }} />
       </section>
 
       <section className="card">
@@ -110,7 +110,6 @@ export default function FindingsPage() {
           labelAt={ci => worst3.includes(d.timing[ci].month) || d.timing[ci].month === best.month}
           series={[{ name: "Median runway", color: "var(--series-1)", values: d.timing.map(t => t.runway) }]}
           tipFor={i => { const t = d.timing[i]; return <><b>Layoff starts in {t.month}</b><br />Median runway: <b>{t.runway.toFixed(1)} months</b><br />Worst month for {t.worst_share}% of customers</>; }} />
-        <p className="muted" style={{ margin: "6px 0 0" }}>{d.timing_n.toLocaleString()} non-pensioner customers whose savings run out within 10 years for every start month.</p>
       </section>
 
       <section className="card">
