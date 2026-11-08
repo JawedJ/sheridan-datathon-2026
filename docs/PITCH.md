@@ -154,7 +154,7 @@ Brief's own cards: "Laid off, EI 55% for 6 months" · "Furnace costs a full mont
 | 0:15–0:35 | Chart 2 and its notes (windfall result) | Dollar number, not months; 3 of 4 windfall dollars spent |
 | 0:35–0:50 | Chart 3 | 93% vs 26%; cutting back leaves 43% short |
 | 0:50–1:35 | Engine: type the 71293 layoff card | Pills → six values → official 6.2 vs real 2.8 → four tiles → both plans 6.3 |
-| 1:35–1:50 | Findings, "How sure are we?" | Hold-out, windfalls, our biggest limit (cash) |
+| 1:35–1:50 | A simple title card (or stay on the engine) | Hold-out, windfalls, our biggest limit (cash) |
 | 1:50–2:00 | Back to the headline | Show balances in months; build the cushion before the shock |
 
 ---
