@@ -132,7 +132,6 @@ function CustomerPanel({ c, data, idInput, setIdInput, onLookup, onRandom }: {
   const peer = c.decile ? data.meta.decile_cushion[String(c.decile)] : null;
   const tags: string[] = [];
   if (c.pensioner) tags.push("Pensioner");
-  if (c.bonusPct > 0) tags.push(`June & Dec bonus +${pct(c.bonusPct)}`);
   if (c.billsZero) tags.push("Bills not recorded");
   if (c.onEdge) tags.push("Often near zero");
   if (c.everNegative) tags.push("Has gone below zero");
@@ -303,9 +302,6 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
                     : <>No regular surplus: trim 10% of non-essential spending and save <b>{money(goal.monthlyTransfer)}/mo</b></>}
                   {goal.monthsToGoal !== null && <> → there in <b>{goal.monthsToGoal} months</b></>}
                 </li>
-                {goal.bonusBoost > 0 && goal.monthsWithBonus !== null && (
-                  <li>Plus half of each June and December bonus → <b>{goal.monthsWithBonus} months</b></li>
-                )}
               </ul>
               <p className="tip-line">Their balance settles around {money(c.comfort)} and extra money gets spent. An automatic transfer raises that level without relying on willpower.</p>
             </>
@@ -334,7 +330,6 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
               <ul>
                 {backup.cutNeeded !== null && backup.cutNeeded > 0 && backup.reachable && <li>That&apos;s <b>{money(backup.cutDollars)}/mo</b> less spending</li>}
                 {backup.options.map(o => <li key={o.cut}>{o.cut === 1 ? "Cut all non-essential spending" : `Cut ${pct(o.cut)} of non-essential`} → {runwayText(o.runway)}</li>)}
-                {c.bonusPct > 0 && shock.jobLoss && shock.incomePct < 100 && <li>A layoff also means losing the June and December bonus</li>}
               </ul>
               <details className="more">
                 <summary>How we decide what&apos;s essential</summary>
@@ -495,12 +490,12 @@ function summary({ c, shock, off, real, goal, backup, goalFirstRunway, bothRunwa
   return {
     account: c.id, income: r1(c.I), spending: r1(c.S), fixed: r1(c.F), buffer: r1(c.B),
     comfort_number: r1(c.comfort), cushion_months: +(c.B / c.S).toFixed(1), pensioner: c.pensioner,
-    bonus_pct: c.bonusPct, shock,
+    shock,
     official_runway: off.runway, real_runway: real.runway, real_notes: real.notes,
     shock_description: describeShock(c, shock),
     buffer_after_shock: r1(real.bufferLeft),
     goal_first_runway: goalFirstRunway, both_runway: bothRunway,
-    goal: { target: r1(goal.target), gap: r1(goal.gap), monthly_transfer: r1(goal.monthlyTransfer), months_to_goal: goal.monthsToGoal, months_with_bonus: goal.monthsWithBonus },
+    goal: { target: r1(goal.target), gap: r1(goal.gap), monthly_transfer: r1(goal.monthlyTransfer), months_to_goal: goal.monthsToGoal },
     backup: {
       target_months: backup.targetMonths, reachable: backup.reachable,
       // when cutting can't get there, don't hand over a "needed" cut bigger than all non-essential spending

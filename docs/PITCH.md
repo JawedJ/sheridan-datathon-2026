@@ -78,13 +78,13 @@ covers Y months of spending."*
 | Account | Who | Card | Official | Real | What to say |
 | --- | --- | --- | ---: | ---: | --- |
 | **71293** | High earner, $21,513/mo in, 2.4 months saved | Laid off, EI 55%, 6 months | 6.2 | **2.8** | The EI cap is the story. Backup alone 5.0, cushion first 3.6, **both 6.3: makes it** |
-| **20111** | Judges' example, H = $0, bonuses | Laid off, EI 55%, 6 months | 3.4 | 3.2 | Cut 81% of non-essential ($2,505/mo) to reach 6 months; cushion first + cuts = 8.8 |
+| **20111** | Judges' example, H = $0 | Laid off, EI 55%, 6 months | 3.4 | 3.2 | Cut 81% of non-essential ($2,505/mo) to reach 6 months; cushion first + cuts = 8.8 |
 | 20111 | | Furnace (1 month of spending) | 4.0 | 4.0 | Makes 3 months without cuts. No-shock runway is only 7.8 because of the median quirk |
 | 20111 | | Bills up 15% | no change | no change | H = $0: the bills shock can't change their number (paid in cash) |
 | **22998** | On the edge, 1.5 months saved, H = $0 | Furnace | **1.9** | 1.9 | Doesn't make 3 months; cut 25% of non-essential ($805/mo) |
 | 22998 | | Laid off, EI 55%, 6 months | 2.5 | 2.3 | Cutting can't reach 6 months (best 5.2); cushion first + cuts = 10.5 |
 | **93255** | Pensioner, 14.8 months saved | Any card | no shortfall | no shortfall | Income covers spending; a layoff can't stop a pension |
-| **98208** | Top earner with bonuses, H = $0 | Laid off, EI 55%, 6 months | 4.7 | **2.1** | Even cutting everything only gets 3.6; both plans 5.8, still short. Loses the bonus too |
+| **98208** | Top earner, H = $0 | Laid off, EI 55%, 6 months | 4.7 | **2.1** | Even cutting everything only gets 3.6; both plans 5.8, still short |
 
 Brief's own cards: "Laid off, EI 55% for 6 months" · "Furnace costs a full month of spending" ·
 "Laid off (EI 55%) + household bills up 15%" · "Rent up 25% starting in January".

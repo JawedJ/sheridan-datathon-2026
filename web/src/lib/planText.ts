@@ -3,14 +3,14 @@
 
 export type Summary = {
   account: number; income: number; spending: number; fixed: number; buffer: number;
-  comfort_number: number; cushion_months: number; pensioner: boolean; bonus_pct: number;
+  comfort_number: number; cushion_months: number; pensioner: boolean;
   shock: { incomePct: number; billsPct: number; oneOffMonths: number; oneOffDollars: number; duration: number; startMonth: number } | null;
   official_runway: number; real_runway: number; real_notes: string[];
   shock_description: string | null;   // the scenario in plain words, so the wording can't misdescribe it
   buffer_after_shock: number;          // savings left after any one-off cost
   goal_first_runway: number | null;   // same shock, if they'd reached the 3-month goal first
   both_runway: number | null;         // goal first AND the backup cuts
-  goal: { target: number; gap: number; monthly_transfer: number; months_to_goal: number | null; months_with_bonus: number | null };
+  goal: { target: number; gap: number; monthly_transfer: number; months_to_goal: number | null };
   backup: { target_months: number; cut_share_of_non_essential: number | null; cut_dollars: number; reachable: boolean;
     non_essential_dollars: number; runway_if_cut_all: number } | null;
 };
@@ -38,8 +38,7 @@ export function template(s: Summary): string {
   }
   if (s.goal.gap > 0) {
     lines.push(`Goal: build a 3-month cushion of ${$(s.goal.target)}. Set an automatic transfer of ${$(s.goal.monthly_transfer)} a month into savings` +
-      (s.goal.months_to_goal ? ` and you'll be there in about ${s.goal.months_to_goal} months` : "") +
-      (s.goal.months_with_bonus && s.bonus_pct > 0 ? `, or ${s.goal.months_with_bonus} months if you also save half of your June and December bonus.` : "."));
+      (s.goal.months_to_goal ? ` and you'll be there in about ${s.goal.months_to_goal} months.` : "."));
   } else {
     lines.push(`You already have a 3-month cushion. A good next goal is 6 months.`);
   }

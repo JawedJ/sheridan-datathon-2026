@@ -15,7 +15,7 @@ export type EngineData = {
   id: number[];
   I: number[]; S: number[]; F: number[]; H: number[]; B: number[]; P: number[];
   mean_in: number[]; mean_out: number[]; comfort: (number | null)[];
-  cash_share: (number | null)[]; pension_share: number[]; bonus_pct: number[];
+  cash_share: (number | null)[]; pension_share: number[];
   season: number[][]; age: (number | null)[]; gender: string[]; district: string[]; region: string[];
   decile: number[]; months: number[]; flags: string[];
 };
@@ -27,7 +27,6 @@ export type Customer = {
   comfort: number;            // where the balance settles (median month-end balance after month 3)
   cashShare: number;
   pensionShare: number;
-  bonusPct: number;           // extra income in June and December (0 = none)
   season: number[];           // 12 spending factors, average 1
   age: number | null; gender: string; district: string; region: string;
   decile: number;             // income decile among non-pensioners (0 = pensioner)
@@ -51,7 +50,7 @@ export function getCustomer(d: EngineData, idx: Map<number, number>, id: number)
     meanIn: d.mean_in[i], meanOut: d.mean_out[i],
     comfort: d.comfort[i] ?? d.B[i],
     cashShare: d.cash_share[i] ?? 0,
-    pensionShare: d.pension_share[i], bonusPct: d.bonus_pct[i], season: d.season[i],
+    pensionShare: d.pension_share[i], season: d.season[i],
     age: d.age[i], gender: d.gender[i], district: d.district[i], region: d.region[i],
     decile: d.decile[i], months: d.months[i],
     pensioner: f.includes("p"), billsZero: f.includes("b"), everNegative: f.includes("n"),
@@ -142,7 +141,7 @@ export function realWorld(c: Customer, s: Shock, eiMonthlyMax: number): Result {
 
 export type PathPoint = { k: number; month: number; balance: number; income: number; spending: number };
 
-/** Month-by-month balance with seasonal spending; income returns (with bonus months) after `duration`. */
+/** Month-by-month balance with seasonal spending; usual income returns after `duration`. */
 export function monthlyPath(c: Customer, s: Shock, real: Result, horizon = 24,
   opts: { startBuffer?: number; cutDuringShock?: number } = {}) {
   // startBuffer: savings before one-off costs (default: today's buffer). cutDuringShock: $/month less
@@ -157,8 +156,7 @@ export function monthlyPath(c: Customer, s: Shock, real: Result, horizon = 24,
   for (let k = 0; k < horizon; k++) {
     const m = ((s.startMonth - 1 + k) % 12) + 1;
     const shocked = k < s.duration;
-    const bonus = !shocked && (m === 6 || m === 12) ? c.I * c.bonusPct : 0;
-    const income = shocked ? real.income : c.I + bonus;
+    const income = shocked ? real.income : c.I;
     const spending = c.S * c.season[m - 1] + (shocked || s.incomePct === 100 ? extraBills : 0) - (shocked ? cut : 0);
     const next = bal + income - spending;
     if (runsOutAt === null && next < 0) runsOutAt = k + bal / (spending - income);
@@ -186,8 +184,8 @@ export function essentialFloor(c: Customer): number {
 
 export type GoalPlan = {
   target: number; have: number; gap: number; cushionMonths: number; comfortMonths: number;
-  monthlyTransfer: number; transferSource: "surplus" | "trim"; bonusBoost: number;
-  monthsToGoal: number | null; monthsWithBonus: number | null;
+  monthlyTransfer: number; transferSource: "surplus" | "trim";
+  monthsToGoal: number | null;
 };
 
 export function goalPlan(c: Customer, targetMonths = 3): GoalPlan {
@@ -197,14 +195,12 @@ export function goalPlan(c: Customer, targetMonths = 3): GoalPlan {
   const nonEssential = Math.max(0, c.S - essentialFloor(c));
   const transferSource = surplus >= 0.02 * c.I ? "surplus" : "trim";
   const monthlyTransfer = transferSource === "surplus" ? surplus : 0.1 * nonEssential;
-  const bonusBoost = c.bonusPct > 0 ? (0.5 * 2 * c.I * c.bonusPct) / 12 : 0;
   const m1 = monthlyTransfer > 0 ? gap / monthlyTransfer : null;
-  const m2 = monthlyTransfer + bonusBoost > 0 ? gap / (monthlyTransfer + bonusBoost) : null;
   return {
     target, have: c.B, gap, cushionMonths: c.S > 0 ? c.B / c.S : 0,
     comfortMonths: c.S > 0 ? c.comfort / c.S : 0,
-    monthlyTransfer, transferSource, bonusBoost,
-    monthsToGoal: m1 === null ? null : Math.ceil(m1), monthsWithBonus: m2 === null ? null : Math.ceil(m2),
+    monthlyTransfer, transferSource,
+    monthsToGoal: m1 === null ? null : Math.ceil(m1),
   };
 }
 

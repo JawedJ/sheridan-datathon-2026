@@ -56,7 +56,7 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | H2 | Cushion | B ÷ S | DERIVED |
 | H3 | Comfort number ("where their balance usually settles") | Median month-end balance, skipping the account's first 3 months | DERIVED |
 | H4 | "People at their income level hold X months" | Median B ÷ S for their income decile, pensioners excluded | DERIVED |
-| H5 | Tags (bonus, bills paid in cash, often near zero, has gone below zero, irregular income, pensioner) | Thresholds we chose: bonus > 10% in Jun/Dec; H = 0; edge months > 25%; any day below zero; income CV > 0.6 with few autopays; pension ≥ 50% of income | DERIVED with ASSUMPTION thresholds |
+| H5 | Tags (bills not recorded, often near zero, has gone below zero, irregular income, pensioner) | Thresholds we chose: H = 0; edge months > 25%; any day below zero; income CV > 0.6 with few autopays; pension ≥ 50% of income | DERIVED with ASSUMPTION thresholds |
 | H7 | Customers with no recorded bills (1,225): knock-on effects | F shows ~$0 for them (understated); the autopay warning sign overlaps 94% with this group; top-earner fixed-cost medians are pulled down. Runway and the headline are unaffected (checked within each group) |
 | H6 | App label "Bills not recorded" (no claim about how they pay) | H = 0 and 98% of these customers never have a labelled bill. They most likely pay their bills in cash out of their withdrawals: they spend as much as customers with bills, but almost all of it leaves as cash (median customer 99.7%; 96% of their total spending). 158 others pay a bills standing order by untagged transfer. This is our **inference**, not something the data states | ESTIMATE |
 
@@ -80,7 +80,7 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | --- | --- | --- |
 | M1 | Spending each month = S × a seasonal factor | DERIVED + ASSUMPTION |
 | M2 | Seasonal factor = 50% the customer's own pattern + 50% everyone's (smoothed, so one odd January doesn't dominate) | ASSUMPTION |
-| M3 | After the shock, income returns to I, plus a bonus in June and December if they usually get one (> 10%) | ASSUMPTION |
+| M3 | After the shock, income returns to I (the June/December "bonus" was removed: unlabelled in the data, so guesswork) | ASSUMPTION |
 | M4 | Uses median S. For the 26% with the median quirk (S > I), the no-shock path drifts down even though they don't really lose money | known limitation |
 
 ### 2.5 Plans (section 3)
@@ -88,7 +88,7 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | --- | --- | --- |
 | P1 | Goal target = 3 × S (3 months of spending) | ASSUMPTION (a standard rule of thumb) |
 | P2 | Monthly transfer = their lifetime average surplus (mean in − mean out); if under 2% of I, "trim 10% of non-essential spending" instead | DERIVED + ASSUMPTION (5%, 2%) |
-| P3 | "Plus half of each June and December bonus" | ASSUMPTION (half) |
+| P3 | ~~"Plus half of each June and December bonus"~~ Removed (the extra income is unlabelled, so calling it a bonus was a guess) | REMOVED |
 | P4 | Backup: target = max(3 months, shock length). Protected spending = max(labelled bills+insurance+loans, 63.8% of S); the rest is "non-essential"; cut needed = share of non-essential. 63.8% = Canadian basic-needs share (food from stores, main home, transportation, health care, clothing: $48,600 of $76,146), Statistics Canada Survey of Household Spending 2023, Table 11-10-0222-01 | DERIVED + sourced ESTIMATE (a national average applied to each customer) |
 | P5 | **Fixed.** Before: flexible = everything except labelled bills, so plans said e.g. "cut 97%" (71293). Now basic needs are protected (P4); if cutting all non-essential spending isn't enough, the app says so and shows the best it can do (71293: 4.3 months, needs extra income). Old note: for cash-bill customers that included their rent | ⚠️ Can produce unrealistic advice, e.g. "cut 97% of flexible spending" (account 71293, EI + rent 15%). We now add a note for cash-bill customers. **DECIDE:** say "not realistic" above some cut (e.g. 50%)? |
 | P6 | Plan text (top of the plan section, written automatically once a scenario runs): template instantly, then Gemini (gemini-3.5-flash-lite) rewords that template text. It never sees raw data. Its reply is rejected unless it finished cleanly, is a plain letter, and contains no number that isn't in the template | Wording only; a note says which wording is showing |

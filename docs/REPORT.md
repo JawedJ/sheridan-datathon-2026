@@ -159,14 +159,13 @@ It's purely calculated from the data, with no assumptions. The app also shows th
 ### 4.3 Seasonal spending (used in the plan chart)
 The judges' formula assumes every month is the same. Real spending isn't: across all customers,
 January spending runs about 45% above average and June about 39% above, while February runs 30%
-below. Two-thirds of customers also get roughly 50% extra income every June and December (a
-13th/14th-month bonus pattern).
+below. Two-thirds of customers also receive roughly 50% more money in June and December. That
+looks like a bonus, but the data doesn't label it, so the app doesn't use it (removed as guesswork).
 
 The separate month-by-month chart under section 2 was removed for a cleaner screen; the same month-by-month model now drives only the plan chart ("What the plan changes"):
 - spending each month = S × a seasonal factor. The factor is 50% the customer's own pattern and
   50% everyone's, so one unusual January doesn't dominate. That blend is our choice.
-- during the shock, income is the real-world shock income; afterwards it returns to I, plus the
-  bonus in June and December if the customer usually gets one.
+- during the shock, income is the real-world shock income; afterwards it returns to I.
 
 This is extra context, not a replacement for the runway number. One limitation to know: it uses
 the median spending S, so for the 26% of customers where median spending is above median income
@@ -181,7 +180,6 @@ shock hits, both based on their own numbers."*
 - How: an automatic monthly transfer equal to their usual surplus (average money in minus average
   money out over their history). If they have almost no surplus (under 2% of income), the plan
   suggests trimming 10% of their non-essential spending instead.
-- Optional boost: saving half of each June and December bonus, if they get one.
 - The comfort-number message: *their balance settles around $X and extra money gets spent, so an
   automatic transfer raises that level without relying on willpower.* This comes directly from our
   main finding.
@@ -423,8 +421,8 @@ spend down two-thirds of a month's income the next month (−66%), vs −27% for
 - **Layoff timing matters.** Median runway by the month the layoff starts: January 6.1 months
   (worst), February 7.8 (best). The median customer's best and worst months differ by 2.7 months.
   January, June and December are the worst months for over half of customers.
-- **Bonus months.** 66% of customers get about +50% income in June and December. The judges' median
-  income ignores this.
+- **Extra June and December income.** 66% of customers receive about +50% more money in June and
+  December. We don't know what it is (no label), so it's a finding only; the app doesn't use it.
 - **January is the riskiest month.** Spending runs 1.3–1.5× normal every January, and the lowest
   balance of the year falls in January for 24% of account-years.
 - **Living on the edge is a slide, not a phase.** 117 customers spend more than a quarter of their
@@ -563,7 +561,7 @@ reply containing a number that isn't in that text, so Gemini can't show a wrong 
 unavailable, our original wording is shown.
 
 **"Why does timing matter?"**
-Spending peaks in January and June, and bonuses arrive in June and December. A layoff in January
+Spending peaks in January and June. A layoff in January
 leaves the median customer 6.1 months; in February, 7.8 months.
 
 **"What would a bank do with this?"** (Impact)
