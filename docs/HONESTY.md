@@ -112,7 +112,7 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | F3 | Layoff timing chart | Subset: 3,547 non-pensioners whose savings run out within 10 years for every start month; seasonal factors per M2 |
 | F4 | "4,500 real bank customers" headline | **Removed** from the engine page (team decision: judges know the dataset). The findings page still states the source |
 | F5 | "Under real EI rules" in the pitch | Fine: deposits are the only income measure in the data and the judges' own definition |
-| F10 | Findings page accuracy notes | A "How sure are we?" table and a "What we can't rule out" list. The intro box, per-chart notes and number tables were removed for a cleaner page (the detail is in FINDINGS.md section 2.1 and REPORT) |
+| F10 | Findings page accuracy notes | All removed from the page for a cleaner look (intro box, per-chart notes, number tables, "How sure are we?" and "What we can't rule out"). The detail lives in FINDINGS.md section 2.1, REPORT Part 8 and PITCH Q&A, ready for questions for a cleaner page (the detail is in FINDINGS.md section 2.1 and REPORT) |
 | F6 | "88% flexible; cutting half brings 93% → 30%" | **Fixed.** Replaced everywhere with the basic-needs-protected numbers: 36% non-essential; cut half → 79% still run out; cut all → 43% |
 
 ---

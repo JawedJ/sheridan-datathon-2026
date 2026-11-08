@@ -112,27 +112,6 @@ export default function FindingsPage() {
           tipFor={i => { const t = d.timing[i]; return <><b>Layoff starts in {t.month}</b><br />Median runway: <b>{t.runway.toFixed(1)} months</b><br />Worst month for {t.worst_share}% of customers</>; }} />
       </section>
 
-      <section className="card">
-        <h2 style={{ fontSize: 18, margin: 0 }}>How sure are we?</h2>
-        <table className="data" style={{ marginTop: 10 }}>
-          <thead><tr><th>Claim</th><th>Confidence</th><th>Why</th></tr></thead>
-          <tbody>
-            <tr><td>Higher earners hold fewer months of savings</td><td><b>High</b></td><td>Holds on a random hold-out, in every region, year and group, with 5 definitions of savings and after noise correction</td></tr>
-            <tr><td>Savings drift back to a set level (the comfort number)</td><td><b>High</b></td><td>Windfalls drain back (45% kept vs 100%+ expected without a set point), and a fair version of the thermostat test agrees</td></tr>
-            <tr><td>93% of top earners run out within 3 months on real EI</td><td><b>Medium</b></td><td>Real policy, but assumes no change in spending, full EI eligibility and no other savings</td></tr>
-            <tr><td>Cutting back isn&apos;t enough for 38–43%</td><td><b>Medium</b></td><td>Basic needs use a national average; the data can&apos;t show what cash was spent on</td></tr>
-            <tr><td>Layoff timing changes runway by about 2.7 months</td><td><b>Medium</b></td><td>The seasonal pattern is stable; the runway itself is a simulation</td></tr>
-          </tbody>
-        </table>
-        <h3 style={{ fontSize: 15, margin: "16px 0 4px" }}>What we can&apos;t rule out</h3>
-        <ul className="limits">
-          <li><b>Cash kept at home.</b> 41% of top earners&apos; spending is large cash withdrawals. They repeat at similar amounts around mid-month, and are more common when no bills are recorded, but we can&apos;t follow cash once it leaves the bank. If a full year of them had been saved instead, top earners would hold about 7 months, not 1.6.</li>
-          <li><b>Savings at other banks.</b> Money sent to other banks can&apos;t explain it: counting every such dollar as savings moves top earners from 1.9 to only 2.4 months. Money that never touches this account is invisible.</li>
-          <li><b>Household size.</b> The data doesn&apos;t say how many people an income supports.</li>
-          <li><b>Old data, new labels.</b> The amounts and habits come from a 1990s cash economy. The pattern should be checked on today&apos;s Canadian customers.</li>
-        </ul>
-        <p className="muted" style={{ margin: "8px 0 0" }}>Every number here can be reproduced from the repo; full method in FINDINGS.md and docs/REPORT.md.</p>
-      </section>
     </div>
   );
 }
