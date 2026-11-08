@@ -162,15 +162,16 @@ function CustomerPanel({ c, data, idInput, setIdInput, onLookup, onRandom, onExa
       </p>
 
       <div className="stat-grid">
-        <Stat label="Money in" value={money(c.I)} unit="/mo" />
-        <Stat label="Spending" value={money(c.S)} unit="/mo" />
-        <Stat label="Bills & fixed costs" value={money(c.F)} unit="/mo" />
-        <Stat label="Savings buffer" value={money(c.B)} />
+        <Stat k="I" label="Money in" value={money(c.I)} unit="/mo" />
+        <Stat k="S" label="Spending" value={money(c.S)} unit="/mo" />
+        <Stat k="F" label="Fixed costs" value={money(c.F)} unit="/mo" note="bills + insurance + loans" />
+        <Stat k="H" label="Household bills" value={money(c.H)} unit="/mo" note={c.H === 0 ? "not recorded (likely paid in cash)" : "rent & utilities"} />
+        <Stat k="B" label="Savings buffer" value={money(c.B)} note="avg. daily balance, last 6 months" />
+        <Stat k="P" label="Loan payment" value={c.P ? money(c.P) : "None"} unit={c.P ? "/mo" : ""} note={c.P ? "loan still running" : "no loan running"} />
       </div>
 
       <div className="facts">
         <div><span>Runway with no shock</span><b>{runwayText(base.runway)}</b></div>
-        <div><span>Loan payment</span><b>{c.P ? money(c.P) + "/mo" : "None running"}</b></div>
         <div><span>Cushion</span><b>{cushion.toFixed(1)} months of spending</b></div>
         <div><span>Comfort number</span><b>{money(c.comfort)}</b></div>
       </div>
@@ -190,8 +191,14 @@ function CustomerPanel({ c, data, idInput, setIdInput, onLookup, onRandom, onExa
   );
 }
 
-function Stat({ label, value, unit }: { label: string; value: string; unit?: string }) {
-  return <div className="stat"><div className="stat-label">{label}</div><div className="stat-value">{value}<small>{unit}</small></div></div>;
+function Stat({ k, label, value, unit, note }: { k: string; label: string; value: string; unit?: string; note?: string }) {
+  return (
+    <div className="stat">
+      <div className="stat-label"><span className="sym" title="The judges' symbol for this value">{k}</span>{label}</div>
+      <div className="stat-value">{value}<small>{unit}</small></div>
+      {note && <div className="stat-note">{note}</div>}
+    </div>
+  );
 }
 
 // ================================================================== 2. the answer

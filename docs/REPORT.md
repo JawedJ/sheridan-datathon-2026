@@ -75,7 +75,7 @@ This shapes almost every decision we made, so it's worth knowing well:
 
 ## Part 3 — How we follow the judges' rules
 
-The brief gives exact definitions so that teams' numbers can be checked against an answer key:
+The brief gives exact definitions so that teams' numbers can be checked against an answer key: (all six are shown in section 1 of the app, each labelled with the judges' letter: I, S, F, H, B, P; H shows "not recorded (likely paid in cash)" when it's $0):
 
 | Number | Judges' definition |
 | --- | --- |

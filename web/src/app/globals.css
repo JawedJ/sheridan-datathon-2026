@@ -175,7 +175,7 @@ details.more { margin-top: 14px; border-top: 1px solid var(--border); padding-to
 .progress div { height: 100%; background: var(--series-1); border-radius: 999px; }
 .tip-line { font-size: 13.5px; color: var(--text-2); background: var(--surface-2); border-radius: 10px; padding: 10px 12px; margin: 10px 0 0; }
 .letter { margin-top: 12px; white-space: pre-wrap; background: var(--surface-2); border-radius: 10px; padding: 14px 16px; }
-@media (max-width: 520px) { .runways, .stat-grid { grid-template-columns: 1fr; } .scenario-row { flex-direction: column; } .hero .btn.primary { padding: 10px; } }
+@media (max-width: 520px) { .runways { grid-template-columns: 1fr; } .stat-value { font-size: 19px; } .scenario-row { flex-direction: column; } .hero .btn.primary { padding: 10px; } }
 
 .check-line { display: flex; gap: 8px; align-items: flex-start; font-size: 13.5px; color: var(--text-2); margin: -4px 0 14px; }
 .adjust { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px; }
@@ -209,3 +209,5 @@ details.more { margin-top: 14px; border-top: 1px solid var(--border); padding-to
 .caveats li, .limits li { margin: 6px 0; }
 .caveats b { color: var(--text); }
 .pill.warn { background: var(--warn-bg); color: var(--warn); }
+.sym { display: inline-block; min-width: 18px; text-align: center; font-size: 11px; font-weight: 700; color: var(--series-1); background: var(--accent-bg); border-radius: 5px; padding: 0 4px; margin-right: 6px; }
+.stat-note { font-size: 11.5px; color: var(--text-3); margin-top: 1px; }
