@@ -156,13 +156,13 @@ cash), so a bills increase can't be measured for them."*
 It's purely calculated from the data, with no assumptions. The app also shows their **cushion**
 (buffer ÷ spending, in months) and how that compares to people at the same income level.
 
-### 4.3 The month-by-month balance chart
+### 4.3 Seasonal spending (used in the plan chart)
 The judges' formula assumes every month is the same. Real spending isn't: across all customers,
 January spending runs about 45% above average and June about 39% above, while February runs 30%
 below. Two-thirds of customers also get roughly 50% extra income every June and December (a
 13th/14th-month bonus pattern).
 
-So the app has an optional chart that plays the shock out month by month:
+The separate month-by-month chart under section 2 was removed for a cleaner screen; the same month-by-month model now drives only the plan chart ("What the plan changes"):
 - spending each month = S × a seasonal factor. The factor is 50% the customer's own pattern and
   50% everyone's, so one unusual January doesn't dominate. That blend is our choice.
 - during the shock, income is the real-world shock income; afterwards it returns to I, plus the

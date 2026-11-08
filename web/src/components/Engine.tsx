@@ -7,7 +7,7 @@ import {
 } from "@/lib/engine";
 import { type Summary, template } from "@/lib/planText";
 import { EXAMPLE_SCENARIOS, type ParsedScenario, toShock } from "@/lib/scenario";
-import { BalanceChart, MultiLine } from "@/components/charts";
+import { MultiLine } from "@/components/charts";
 
 const EXAMPLES = [
   { id: 20111, label: "Judges' example" },
@@ -206,7 +206,6 @@ function AnswerPanel({ c, data, shock, setManual }: {
 }) {
   const off = official(c, shock);
   const real = realWorld(c, shock, data.meta.ei_monthly_max);
-  const path = monthlyPath(c, shock, real, 24);
   const any = hasShock(shock);
   const jobLoss = shock.incomePct < 100;
   const horizon = jobLoss ? shock.duration : 3;
@@ -218,7 +217,6 @@ function AnswerPanel({ c, data, shock, setManual }: {
     else if (okOff) { tone = "warn"; headline = "Official formula says yes. Real rules say no."; sub = `With real-world rules their savings last ${runwayText(real.runway)}, not ${horizon}.`; }
     else { tone = "bad"; headline = "No, their savings run out"; sub = `They need ${horizon} months. Savings last ${runwayText(Math.min(off.runway, real.runway))}.`; }
   }
-  const pts = path.pts.map(p => ({ k: p.k, label: MONTHS[p.month - 1], balance: p.balance }));
   const same = off.runway === real.runway && real.notes.length === 0;
 
   return (
@@ -252,16 +250,6 @@ function AnswerPanel({ c, data, shock, setManual }: {
       )}
       {real.notes.length > 0 && <ul className="notes">{real.notes.map(n => <li key={n}>{n}</li>)}</ul>}
 
-      {any && (
-        <details className="more">
-          <summary>Month-by-month balance</summary>
-          <BalanceChart pts={pts} shockMonths={jobLoss ? shock.duration : 24} fmt={kfmt} />
-          <p className="note">
-            {path.runsOutAt === null ? "Balance stays above zero for 24 months." : `Balance hits zero after ${path.runsOutAt.toFixed(1)} months.`}
-            {" "}Lowest point {money(path.low)}. Uses real-world rules and their usual seasonal spending (January and June run high).
-          </p>
-        </details>
-      )}
 
       <div className="adjust">
         <h3 className="adjust-title">Adjust the shock</h3>
