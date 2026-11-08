@@ -194,7 +194,7 @@ shock hits, both based on their own numbers."*
 - Honest limit, stated in the app: 63.8% is a national average, not this customer's actual
   spending, and it comes from Canadian data while the customers are from a 1990s Czech bank.
 
-**How the plan appears.** The plan section only shows once a scenario is run. It opens with the
+**How the plan appears.** The goal plan always shows: the brief describes it as "a goal plan, like building an emergency fund", for normal times, and building the cushion before a shock is our headline. The backup plan ("for if the shock hits"), the plan text and the outcome chart appear once a scenario is run. The plan section opens with the
 plan in plain words, written automatically: a template version appears instantly, then Google's
 Gemini (gemini-3.5-flash-lite) rewords it a second or two later. Gemini only rewords our template
 text; it never sees raw data to interpret. Its reply is only used if it finished cleanly, reads as a

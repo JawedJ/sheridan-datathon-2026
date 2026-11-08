@@ -310,18 +310,12 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
   const goal = goalPlan(c);
   const backup = backupPlan(c, real, shock);
   const any = hasShock(shock);
-  if (!any) {
-    return (
-      <section className="card">
-        <h2 className="section-title">3 · The plan</h2>
-        <p className="muted" style={{ margin: 0 }}>Run a scenario above and the plan appears here: what to do, and how long their savings last with and without it.</p>
-      </section>
-    );
-  }
+  // The goal plan is for normal times (the brief: "a goal plan, like building an emergency fund"), so it
+  // always shows. The backup plan is "for if the shock hits", so it and the outcome chart need a scenario.
   return (
     <section className="card">
       <h2 className="section-title">3 · The plan</h2>
-      <PlanStory c={c} shock={shock} off={off} real={real} goal={goal} backup={backup} />
+      {any && <PlanStory c={c} shock={shock} off={off} real={real} goal={goal} backup={backup} />}
       <div className="plans">
         <div className="plan-block">
           <h3 className="plan-title">Goal plan: before a shock</h3>
@@ -352,6 +346,9 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
 
         <div className="plan-block">
           <h3 className="plan-title">Backup plan: if it hits</h3>
+          {!any ? (
+            <p className="muted" style={{ margin: 0 }}>Run a scenario above to see what they&apos;d cut if it hits, and how long their savings last with and without each plan.</p>
+          ) : (
             <>
               <p className="plan-lead">
                 {real.runway >= NO_SHORTFALL || backup.cutNeeded === 0
@@ -386,6 +383,7 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
                   : "Timing matters: the same shock starting in December or January leaves less room."}
               </p>
             </>
+          )}
         </div>
       </div>
     </section>
