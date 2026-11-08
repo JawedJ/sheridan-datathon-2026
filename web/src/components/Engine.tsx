@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   type Customer, type EngineData, type Shock, MONTHS, NO_SHOCK, NO_SHORTFALL,
-  ESSENTIAL_SHARE, backupPlan, fullPlan, type FullPlan, getCustomer, goalPlan, indexData, money, monthlyPath, official,
+  ESSENTIAL_SHARE, backupPlan, fullPlan, type FullPlan, getCustomer, goalPlan, indexData, judgesRunway, money, monthlyPath, official,
   realWorld, runwayText,
 } from "@/lib/engine";
 import { type Summary, template } from "@/lib/planText";
@@ -290,6 +290,7 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
   const any = hasShock(shock);
   const okWithout = real.runway >= plan.need;
   const okWith = plan.runway >= plan.need - 0.05;
+  const peer = c.decile ? data.meta.decile_cushion[String(c.decile)] : null;
 
   return (
     <section className="card">
@@ -323,10 +324,14 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
             <PlanItem n={1}
               title={<>Move <b>{money(goal.monthlyTransfer)} a month</b> into savings automatically, for <b>{goal.monthsToGoal} months</b></>}
               why={<>{goal.transferSource === "surplus" ? "That's their usual monthly surplus. " : "From trimming 10% of non-essential spending. "}
-                It takes savings from {money(c.B)} to <b>{money(goal.target)}</b> (3 months of spending). Without it, their balance keeps settling around {money(c.comfort)}.</>} />
+                It takes savings from {money(c.B)} to <b>{money(goal.target)}</b> (3 months of spending). Without it, their balance keeps settling around {money(c.comfort)}.
+                {peer !== null && <> People at their income level hold about {peer.toFixed(1)} months.</>}</>} />
           ) : (
             <PlanItem n={1} title={`Aim for ${money(goal.target)} in savings (3 months of spending)`}
               why="They have no money left over each month, so this needs a spending change first." />
+          )}
+          {plan.saveFirst && goal.monthlyTransfer > 0 && goal.monthsToGoal !== null && (
+            <FundTimeline c={c} goal={goal} real={real} any={any} />
           )}
         </div>
 
@@ -343,6 +348,7 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
               why={<>Basic needs ({money(backup.essential)}/mo) stay protected.{" "}
                 {plan.reachable ? "That makes the savings last as long as needed." : <>Even so, savings only last <b>{mo(plan.runway)}</b>, so they&apos;d also need extra income or help.</>}</>} />
           )}
+          {any && <SpendBar c={c} real={real} backup={backup} plan={plan} />}
           {any && (
             <details className="more">
               <summary>What counts as basic needs?</summary>
@@ -358,6 +364,61 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
 
       {any && <PlanChart c={c} shock={shock} real={real} plan={plan} />}
     </section>
+  );
+}
+
+/** Savings at a few checkpoints along the way, and how long a shock would last if it hit then (no cuts). */
+function FundTimeline({ c, goal, real, any }: { c: Customer; goal: ReturnType<typeof goalPlan>; real: ReturnType<typeof realWorld>; any: boolean }) {
+  const N = goal.monthsToGoal ?? 0;
+  const ks = [...new Set([0, Math.round(N / 3), Math.round((2 * N) / 3), N])].filter(k => k <= N);
+  const oneOff = c.B - real.bufferLeft;
+  return (
+    <div className="timeline" aria-label="Savings along the way">
+      {ks.map(k => {
+        const saved = Math.min(goal.target, c.B + k * goal.monthlyTransfer);
+        const r = judgesRunway(saved - oneOff, real.gap);
+        return (
+          <div key={k} className={"tl-step" + (k === N ? " done" : "")}>
+            <div className="tl-when">{k === 0 ? "Today" : `After ${k} mo`}</div>
+            <div className="tl-saved">{money(saved)}</div>
+            {any && <div className="tl-runway">if it hit then: <b>{mo(r)}</b></div>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Their monthly spending during the shock: protected basic needs, non-essential kept, the cut; vs income. */
+function SpendBar({ c, real, backup, plan }: { c: Customer; real: ReturnType<typeof realWorld>; backup: ReturnType<typeof backupPlan>; plan: FullPlan }) {
+  const extra = Math.max(0, real.spending - c.S);           // shock costs (bills, other spending): treated as protected
+  const essential = backup.essential + extra;
+  const cut = Math.min(plan.cutDollars, backup.nonEssential);
+  const kept = Math.max(0, backup.nonEssential - cut);
+  const scale = Math.max(real.spending, real.income, 1);
+  const w = (x: number) => `${(100 * x) / scale}%`;
+  const short = real.spending - real.income;
+  return (
+    <div className="spendbar">
+      <div className="step-kicker">Their monthly spending during the shock</div>
+      <div className="sb-track">
+        <span className="sb-seg sb-need" style={{ width: w(essential) }} />
+        <span className="sb-seg sb-kept" style={{ width: w(kept) }} />
+        <span className="sb-seg sb-cut" style={{ width: w(cut) }} />
+        <span className="sb-income" style={{ left: w(Math.min(real.income, scale)) }} />
+      </div>
+      <div className="sb-legend">
+        <span><i className="sb-need" />Basic needs {money(essential)}</span>
+        {kept > 0.5 && <span><i className="sb-kept" />Non-essential kept {money(kept)}</span>}
+        {cut > 0.5 && <span><i className="sb-cut" />Cut {money(cut)}</span>}
+        <span><i className="sb-inc" />Income during the shock {money(real.income)}</span>
+      </div>
+      <p className="note" style={{ margin: "4px 0 0" }}>
+        {short > 0
+          ? <>Income covers {money(real.income)} of {money(real.spending)} a month, so savings pay the other {money(short)}{cut > 0.5 ? <>, or {money(Math.max(0, short - cut))} after the cut</> : null}.</>
+          : <>Income covers all of their spending during the shock.</>}
+      </p>
+    </div>
   );
 }
 

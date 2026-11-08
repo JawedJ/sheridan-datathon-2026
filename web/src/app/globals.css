@@ -261,3 +261,23 @@ details.more { margin-top: 14px; border-top: 1px solid var(--border); padding-to
 .plan-why { font-size: 13.5px; color: var(--text-2); margin-top: 2px; }
 .phase .more { margin-top: 10px; }
 @media (max-width: 520px) { .compare { grid-template-columns: 1fr; } .compare-arrow { display: none; } }
+
+/* plan: fund timeline + spending bar */
+.timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-top: 12px; }
+.tl-step { background: var(--surface); border-radius: 10px; padding: 8px 10px; border-top: 3px solid var(--series-1); opacity: .85; }
+.tl-step.done { opacity: 1; border-top-color: var(--good); }
+.tl-when { font-size: 12px; color: var(--text-2); font-weight: 600; }
+.tl-saved { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tl-runway { font-size: 12px; color: var(--text-2); }
+.spendbar { margin-top: 12px; }
+.sb-track { position: relative; display: flex; height: 16px; border-radius: 6px; overflow: visible; background: var(--surface); margin-top: 6px; }
+.sb-seg { height: 100%; }
+.sb-seg:first-child { border-radius: 6px 0 0 6px; }
+.sb-seg:last-of-type { border-radius: 0 6px 6px 0; }
+.sb-need, .sb-legend i.sb-need { background: var(--text-3); }
+.sb-kept, .sb-legend i.sb-kept { background: var(--series-1); }
+.sb-cut, .sb-legend i.sb-cut { background: repeating-linear-gradient(45deg, var(--series-2), var(--series-2) 4px, transparent 4px, transparent 7px); border: 1px solid var(--series-2); box-sizing: border-box; }
+.sb-income { position: absolute; top: -5px; bottom: -5px; width: 3px; background: var(--good); border-radius: 2px; }
+.sb-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--text-2); margin-top: 8px; }
+.sb-legend i { display: inline-block; width: 12px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.sb-legend i.sb-inc { background: var(--good); width: 4px; }
