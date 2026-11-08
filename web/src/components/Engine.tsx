@@ -22,7 +22,7 @@ const pct = (x: number) => Math.round(x * 100) + "%";
 const short = (r: number) => (r >= NO_SHORTFALL ? "120+" : r.toFixed(1));
 
 function hasShock(s: Shock) {
-  return s.incomePct < 100 || s.billsPct > 0 || s.oneOffMonths > 0 || s.oneOffDollars > 0;
+  return s.incomePct < 100 || s.billsPct > 0 || (s.otherPct ?? 0) > 0 || (s.otherDollars ?? 0) > 0 || s.oneOffMonths > 0 || s.oneOffDollars > 0;
 }
 
 export default function Engine() {
@@ -55,8 +55,7 @@ export default function Engine() {
       if (!r.ok || !j.parsed) throw new Error(j.error || "failed");
       const target = j.parsed.account_id ?? id;
       if (j.parsed.account_id !== null && !loadAccount(target)) return;
-      const tc = data && idx ? getCustomer(data, idx, target) : c;
-      const p = toShock(j.parsed as ParsedScenario, tc?.H ?? 0, shock.startMonth);
+      const p = toShock(j.parsed as ParsedScenario, shock.startMonth);
       setMissing(p.missing);
       if (p.empty) { setUnderstood(p.notes); setMsg(p.missing.length ? "That isn't something the engine can model (see below)." : "I couldn't find a shock in that. Try one of the examples below."); return; }
       setShock(p.shock);
@@ -274,7 +273,11 @@ function AnswerPanel({ c, data, shock, setManual }: {
             It&apos;s a job loss (EI rules apply, including the ${data.meta.ei_weekly_max}/week maximum)
           </label>
           <Slider label="Lasts" value={shock.duration} min={1} max={24} step={1} show={`${shock.duration} months`} onChange={v => setManual({ duration: v })} />
-          <Slider label="Household bills / rent up" value={shock.billsPct} min={0} max={50} step={5} show={`${shock.billsPct}%`} onChange={v => setManual({ billsPct: v })} />
+          <Slider label="Household bills / rent up" value={shock.billsPct} min={0} max={200} step={5} show={`${shock.billsPct}%`} onChange={v => setManual({ billsPct: v })} />
+          <Slider label="Other monthly costs up (childcare, car payment…)" value={shock.otherDollars ?? 0} min={0} max={5000} step={50}
+            show={shock.otherDollars ? `${money(shock.otherDollars)}/mo` : "none"} onChange={v => setManual({ otherDollars: v })} />
+          <Slider label="All spending up (e.g. inflation)" value={shock.otherPct ?? 0} min={0} max={50} step={1}
+            show={shock.otherPct ? `${shock.otherPct}% = ${money(((shock.otherPct ?? 0) / 100) * c.S)}/mo` : "none"} onChange={v => setManual({ otherPct: v })} />
           <Slider label="One-off cost, months of spending" value={shock.oneOffMonths} min={0} max={3} step={0.25}
             show={shock.oneOffMonths ? `${shock.oneOffMonths} = ${money(shock.oneOffMonths * c.S)}` : "none"} onChange={v => setManual({ oneOffMonths: v })} />
           <Slider label="One-off cost, dollars" value={shock.oneOffDollars} min={0} max={20000} step={500}
@@ -515,6 +518,8 @@ function describeShock(c: Customer, s: Shock): string {
   const parts: string[] = [];
   if (s.incomePct < 100) parts.push(`${s.jobLoss ? "job loss: " : ""}income drops to ${s.incomePct}% of usual for ${s.duration} months`);
   if (s.billsPct > 0) parts.push(`household bills/rent go up ${s.billsPct}%`);
+  if (s.otherDollars) parts.push(`monthly costs go up ${money(s.otherDollars)}`);
+  if (s.otherPct) parts.push(`all spending goes up ${s.otherPct}%`);
   if (s.oneOffMonths > 0) parts.push(`a one-off cost of ${money(s.oneOffMonths * c.S)} (${s.oneOffMonths} month${s.oneOffMonths === 1 ? "" : "s"} of spending)`);
   if (s.oneOffDollars > 0) parts.push(`a one-off cost of ${money(s.oneOffDollars)}`);
   return parts.join("; ") + `, starting in ${MONTHS[s.startMonth - 1]}`;

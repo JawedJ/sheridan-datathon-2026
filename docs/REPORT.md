@@ -111,6 +111,17 @@ The brief explicitly allows this: *"You can use your own definitions instead. If
 from these, be ready to explain why."* Our rule: **the official number is always shown first and
 never changed.** Anything extra is shown next to it, labelled, and explained on screen.
 
+### 4.0 Shocks beyond the brief's examples
+The brief says a shock "changes income or spending" and gives a bills rule (spending = S + x% × H).
+Twist cards could also name costs that aren't household bills, so the engine adds one more spending
+input, used in both columns the same way: **other spending**, either $ per month (childcare, a car
+payment, rent up by a dollar amount) or a % of all usual spending (inflation). Spending = S + x% × H
++ other. It is 0 for all of the brief's own cards, so the official answers don't change (49,500
+checks still match). Dollar increases are added straight to spending, so "rent up $300" also works
+for the 1,225 customers whose bills aren't recorded. Still not modelled, and shown as "Not included":
+a partner's job loss (their share of income is unknown), a % rise in one category like groceries
+(its amount is unknown), EI running out, and good news.
+
 ### 4.1 The "Real-world rules" column
 Next to the official runway, the app shows a second runway that applies real Canadian policy to the
 judges' own numbers. Only two things differ:

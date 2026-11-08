@@ -47,7 +47,8 @@ The judge picks an `account_id` and reads a twist card. Same routine every time:
 "Account 71293 is laid off, EI pays 55% for 6 months", and press Run. Gemini reads it.
 Read the pills aloud: *"It understood: off work on EI, income 55%, 6 months."*
 - "Assumed: …" pills = defaults from the brief (no % → 55%; no length → 6 months). Say them.
-- "Not included" pills = things the judges' model can't do (e.g. inflation on all spending). Say so plainly.
+- "Not included" pills = things the engine can't model (a partner's job loss, "groceries up 20%"). Say so plainly.
+- New costs work too: "daycare $1,000 a month", "inflation pushes spending up 8%" go in as other spending.
 - If Gemini is slow or busy: set it with the sliders under "Adjust the shock". Practise this once.
 
 **1. Know the customer (≈30 s).** Point at the six boxes, using the judges' letters:

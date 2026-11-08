@@ -63,14 +63,16 @@ export function getCustomer(d: EngineData, idx: Map<number, number>, id: number)
 export type Shock = {
   incomePct: number;      // income during the shock as % of usual (100 = no change, 55 = EI)
   jobLoss: boolean;       // true = layoff, so EI rules (the weekly maximum) apply; false = e.g. reduced hours
-  billsPct: number;       // household bills increase, %
+  billsPct: number;       // household bills increase, % (the judges' rule: + billsPct% x H)
+  otherPct?: number;      // all usual spending goes up, % (e.g. inflation): + otherPct% x S
+  otherDollars?: number;  // new or higher recurring cost, $/month (childcare, a car payment, rent up $300)
   oneOffMonths: number;   // one-off cost in months of typical spending (furnace = 1)
   oneOffDollars: number;  // extra one-off cost in dollars
   duration: number;       // months until income returns
   startMonth: number;     // 1-12, month the shock starts
 };
 
-export const NO_SHOCK: Shock = { incomePct: 100, jobLoss: false, billsPct: 0, oneOffMonths: 0, oneOffDollars: 0, duration: 6, startMonth: 1 };
+export const NO_SHOCK: Shock = { incomePct: 100, jobLoss: false, billsPct: 0, otherPct: 0, otherDollars: 0, oneOffMonths: 0, oneOffDollars: 0, duration: 6, startMonth: 1 };
 
 export const TWISTS: { key: string; label: string; shock: Partial<Shock> }[] = [
   { key: "ei", label: "Laid off, EI 55% for 6 months", shock: { incomePct: 55, jobLoss: true, billsPct: 0, oneOffMonths: 0, duration: 6 } },
@@ -101,10 +103,16 @@ export type Result = {
   notes: string[];
 };
 
+/** Extra monthly spending beyond the judges' bills rule. The brief says a shock "changes income or
+ *  spending"; this adds other recurring costs the same way (0 for all of the brief's own cards). */
+export function otherSpending(c: Customer, s: Shock): number {
+  return ((s.otherPct ?? 0) / 100) * c.S + (s.otherDollars ?? 0);
+}
+
 /** Official numbers, exactly as the judges define them. */
 export function official(c: Customer, s: Shock): Result {
   const income = (s.incomePct / 100) * c.I;
-  const spending = c.S + (s.billsPct / 100) * c.H;
+  const spending = c.S + (s.billsPct / 100) * c.H + otherSpending(c, s);
   const bufferLeft = c.B - s.oneOffMonths * c.S - s.oneOffDollars;
   const gap = spending - income;
   return { income, spending, bufferLeft, gap, runway: judgesRunway(bufferLeft, gap), notes: [] };
@@ -126,7 +134,7 @@ export function realWorld(c: Customer, s: Shock, eiMonthlyMax: number): Result {
   if (s.billsPct > 0 && c.billsZero) {
     notes.push("This customer's bills aren't recorded in the data (they pay in cash), so a bills increase can't be measured for them.");
   }
-  const spending = c.S + (s.billsPct / 100) * c.H;
+  const spending = c.S + (s.billsPct / 100) * c.H + otherSpending(c, s);
   const bufferLeft = c.B - s.oneOffMonths * c.S - s.oneOffDollars;
   const gap = spending - income;
   return { income, spending, bufferLeft, gap, runway: judgesRunway(bufferLeft, gap), notes };

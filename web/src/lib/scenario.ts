@@ -12,7 +12,9 @@ export type ParsedScenario = {
   ei_rules: boolean;                // layoff / sick / parental leave: EI rules (incl. weekly maximum) apply
   duration_months: number | null;   // how long the income drop lasts
   bills_pct: number | null;         // household bills / rent increase, %
-  bills_dollars: number | null;     // ... or as dollars per month (converted with the customer's bills)
+  bills_dollars: number | null;     // ... or as dollars per month (added straight to spending)
+  other_dollars: number | null;     // other new / higher recurring cost, $ per month
+  other_pct: number | null;         // all spending goes up, %
   one_off_months: number | null;    // one-off cost as months of usual spending
   one_off_dollars: number | null;   // one-off cost in dollars
   start_month: number | null;       // 1-12
@@ -29,6 +31,8 @@ export const SCENARIO_SCHEMA = {
     duration_months: { type: "NUMBER", nullable: true },
     bills_pct: { type: "NUMBER", nullable: true },
     bills_dollars: { type: "NUMBER", nullable: true },
+    other_dollars: { type: "NUMBER", nullable: true },
+    other_pct: { type: "NUMBER", nullable: true },
     one_off_months: { type: "NUMBER", nullable: true },
     one_off_dollars: { type: "NUMBER", nullable: true },
     start_month: { type: "INTEGER", nullable: true },
@@ -36,9 +40,9 @@ export const SCENARIO_SCHEMA = {
     not_modelled: { type: "ARRAY", items: { type: "STRING" } },
   },
   required: ["account_id", "income_pct", "ei_rules", "duration_months", "bills_pct", "bills_dollars",
-    "one_off_months", "one_off_dollars", "start_month", "assumptions", "not_modelled"],
+    "other_dollars", "other_pct", "one_off_months", "one_off_dollars", "start_month", "assumptions", "not_modelled"],
   propertyOrdering: ["account_id", "income_pct", "ei_rules", "duration_months", "bills_pct", "bills_dollars",
-    "one_off_months", "one_off_dollars", "start_month", "assumptions", "not_modelled"],
+    "other_dollars", "other_pct", "one_off_months", "one_off_dollars", "start_month", "assumptions", "not_modelled"],
 };
 
 export function scenarioPrompt(text: string, todayMonth: number): string {
@@ -52,10 +56,14 @@ THE ENGINE CAN ONLY MODEL THESE THINGS
    - ei_rules = true when the income drop is because they are off work and on Employment Insurance: laid off, let go, fired, lost their job, unemployed, on EI, sick and can't work (EI sickness benefits), maternity or parental leave (EI benefits). Otherwise false (pay cut, fewer hours, business slowdown, commission drop).
    - If they are laid off / on EI / on sick or parental leave and no percentage is given, use 55 (the EI rate) and add an assumption "No EI rate given, used 55% (the standard EI rate)".
    - duration_months = how long the income drop lasts, in months (1-24). Convert: weeks / 4.345, "a year" = 12, "half a year" = 6, "six-month layoff" = 6. If income drops but no length is given, use null and add the assumption "No length given, used 6 months".
-3. Household bills / rent going up (this is the ONLY kind of spending increase the engine can model):
+3. Household bills / rent going up:
    - bills_pct = the percentage increase ("rent goes up 15%" → 15; "bills double" → 100; "triple" → 200).
    - bills_dollars = an increase stated in dollars per month ("rent goes up by $300 a month" → 300). Use bills_pct OR bills_dollars, not both.
    - Counts as bills: rent, mortgage payment, utilities, hydro, heating, electricity, water, internet/phone bills, property tax, condo fees.
+3b. Other ongoing spending going up (every month):
+   - other_dollars = a new or higher monthly cost that is NOT a household bill, in dollars per month: childcare, daycare, a new car or loan payment, insurance premiums, tuition, ongoing medical or care costs, supporting a family member, a new baby's costs ("childcare adds $900 a month" -> 900). Several: add them up. Yearly amounts: divide by 12.
+   - other_pct = ALL of their usual spending goes up by a percentage ("inflation pushes spending up 10%" -> 10; "everything costs 5% more" -> 5).
+   - A percentage increase in only one category, e.g. "groceries go up 20%": we don't know their grocery spending, so list it in not_modelled.
 4. A one-off cost (a single unexpected expense paid from savings):
    - one_off_dollars = the amount in dollars ("$2,500 car repair" → 2500, "$3k" → 3000). Several one-off costs: add them up.
    - one_off_months = the cost measured in months of their usual spending ("a full month of their typical spending" → 1, "two months of expenses" → 2).
@@ -63,7 +71,7 @@ THE ENGINE CAN ONLY MODEL THESE THINGS
 5. start_month = the calendar month the shock starts (1 = January ... 12 = December). The current month is ${todayMonth} (${MONTHS[todayMonth - 1]}), so "next month" = ${(todayMonth % 12) + 1}. null if not mentioned.
 
 WHAT THE ENGINE CANNOT MODEL → list in not_modelled, briefly, and do NOT approximate it in the other fields:
-- Increases to all spending or to non-bill spending (inflation, groceries, gas, childcare, tuition).
+- A percentage increase in one non-bill category (groceries, gas): its dollar amount is unknown.
 - Someone else's job loss or income (spouse, partner, roommate): we don't know their share of household income.
 - Good news (raises, bonuses, inheritances, tax refunds, lottery wins).
 - Anything else that isn't one of the fields above.
@@ -77,11 +85,11 @@ RULES
 
 EXAMPLES (input → output)
 "Account 71293 loses 40% of their income for half a year and needs a $3k dental procedure" →
-{"account_id":71293,"income_pct":60,"ei_rules":false,"duration_months":6,"bills_pct":null,"bills_dollars":null,"one_off_months":null,"one_off_dollars":3000,"start_month":null,"assumptions":[],"not_modelled":[]}
+{"account_id":71293,"income_pct":60,"ei_rules":false,"duration_months":6,"bills_pct":null,"bills_dollars":null,"other_dollars":null,"other_pct":null,"one_off_months":null,"one_off_dollars":3000,"start_month":null,"assumptions":[],"not_modelled":[]}
 "They're laid off and their partner's hours get cut" →
-{"account_id":null,"income_pct":55,"ei_rules":true,"duration_months":null,"bills_pct":null,"bills_dollars":null,"one_off_months":null,"one_off_dollars":null,"start_month":null,"assumptions":["No EI rate given, used 55% (the standard EI rate)","No length given, used 6 months"],"not_modelled":["Partner's hours cut: their share of household income is unknown"]}
-"Groceries go up 20% and rent rises $250 a month from March" →
-{"account_id":null,"income_pct":null,"ei_rules":false,"duration_months":null,"bills_pct":null,"bills_dollars":250,"one_off_months":null,"one_off_dollars":null,"start_month":3,"assumptions":[],"not_modelled":["Groceries up 20%: only bills and rent increases can be modelled"]}
+{"account_id":null,"income_pct":55,"ei_rules":true,"duration_months":null,"bills_pct":null,"bills_dollars":null,"other_dollars":null,"other_pct":null,"one_off_months":null,"one_off_dollars":null,"start_month":null,"assumptions":["No EI rate given, used 55% (the standard EI rate)","No length given, used 6 months"],"not_modelled":["Partner's hours cut: their share of household income is unknown"]}
+"They have a baby: daycare costs $1,100 a month, groceries go up 20%, and rent rises $250 a month from March" →
+{"account_id":null,"income_pct":null,"ei_rules":false,"duration_months":null,"bills_pct":null,"bills_dollars":250,"other_dollars":1100,"other_pct":null,"one_off_months":null,"one_off_dollars":null,"start_month":3,"assumptions":[],"not_modelled":["Groceries up 20%: only bills and rent increases can be modelled"]}
 
 Scenario: """${text.slice(0, 600)}"""`;
 }
@@ -89,9 +97,8 @@ Scenario: """${text.slice(0, 600)}"""`;
 const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x));
 const finite = (x: unknown): x is number => typeof x === "number" && Number.isFinite(x);
 
-/** Turn the reader's output into engine settings. `billsH` = the target customer's monthly
- *  household bills (to convert a dollar increase); every value is range-checked here. */
-export function toShock(p: ParsedScenario, billsH: number, keepStartMonth: number) {
+/** Turn the reader's output into engine settings; every value is range-checked here. */
+export function toShock(p: ParsedScenario, keepStartMonth: number) {
   const shock: Shock = { ...NO_SHOCK, startMonth: keepStartMonth };
   const understood: string[] = [];
   const notes = [...(p.assumptions ?? [])].map(a => "Assumed: " + a);
@@ -107,13 +114,21 @@ export function toShock(p: ParsedScenario, billsH: number, keepStartMonth: numbe
   if (finite(p.bills_pct) && p.bills_pct > 0) {
     shock.billsPct = Math.round(clamp(p.bills_pct, 0, 300));
     understood.push(`Household bills / rent up ${shock.billsPct}%`);
-  } else if (finite(p.bills_dollars) && p.bills_dollars > 0) {
-    if (billsH > 0) {
-      shock.billsPct = Math.round(clamp((100 * p.bills_dollars) / billsH, 0, 300));
-      understood.push(`Household bills / rent up $${Math.round(p.bills_dollars).toLocaleString("en-CA")}/mo (${shock.billsPct}% of their bills)`);
-    } else {
-      missing.push(`Bills up $${Math.round(p.bills_dollars)}/mo: this customer's bills aren't recorded, so the increase can't be applied`);
-    }
+  }
+  // Dollar increases are added straight to spending, so they work even when bills aren't recorded.
+  let extra = 0;
+  if (finite(p.bills_dollars) && p.bills_dollars > 0) {
+    extra += p.bills_dollars;
+    understood.push(`Rent / bills up $${Math.round(p.bills_dollars).toLocaleString("en-CA")}/mo`);
+  }
+  if (finite(p.other_dollars) && p.other_dollars > 0) {
+    extra += p.other_dollars;
+    understood.push(`Other monthly costs up $${Math.round(p.other_dollars).toLocaleString("en-CA")}/mo`);
+  }
+  if (extra > 0) shock.otherDollars = Math.round(clamp(extra, 0, 100_000));
+  if (finite(p.other_pct) && p.other_pct > 0) {
+    shock.otherPct = Math.round(clamp(p.other_pct, 0, 100));
+    understood.push(`All spending up ${shock.otherPct}%`);
   }
   if (finite(p.one_off_months) && p.one_off_months > 0) {
     shock.oneOffMonths = clamp(Math.round(p.one_off_months * 4) / 4, 0, 6);
