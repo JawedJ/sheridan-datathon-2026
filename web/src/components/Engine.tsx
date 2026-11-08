@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   type Customer, type EngineData, type Shock, MONTHS, NO_SHOCK, NO_SHORTFALL,
-  ESSENTIAL_SHARE, backupPlan, fullPlan, type FullPlan, getCustomer, goalPlan, indexData, judgesRunway, money, monthlyPath, official,
+  ESSENTIAL_SHARE, backupPlan, fullPlan, type FullPlan, getCustomer, goalPlan, indexData, money, monthlyPath, official,
   realWorld, runwayText,
 } from "@/lib/engine";
 import { type Summary, template } from "@/lib/planText";
@@ -330,9 +330,6 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
             <PlanItem n={1} title={`Aim for ${money(goal.target)} in savings (3 months of spending)`}
               why="They have no money left over each month, so this needs a spending change first." />
           )}
-          {plan.saveFirst && goal.monthlyTransfer > 0 && goal.monthsToGoal !== null && (
-            <FundTimeline c={c} goal={goal} real={real} any={any} />
-          )}
         </div>
 
         <div className="phase">
@@ -364,28 +361,6 @@ function Plans({ c, data, shock }: { c: Customer; data: EngineData; shock: Shock
 
       {any && <PlanChart c={c} shock={shock} real={real} plan={plan} />}
     </section>
-  );
-}
-
-/** Savings at a few checkpoints along the way, and how long a shock would last if it hit then (no cuts). */
-function FundTimeline({ c, goal, real, any }: { c: Customer; goal: ReturnType<typeof goalPlan>; real: ReturnType<typeof realWorld>; any: boolean }) {
-  const N = goal.monthsToGoal ?? 0;
-  const ks = [...new Set([0, Math.round(N / 3), Math.round((2 * N) / 3), N])].filter(k => k <= N);
-  const oneOff = c.B - real.bufferLeft;
-  return (
-    <div className="timeline" aria-label="Savings along the way">
-      {ks.map(k => {
-        const saved = Math.min(goal.target, c.B + k * goal.monthlyTransfer);
-        const r = judgesRunway(saved - oneOff, real.gap);
-        return (
-          <div key={k} className={"tl-step" + (k === N ? " done" : "")}>
-            <div className="tl-when">{k === 0 ? "Today" : `After ${k} mo`}</div>
-            <div className="tl-saved">{money(saved)}</div>
-            {any && <div className="tl-runway">if it hit then: <b>{mo(r)}</b></div>}
-          </div>
-        );
-      })}
-    </div>
   );
 }
 

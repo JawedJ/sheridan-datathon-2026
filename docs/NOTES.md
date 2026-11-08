@@ -49,8 +49,6 @@ Then the comfort number: "Their balance settles around $X. That's Y months of sp
 1. **Now:** "Move $T a month into savings automatically for G months, until they have 3 months saved."
 2. **If it hits:** "Then cut non-essential spending by $C a month. Basic needs stay protected."
 > *Why both:* "For high earners, saving alone or cutting alone isn't enough. Saving first means they cut less."
-> *The savings timeline (under 1):* "Today a layoff would last 2.8 months. Every month they save, it lasts longer:
-> 3.1 after 3 months, 3.6 once the fund is full. That's why the plan starts now, not after the layoff."
 > *The spending bar (under 2):* "Grey is basic needs, which we protect. The green line is their income during the
 > shock: EI covers $3,159 of their $19,172 a month. Everything right of the line comes out of savings, and the
 > striped part is what the plan cuts."
