@@ -9,14 +9,6 @@ import { type Summary, template } from "@/lib/planText";
 import { EXAMPLE_SCENARIOS, type ParsedScenario, toShock } from "@/lib/scenario";
 import { MultiLine } from "@/components/charts";
 
-const EXAMPLES = [
-  { id: 20111, label: "Judges' example" },
-  { id: 71293, label: "High earner" },
-  { id: 22998, label: "On the edge" },
-  { id: 98208, label: "Saver with bonuses" },
-  { id: 93255, label: "Pensioner" },
-];
-
 const kfmt = (v: number) => (Math.abs(v) >= 1000 ? (v < 0 ? "−$" : "$") + Math.round(Math.abs(v) / 1000) + "k" : money(v));
 const pct = (x: number) => Math.round(x * 100) + "%";
 const short = (r: number) => (r >= NO_SHORTFALL ? "120+" : r.toFixed(1));
@@ -120,8 +112,7 @@ export default function Engine() {
       <div className="split">
         <CustomerPanel c={c} data={data} idInput={idInput} setIdInput={setIdInput}
           onLookup={() => loadAccount(Number(idInput.trim()))}
-          onRandom={() => loadAccount(data.id[Math.floor(Math.random() * data.id.length)])}
-          onExample={loadAccount} currentId={id} />
+          onRandom={() => loadAccount(data.id[Math.floor(Math.random() * data.id.length)])} />
         <AnswerPanel c={c} data={data} shock={shock} setManual={setManual} />
       </div>
 
@@ -132,9 +123,9 @@ export default function Engine() {
 }
 
 // ================================================================== 1. know the customer
-function CustomerPanel({ c, data, idInput, setIdInput, onLookup, onRandom, onExample, currentId }: {
+function CustomerPanel({ c, data, idInput, setIdInput, onLookup, onRandom }: {
   c: Customer; data: EngineData; idInput: string; setIdInput: (v: string) => void;
-  onLookup: () => void; onRandom: () => void; onExample: (n: number) => void; currentId: number;
+  onLookup: () => void; onRandom: () => void;
 }) {
   const base = official(c, NO_SHOCK);
   const cushion = c.S > 0 ? c.B / c.S : 0;
@@ -179,13 +170,6 @@ function CustomerPanel({ c, data, idInput, setIdInput, onLookup, onRandom, onExa
         {peer !== null && <> People at their income level hold {peer.toFixed(1)} months.</>}
       </p>
       {tags.length > 0 && <div className="tags">{tags.map(t => <span key={t} className="tag">{t}</span>)}</div>}
-
-      <div className="chip-row" style={{ marginTop: 12 }}>
-        <span className="muted">Try:</span>
-        {EXAMPLES.map(e => (
-          <button key={e.id} className={"btn chip" + (e.id === currentId ? " on" : "")} onClick={() => onExample(e.id)}>{e.label}</button>
-        ))}
-      </div>
     </section>
   );
 }
