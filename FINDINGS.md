@@ -614,7 +614,7 @@ One correction: most of statement frequency's apparent fragility was just income
 | `build_engine_data.py` | App data (`web/public/engine.json`), judges' test fixture, layoff-timing simulation [D6] |
 | `web/` | The app (Next.js): engine, findings page, Gemini plan wording. `npm run verify` checks it against the judges' formulas |
 | `build_chart_data.py` | Chart data → `charts/charts.js` and `web/public/findings.json` |
-| `charts/index.html` | The four headline charts |
+| `charts/index.html` | Original static charts; the app's findings page shows chart 1 and the windfall chart (data from `build_chart_data.py`) |
 
 Run order (from the repo root, with `.venv`):
 ```

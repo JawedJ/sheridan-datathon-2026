@@ -68,7 +68,38 @@ months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", 
 timing_rows = [{"month": months[int(r.start_month) - 1], "runway": float(r.median_runway),
                 "worst_share": round(100 * float(r.worst_share), 1)} for r in timing.itertuples()]
 
-out = {"deciles": deciles, "thermostat": thermo, "timing": timing_rows,
+# Windfalls: months with net inflow >= 1x usual income (balance above the previous 3 months' median),
+# share of the windfall still in the account 1..6 months later, by income group (non-pensioners).
+# Expected = same account, its own later net flows in random order (no pull back to a set level).
+# Same definitions as analysis/verify_deep.py section 3.
+wm = pd.read_csv(DATA / "monthly_summary.csv").sort_values(["account_id", "month"])
+wm["k"] = wm.groupby("account_id").cumcount()
+wm = wm[(wm.k >= 3) & wm.account_id.isin(t.index)].copy()
+wg = wm.groupby("account_id")
+wm["Imed"] = wg.money_in.transform("median").replace(0, np.nan)
+wm["net"] = wm.money_in - wm.money_out
+wm["base"] = wg.month_end_balance.transform(lambda x: x.shift(1).rolling(3).median())
+for h in range(0, 7):
+    wm[f"b{h}"] = wg.month_end_balance.shift(-h)
+ev = wm[(wm.net >= wm.Imed) & wm.base.notna() & wm.b6.notna()].copy()
+ev["windfall"] = ev.b0 - ev.base
+ev = ev[ev.windfall > 0].join(t[["dec"]], on="account_id")
+for h in range(1, 7):
+    ev[f"kept{h}"] = (ev[f"b{h}"] - ev.base) / ev.windfall
+rng = np.random.default_rng(0)
+nets = wm.groupby("account_id").net.apply(np.array)
+sample = ev.sample(min(4000, len(ev)), random_state=0)
+sim = np.array([1 + rng.choice(nets[r.account_id], 6).cumsum() / r.windfall for r in sample.itertuples()])
+groups = {"bottom20": ev[ev.dec <= 2], "top20": ev[ev.dec >= 9]}
+windfall = {
+    "months": list(range(0, 7)),
+    "expected": [100] + [round(100 * float(np.median(sim[:, h - 1]))) for h in range(1, 7)],
+    **{k: [100] + [round(100 * float(g[f"kept{h}"].median())) for h in range(1, 7)] for k, g in groups.items()},
+    "n": int(len(ev)), "accounts": int(ev.account_id.nunique()),
+    "typical_size": round(float((ev.money_in / ev.Imed).median()), 1),
+}
+
+out = {"deciles": deciles, "thermostat": thermo, "timing": timing_rows, "windfall": windfall,
        "timing_n": int(timing.n.iloc[0]), "n_nonpension": int(len(t))}
 CHARTS.mkdir(exist_ok=True)
 (CHARTS / "charts.js").write_text("window.CHARTS = " + json.dumps(out, indent=1) + ";\n")

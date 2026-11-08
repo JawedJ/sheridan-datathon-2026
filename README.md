@@ -28,14 +28,14 @@ in months, not dollars.
   formula** with **real-world rules** (EI maximum, pensions keep paying, cash-paid bills estimated).
   Then get a goal plan (auto-transfer above the comfort number) and a backup plan (% of non-essential
   spending to cut, with basic needs protected). Gemini can rewrite the plan in plain words, using only the engine's numbers.
-- **Findings:** the four headline charts.
+- **Findings:** two charts: savings level off while spending climbs, and windfalls drain back (fastest for top earners).
 - **Accuracy:** matches the judges' formulas exactly for all 4,500 accounts (`npm run verify`).
 
 ## What's in the repo
 | Path | What it is |
 | --- | --- |
 | [`FINDINGS.md`](FINDINGS.md) | The full write-up: headline, evidence, stress test, supporting findings, data checks, limits |
-| [`charts/index.html`](charts/index.html) | The four headline charts |
+| [`charts/index.html`](charts/index.html) | Original static charts (the live findings page now shows two) |
 | `build_customer_table.py` | Per-customer judges' metrics (income, spending, fixed costs, buffer, runway, standard shocks) |
 | `analysis/` | Formula checks, broad survey, deep dives, stress test |
 | `output/` | Generated tables (not committed; rebuilt by the scripts) |

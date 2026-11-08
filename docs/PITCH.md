@@ -23,8 +23,8 @@ Three numbers to remember, and nothing else:
 | --- | --- | --- |
 | 0:00–0:10 | Findings page title | "Who runs out of money faster after a layoff: someone earning six thousand a month, or twenty-five thousand? In 4,500 bank accounts, it's the **high earner**." |
 | 0:10–0:22 | Chart 1 (savings level off) | "The lowest earners hold **11 months** of spending in savings. The top 10% hold **1.6**. Their savings level off around $33,000, but three months of their spending costs $72,000." |
-| 0:22–0:37 | Chart 2 (balances pulled back; windfall result in its notes) | "Why? People save to a **dollar number**, not to a number of months. When top earners get a windfall, they spend **three of every four dollars** within three months. Their balance drifts back to the same level. We call it their **comfort number**." |
-| 0:37–0:50 | Chart 3 (run out after a layoff) | "With real EI, which caps at $729 a week, **93%** of top earners would run out within three months. The official formula says 26%. And cutting back after the layoff isn't enough: even cutting everything non-essential leaves 43% short." |
+| 0:22–0:37 | Windfall chart (second chart) | "Why? People save to a **dollar number**, not to a number of months. When top earners get a windfall, they spend **three of every four dollars** within three months. Their balance drifts back to the same level. We call it their **comfort number**." |
+| 0:37–0:50 | Point at the 93% number at the top of the page | "With real EI, which caps at $729 a week, **93%** of top earners would run out within three months. The official formula says 26%. And cutting back after the layoff isn't enough: even cutting everything non-essential leaves 43% short." |
 | 0:50–1:00 | Switch to the engine | "So the fix has to come **before** the shock. Our engine finds each customer's comfort number and builds the cushion first. Give us an account and a twist card." |
 
 **One-line version** (Devpost, video intro):
@@ -151,8 +151,8 @@ Brief's own cards: "Laid off, EI 55% for 6 months" · "Furnace costs a full mont
 | Time | Show | Say |
 | --- | --- | --- |
 | 0:00–0:15 | Findings, chart 1 | The headline and 11 vs 1.6 months |
-| 0:15–0:35 | Chart 2 and its notes (windfall result) | Dollar number, not months; 3 of 4 windfall dollars spent |
-| 0:35–0:50 | Chart 3 | 93% vs 26%; cutting back leaves 43% short |
+| 0:15–0:35 | Windfall chart | Dollar number, not months; 3 of 4 windfall dollars spent |
+| 0:35–0:50 | The 93% number at the top of the findings page | 93% vs 26%; cutting back leaves 43% short |
 | 0:50–1:35 | Engine: type the 71293 layoff card | Pills → six values → official 6.2 vs real 2.8 → four tiles → both plans 6.3 |
 | 1:35–1:50 | A simple title card (or stay on the engine) | Hold-out, windfalls, our biggest limit (cash) |
 | 1:50–2:00 | Back to the headline | Show balances in months; build the cushion before the shock |

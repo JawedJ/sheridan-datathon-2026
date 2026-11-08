@@ -11,7 +11,7 @@ after a scenario runs; the template version shows instantly, so the page never w
 | `src/lib/engine.ts` | Judges' formulas, real-world corrections (EI maximum, pensions, cash-paid bills), month-by-month path, goal and backup plans |
 | `src/components/Engine.tsx` | Engine screen: customer, shock, plans |
 | `src/components/charts.tsx` | SVG charts (balance path, grouped bars, gap lines) |
-| `src/app/findings/page.tsx` | The four headline charts |
+| `src/app/findings/page.tsx` | Findings page: savings vs 3 months of spending, and the windfall chart |
 | `src/app/api/explain/route.ts` | Gemini rewrites the plan in plain words from the engine's numbers (thinking off, output checked); template fallback |
 | `src/lib/scenario.ts` | Gemini prompt + JSON schema for reading a scenario, and the range-checked conversion to engine settings |
 | `src/app/api/parse/route.ts` | Sends the scenario to Gemini (models from `GEMINI_PARSE_MODELS`, retry when busy) |
