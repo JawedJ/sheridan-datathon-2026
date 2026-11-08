@@ -65,14 +65,6 @@ export default function FindingsPage() {
         <GapLines cats={d.deciles.map(x => "D" + x.decile)} sub={d.deciles.map(x => kfmt(x.income) + "/mo")}
           kept={d.deciles.map(x => x.comfort)} needed={d.deciles.map(x => x.three_months)} fmt={kfmt}
           tipFor={i => { const x = d.deciles[i]; return <><b>Income group {x.decile}</b> ({money(x.income)}/mo)<br />Balance settles at <b>{money(x.comfort)}</b><br />3 months of spending: <b>{money(x.three_months)}</b><br />Covers {x.cushion_months.toFixed(1)} months · n={x.n}</>; }} />
-        <DataTable head={["Group", "Income", "Settles at", "3 months of spending", "Months covered"]}
-          rows={d.deciles.map(x => ["D" + x.decile, money(x.income), money(x.comfort), money(x.three_months), x.cushion_months.toFixed(2)])} />
-        <Caveats items={[
-          <><b>Don&apos;t misread it as &quot;high earners save less money.&quot;</b> They hold <i>more</i> dollars ({kfmt(d10.comfort)} vs {kfmt(d1.comfort)}). It&apos;s the number of <i>months</i> those dollars cover that falls.</>,
-          <><b>How it&apos;s measured:</b> &quot;settles at&quot; is each customer&apos;s median month-end balance after their first 3 months (accounts start at $0). &quot;3 months of spending&quot; is 3 × their median monthly money out. The months-saved column uses the judges&apos; buffer (average daily balance, last 6 months).</>,
-          <><b>Why we trust it:</b> the same result on a random half of customers and on the other half; in all 8 regions and every year 2021–2025; with five definitions of savings; and after correcting for noisy income (savings grow only ×1.22 when income doubles, 95% range ×1.20–×1.24).</>,
-          <><b>Not caused by cash moving in and out:</b> only 0.5–3.6% of deposits look like re-deposited withdrawals, and customers paid by bank transfer show the pattern even more strongly.</>,
-        ]} />
       </section>
 
       <section className="card">
@@ -91,12 +83,6 @@ export default function FindingsPage() {
             { name: "Top 20%", color: "var(--series-1)", values: d.thermostat.map(t => t.top20) },
           ]}
           tipFor={i => { const t = d.thermostat[i]; return <><b>Balance {t.position.toLowerCase()}</b><br />Bottom 20%: <b>{signed(t.bottom20)}</b> of usual income next month<br />Top 20%: <b>{signed(t.top20)}</b><br />{t.bottom20_n.toLocaleString()} / {t.top20_n.toLocaleString()} account-months</>; }} />
-        <Caveats items={[
-          <><b>Part of this shape is automatic.</b> &quot;Usual&quot; here is the account&apos;s median over its whole history, so a high month is partly high <i>because</i> later months are lower. Shuffling each account&apos;s months at random still gives about two-thirds of the effect.</>,
-          <><b>The real part, measured fairly:</b> comparing each balance only with its <i>previous</i> 6 months, shuffled data shows no pull (−0.01) and real data still does (−0.23). It mostly happens within one month, so some of it may be timing: cash deposited late in a month and spent early the next.</>,
-          <><b>The cleanest evidence isn&apos;t on this chart:</b> after a windfall (a month bringing in at least a month&apos;s usual income), accounts still hold only 45% of it six months later (top 20% of earners: 29%). With no pull back, they&apos;d hold all of it.</>,
-          <><b>What it doesn&apos;t show:</b> <i>why</i> people do this. It&apos;s observed behaviour, not proven psychology. Income groups here are fifths of all customers.</>,
-        ]} />
       </section>
 
       <section className="card">
@@ -117,12 +103,6 @@ export default function FindingsPage() {
             { name: "Real EI maximum", color: "var(--series-2)", values: d.deciles.map(x => x.ei_lt3_cap) },
           ]}
           tipFor={i => { const x = d.deciles[i]; return <><b>Income group {x.decile}</b> ({money(x.income)}/mo)<br />Judges&apos; rule: <b>{x.ei_lt3_judges}%</b><br />Real EI maximum: <b>{x.ei_lt3_cap}%</b></>; }} />
-        <Caveats items={[
-          <><b>This is &quot;if nothing changes,&quot; not a forecast.</b> It assumes they keep spending exactly as usual. Real people cut back, so read it as how exposed they are, not how many will go broke.</>,
-          <><b>Cutting back helps, but not enough:</b> protecting basic needs (Statistics Canada: 64% of household spending; 61% for the richest fifth), cutting <i>all</i> other spending still leaves 38–43% of the top group running out within 3 months.</>,
-          <><b>EI is simplified:</b> we assume everyone qualifies, for the whole period, with no severance, other savings or a partner&apos;s income. The real maximum is $729/week in 2026 (canada.ca).</>,
-          <><b>The orange bars depend on the cap; the gap in months saved (chart 1) doesn&apos;t.</b> Even with the judges&apos; uncapped 55% rule, top earners are the most exposed group.</>,
-        ]} />
       </section>
 
       <section className="card">
@@ -137,12 +117,6 @@ export default function FindingsPage() {
           series={[{ name: "Median runway", color: "var(--series-1)", values: d.timing.map(t => t.runway) }]}
           tipFor={i => { const t = d.timing[i]; return <><b>Layoff starts in {t.month}</b><br />Median runway: <b>{t.runway.toFixed(1)} months</b><br />Worst month for {t.worst_share}% of customers</>; }} />
         <p className="muted" style={{ margin: "6px 0 0" }}>{d.timing_n.toLocaleString()} non-pensioner customers whose savings run out within 10 years for every start month.</p>
-        <Caveats items={[
-          <><b>This one is a model, not an observation.</b> Nobody in the data was laid off; we replay each customer&apos;s own seasonal spending against EI at 55% of income (the judges&apos; rule, no cap).</>,
-          <><b>The seasonal pattern itself is solid:</b> January runs about 1.6× a normal month, June 1.5× and February 0.7×, in every year from 2021 to 2025.</>,
-          <><b>For one customer it&apos;s rougher:</b> a person&apos;s own pattern only partly repeats from year to year (correlation 0.55), so treat their best and worst start months as a guide, not a promise.</>,
-          <><b>Customers who never run out are left out</b>, because their runway is &quot;no shortfall&quot; in every month and there&apos;s nothing to compare.</>,
-        ]} />
       </section>
 
       <section className="card">
@@ -176,15 +150,5 @@ function Caveats({ title = "How accurate is this, and what it doesn't say", item
       <div className="caveats-title">{title}</div>
       <ul>{items.map((it, i) => <li key={i}>{it}</li>)}</ul>
     </div>
-  );
-}
-
-function DataTable({ head, rows }: { head: string[]; rows: (string | number)[][] }) {
-  return (
-    <details style={{ marginTop: 8 }}>
-      <summary>Show the numbers</summary>
-      <table className="data"><thead><tr>{head.map(h => <th key={h}>{h}</th>)}</tr></thead>
-        <tbody>{rows.map((r, i) => <tr key={i}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}</tbody></table>
-    </details>
   );
 }

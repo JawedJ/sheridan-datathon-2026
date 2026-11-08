@@ -266,7 +266,7 @@ What we did with each awkward case:
 | Zero typical income | 14 | Kept; left out only of the income-vs-savings slope (log of 0 is undefined) | They're real customers a judge could pick |
 | Income under $500/month | 118 | Kept | Real customers |
 | Pensioners | 740 | Kept in the app; left out of income comparisons | A layoff can't stop a pension |
-| $0 recorded bills | 1,225 | Kept; no bills estimate; limitation shown on screen | Their bills almost certainly exist and are most likely paid in cash out of their withdrawals: they spend as much as customers with bills, but 96% of it leaves as cash. 158 of them even pay a bills standing order every month, but the bank didn't tag those payments as bills |
+| $0 recorded bills | 1,225 | Kept; no bills estimate; limitation shown on screen | Their bills almost certainly exist and are most likely paid in cash out of their withdrawals: they spend as much as customers with bills, but 96% of it leaves as cash. 158 of them even pay a bills standing order every month, but the bank didn't tag those payments as bills. Also affects: their fixed costs (F) show about $0; the "no autopay" warning sign (94% of no-autopay customers are in this group). Doesn't affect runway (cash-paid bills are already inside spending S) or the headline, which holds within each group |
 | First 3 months of each account | all | Skipped for comfort number and thermostat | Accounts fill up from $0 |
 | 2020 (partial first year) | — | Year-by-year checks use 2021–2025 only, full years only | Accounts were still opening |
 | Accounts without a December 2025 row | 76 | Kept | Their "last 6 months" is just slightly older |
@@ -385,7 +385,8 @@ spend down two-thirds of a month's income the next month (−66%), vs −27% for
   Below $5,000/month income it's almost flat; nearly everyone keeps about $13,000.
 - Top earners' extra spending isn't fixed costs. Labelled bills plateau around $3,000/month from the
   middle of the income range up. A top earner spends $24,139/month, of which only $2,967 is labelled
-  bills; 89% leaves as cash.
+  bills; 89% leaves as cash. (41% of top earners have no recorded bills, which pulls that down; for
+  those whose bills are recorded, fixed costs are $4,974, still only about a fifth of spending.)
 - We ruled out "pass-through accounts" (money just passing through to another bank): top earners'
   money comes in as cash deposits and leaves as cash withdrawals; almost nothing goes to other banks.
 

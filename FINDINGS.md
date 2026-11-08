@@ -160,6 +160,9 @@ or currency scale.
 
 - Fixed costs plateau around $3k/month from D5 up. Almost all of a top earner's extra spending is
   flexible, and nearly all of it leaves as cash.
+- **Caveat:** 41% of the top 10% have no recorded bills (they most likely pay them in cash), which
+  pulls these medians down. Among top earners whose bills *are* recorded, fixed costs are $4,974/month
+  and bills alone are 17% of spending: still a small share, so the point stands, but the 12% is low.
 - **We can't say whether it's *unnecessary*.** Cash withdrawals carry no category. It could be
   luxuries, or rent and family costs paid in cash (household size isn't in the data).
 
@@ -311,6 +314,8 @@ Sturdier definition: months where the lowest balance is under 25% of the account
 - Their income is erratic: CV 0.92 vs 0.24. The top 3 months bring in 24% of all income (vs 12%),
   and they have zero-income months 4.3% of the time (vs 0.2%).
 - Customers with exactly 2 standing orders: **0%** ever negative.
+- **Overlap:** 94% of the 742 no-autopay customers are also customers with no recorded bills, so
+  "no autopay" and "pays bills in cash" are largely the same group.
 - Caveat: autopay is likely a *marker* of steady income, not the cause. An irregular earner can't
   commit to fixed monthly payments. For the app it doesn't matter which way it runs: it's a free,
   easy-to-see warning sign.
@@ -411,7 +416,7 @@ Each problem was tested against the data; the evidence is in `analysis/verify_fo
 | Zero median income | 14 | Kept; excluded from log-based elasticity (log 0 undefined) | stress test |
 | Income under $500/month | 118 | Kept; flagged as special cases for plans | 3.6 |
 | Pensioners (pension ≥ 50% of income) | 740 | Excluded from fragility rankings and elasticity; the engine should keep their pension during a job-loss shock | 3.3, 4D |
-| $0 labelled household bills | 1,225 | Judges' rule leaves them at $0; not estimated (the app states the limitation). Very unlikely to truly have no bills: they spend as much as everyone else ($7,875 vs $7,238/mo), 96% of it as cash (vs 68%), while customers with bills pay a median $2,148/mo (40% of spending). 162 of them have a household-bills standing order, and 158 of those pay that exact amount every month by an **unlabelled** transfer: bills that are in the data but not tagged. The rest most likely pay bills in cash. `verify_deep.py` §6 | 3.4, 2.1 |
+| $0 labelled household bills | 1,225 | Judges' rule leaves them at $0; not estimated (the app states the limitation). Very unlikely to truly have no bills: they spend as much as everyone else ($7,875 vs $7,238/mo), 96% of it as cash (vs 68%), while customers with bills pay a median $2,148/mo (40% of spending). 162 of them have a household-bills standing order, and 158 of those pay that exact amount every month by an **unlabelled** transfer: bills that are in the data but not tagged. The rest most likely pay bills in cash. **Also affects:** their fixed costs F show about $0 (understated on screen); the autopay finding (94% overlap, 3.5); the top-earner fixed-cost medians (1.4). **Doesn't affect** runway (cash bills are inside S) or the headline, which holds within each group: bills recorded D1 8.3 vs D10 1.5 months; no bills recorded bottom fifth 20.9 vs top fifth 1.8. `verify_deep.py` §6 | 3.4, 2.1 |
 | First 3 months of each account ("fill-up" from $0) | all | Excluded from comfort-number, split-half and year-by-year analysis | D1, 4D |
 | Partial first year (2020 opening wave) | — | Year-by-year test starts at 2021 and uses only full 12-month account-years | 4D |
 | Median income vs median spending from different months | 1,181 show a shortfall (97.5% of them false) | Report judges' number as-is; month-by-month view uses real averages | 3.1 |

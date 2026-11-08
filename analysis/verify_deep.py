@@ -237,5 +237,19 @@ txo = pd.read_csv(DATA / "transactions.csv", usecols=["account_id", "operation",
 txo = txo[txo.account_id.isin(sb.account_id) & txo.operation.isin(["transfer out to another bank", "bill payment"])]
 mm = txo.merge(sb[["account_id", "amount"]].rename(columns={"amount": "so_amt"}), on="account_id")
 paid = mm[(mm.amount - mm.so_amt).abs() <= 0.01 * mm.so_amt].account_id.nunique()
+# What else the $0-bill group touches
+npn = x[x.pension_share.fillna(0) < 0.5].copy()
+npn["dec"] = pd.qcut(npn.I.rank(method="first"), 10, labels=False) + 1
+print("share with $0 bills by income decile (non-pensioners):", npn.groupby("dec").zero.mean().round(2).to_dict())
+d10 = npn[npn.dec == 10]
+print(f"top 10%: fixed costs F median, bills recorded ${d10[~d10.zero].F.median():,.0f} vs not ${d10[d10.zero].F.median():,.0f}; "
+      f"bills share of spending (recorded) {(d10[~d10.zero].H / d10[~d10.zero].S).median():.1%}")
+if "has_so" in x:
+    noap = ~x.has_so
+    print(f"no-autopay customers who also have $0 bills: {(noap & x.zero).sum() / noap.sum():.1%} of {noap.sum()}")
+w = npn[~npn.zero]; qw = pd.qcut(w.I.rank(method="first"), 10, labels=False)
+z = npn[npn.zero]; qz = pd.qcut(z.I.rank(method="first"), 5, labels=False)
+print(f"headline within groups: bills recorded D1 {(w.B / w.S)[qw == 0].median():.1f} vs D10 {(w.B / w.S)[qw == 9].median():.1f} months; "
+      f"no bills recorded bottom fifth {(z.B / z.S)[qz == 0].median():.1f} vs top fifth {(z.B / z.S)[qz == 4].median():.1f}")
 print(f"$0-bill customers with a household-bills standing order: {sb.account_id.nunique()}; "
       f"of them, paying that exact amount by unlabelled transfer: {paid}")

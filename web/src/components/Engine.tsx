@@ -282,13 +282,6 @@ function AnswerPanel({ c, data, shock, setManual }: {
             show={shock.oneOffMonths ? `${shock.oneOffMonths} = ${money(shock.oneOffMonths * c.S)}` : "none"} onChange={v => setManual({ oneOffMonths: v })} />
           <Slider label="One-off cost, dollars" value={shock.oneOffDollars} min={0} max={20000} step={500}
             show={shock.oneOffDollars ? money(shock.oneOffDollars) : "none"} onChange={v => setManual({ oneOffDollars: v })} />
-          <label className="slider" style={{ display: "block" }}>
-            <span style={{ fontSize: 13.5, color: "var(--text-2)" }}>Starts in</span>
-            <select className="input" style={{ display: "block", marginTop: 4 }} value={shock.startMonth}
-              onChange={e => setManual({ startMonth: Number(e.target.value) })}>
-              {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-            </select>
-          </label>
         </div>
       </div>
     </section>

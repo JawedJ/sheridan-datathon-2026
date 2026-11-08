@@ -57,6 +57,7 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | H3 | Comfort number ("where their balance usually settles") | Median month-end balance, skipping the account's first 3 months | DERIVED |
 | H4 | "People at their income level hold X months" | Median B ÷ S for their income decile, pensioners excluded | DERIVED |
 | H5 | Tags (bonus, bills paid in cash, often near zero, has gone below zero, irregular income, pensioner) | Thresholds we chose: bonus > 10% in Jun/Dec; H = 0; edge months > 25%; any day below zero; income CV > 0.6 with few autopays; pension ≥ 50% of income | DERIVED with ASSUMPTION thresholds |
+| H7 | Customers with no recorded bills (1,225): knock-on effects | F shows ~$0 for them (understated); the autopay warning sign overlaps 94% with this group; top-earner fixed-cost medians are pulled down. Runway and the headline are unaffected (checked within each group) |
 | H6 | "Bills paid in cash (not in data)" | H = 0 and 98% of these customers never have a labelled bill. They most likely pay their bills in cash out of their withdrawals: they spend as much as customers with bills, but almost all of it leaves as cash (median customer 99.7%; 96% of their total spending). 158 others pay a bills standing order by untagged transfer. This is our **inference**, not something the data states | ESTIMATE |
 
 ### 2.2 The "Official formula" result (section 2)
@@ -111,7 +112,7 @@ calculation from the data, no assumptions added · **ESTIMATE** = an approximati
 | F3 | Layoff timing chart | Subset: 3,547 non-pensioners whose savings run out within 10 years for every start month; seasonal factors per M2 |
 | F4 | "4,500 real bank customers" headline | **Removed** from the engine page (team decision: judges know the dataset). The findings page still states the source |
 | F5 | "Under real EI rules" in the pitch | Fine: deposits are the only income measure in the data and the judges' own definition |
-| F10 | Findings page accuracy notes | Each chart now has "How accurate is this, and what it doesn't say", plus a "How sure are we?" table and "What we can't rule out" list |
+| F10 | Findings page accuracy notes | An intro box ("Before you read the charts"), a "How sure are we?" table and a "What we can't rule out" list. Per-chart notes and number tables were removed for a cleaner page (the detail is in FINDINGS.md section 2.1 and REPORT) |
 | F6 | "88% flexible; cutting half brings 93% → 30%" | **Fixed.** Replaced everywhere with the basic-needs-protected numbers: 36% non-essential; cut half → 79% still run out; cut all → 43% |
 
 ---
